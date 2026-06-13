@@ -1,14 +1,13 @@
 {
-  "required": true,
   "package": "fabiofdez.knots_and_rings.mixin",
-  "compatibilityLevel": "JAVA_21",
-  "mixins": [
-    "LogBlockMixin"
-  ],
+  "required": true,
+  "minVersion": "0.8",
+  "compatibilityLevel": "${java}",
   "injectors": {
     "defaultRequire": 1
   },
-  "overwrites": {
-    "requireAnnotations": true
-	}
+  "mixins": [
+    "LogBlockMixin"
+  ],
+  "client": []
 }

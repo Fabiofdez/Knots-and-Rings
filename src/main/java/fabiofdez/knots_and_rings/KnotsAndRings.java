@@ -1,26 +1,66 @@
 package fabiofdez.knots_and_rings;
 
-import fabiofdez.knots_and_rings.util.LogConnectivityCache;
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
+import fabiofdez.knots_and_rings.platform.Platform;
+
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class KnotsAndRings implements ModInitializer {
-  public static final String MOD_ID = "knots_and_rings";
+//? fabric {
+import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
+//?} neoforge {
+/*import com.example.modtemplate.platform.neoforge.NeoforgePlatform;
+ *///?} forge {
+/*import com.example.modtemplate.platform.forge.ForgePlatform;
+ *///?}
 
-  public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
+@SuppressWarnings("LoggingSimilarMessage")
+public class KnotsAndRings {
 
-  @Override
-  public void onInitialize() {
-    LOGGER.info("Initializing Knots & Rings");
+	public static final String MOD_ID = /*$ mod_id*/ "knots_and_rings";
+	public static final String MOD_VERSION = /*$ mod_version*/ "1.3.0";
+	public static final String MOD_FRIENDLY_NAME = /*$ mod_name*/ "Knots & Rings";
+	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
-    ModSounds.initialize();
-    ServerChunkEvents.CHUNK_UNLOAD.register(LogConnectivityCache::invalidateInChunk);
-  }
+	private static final Platform PLATFORM = createPlatformInstance();
 
-  public static ResourceLocation id(String path) {
-    return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-  }
+	public static void onInitialize() {
+		LOGGER.info("Initializing {} on {}", MOD_ID, KnotsAndRings.xplat().loader());
+		LOGGER.debug("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
+	}
+
+	public static void onInitializeClient() {
+		LOGGER.info("Initializing {} Client on {}", MOD_ID, KnotsAndRings.xplat().loader());
+		LOGGER.debug("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
+	}
+
+	static Platform xplat() {
+		return PLATFORM;
+	}
+
+	private static Platform createPlatformInstance() {
+		//? fabric {
+		return new FabricPlatform();
+		//?} neoforge {
+		/*return new NeoforgePlatform();
+		 *///?} forge {
+		/*return new ForgePlatform();
+		 *///?}
+	}
+
+	public static ResourceLocation id(String path) {
+		//? > 1.19.2 {
+		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+		 //?} <= 1.19.2 {
+		/*return new ResourceLocation(MOD_ID, path);
+		*///?}
+	}
+
+	public static ResourceLocation id(String namespace, String path) {
+		//? > 1.19.2 {
+		return ResourceLocation.fromNamespaceAndPath(namespace, path);
+		 //?} <= 1.19.2 {
+		/*return new ResourceLocation(namespace, path);
+		*///?}
+	}
 }

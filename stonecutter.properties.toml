@@ -1,0 +1,39 @@
+mod.id = "knots_and_rings"
+mod.name = "Knots & Rings"
+mod.group = "fabiofdez"
+mod.version = "1.3.0"
+mod.channel_tag = ""
+mod.description = "Bring trees to life with natural details like seamless growth rings and bark imperfections"
+mod.authors = ["Fabiofdez"]
+mod.contributors = []
+mod.inception_year = "2026"
+mod.license.name = "CC0-1.0"
+mod.license.url = "https://github.com/Fabiofdez/Knots-and-Rings?tab=CC0-1.0-1-ov-file#readme"
+mod.license.dist = "repo"
+mod.sources_url = "https://github.com/Fabiofdez/Knots-n-Rings"
+mod.homepage_url = "https://github.com/Fabiofdez/Knots-n-Rings"
+mod.issues_url = "https://github.com/Fabiofdez/Knots-n-Rings/issues"
+mod.discord_url = ""
+[[mod.pom.developers]]
+id = "Fabiofdez"
+name = "Fabio Fernandez"
+url = "https://github.com/Fabiofdez"
+
+[fabric]
+
+[fabric."1.21.5"]
+deps.minecraft = "1.21.5"
+deps.fabric-api = "0.128.2+1.21.5"
+deps.fabric-loader = "0.17.2"
+
+[fabric."1.21.11"]
+deps.minecraft = "1.21.11"
+deps.fabric-api = "0.141.3+1.21.11"
+deps.fabric-loader = "0.18.5"
+
+# [neoforge]
+
+# [neoforge."?"]
+# deps.minecraft = "?"
+# deps.neoforge = "?"
+# deps.parchment = "?"
