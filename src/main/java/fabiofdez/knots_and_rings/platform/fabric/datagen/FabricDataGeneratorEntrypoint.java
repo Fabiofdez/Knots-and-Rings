@@ -10,6 +10,7 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 	public void onInitializeDataGenerator(FabricDataGenerator generator) {
 		FabricDataGenerator.Pack pack = generator.createPack();
 
+    //? > 1.21.1
     pack.addProvider(SoundEventProvider::new);
     pack.addProvider(ModLangProvider::new);
 	}

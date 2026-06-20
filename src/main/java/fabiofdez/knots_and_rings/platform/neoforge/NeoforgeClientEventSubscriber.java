@@ -2,17 +2,18 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 
 //? neoforge {
 
-/*import com.example.modtemplate.ModTemplate;
+/*import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 
-@EventBusSubscriber(modid = ModTemplate.MOD_ID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = KnotsAndRings.MOD_ID, /^? if < 1.21.11 >> 'value' ^/ bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class NeoforgeClientEventSubscriber {
+
 	@SubscribeEvent
 	public static void onClientSetup(final FMLClientSetupEvent event) {
-		ModTemplate.onInitializeClient();
+		KnotsAndRings.onInitializeClient();
 	}
 }
 *///?}

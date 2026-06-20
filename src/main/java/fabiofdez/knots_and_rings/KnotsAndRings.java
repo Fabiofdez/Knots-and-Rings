@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 //? fabric {
 import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
 //?} neoforge {
-/*import com.example.modtemplate.platform.neoforge.NeoforgePlatform;
+/*import fabiofdez.knots_and_rings.platform.neoforge.NeoforgePlatform;
  *///?} forge {
-/*import com.example.modtemplate.platform.forge.ForgePlatform;
+/*import fabiofdez.knots_and_rings.platform.forge.ForgePlatform;
  *///?}
 
 @SuppressWarnings("LoggingSimilarMessage")
@@ -48,19 +48,17 @@ public class KnotsAndRings {
 		 *///?}
 	}
 
-	public static ResourceLocation id(String path) {
-		//? > 1.19.2 {
-		return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-		 //?} <= 1.19.2 {
-		/*return new ResourceLocation(MOD_ID, path);
-		*///?}
-	}
+  public static ResourceLocation id(String path) {
+    //? >= 1.21
+    return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    //? < 1.21
+    //return new ResourceLocation(MOD_ID, path);
+  }
 
-	public static ResourceLocation id(String namespace, String path) {
-		//? > 1.19.2 {
-		return ResourceLocation.fromNamespaceAndPath(namespace, path);
-		 //?} <= 1.19.2 {
-		/*return new ResourceLocation(namespace, path);
-		*///?}
-	}
+  public static ResourceLocation id(String namespace, String path) {
+    //? >= 1.21
+    return ResourceLocation.fromNamespaceAndPath(namespace, path);
+    //? < 1.21
+    //return new ResourceLocation(namespace, path);
+  }
 }

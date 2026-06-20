@@ -1,5 +1,7 @@
 package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
+//? fabric && > 1.21.1 {
+
 import fabiofdez.knots_and_rings.ModSounds;
 import net.fabricmc.fabric.api.client.datagen.v1.builder.SoundTypeBuilder;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricSoundsProvider;
@@ -20,21 +22,21 @@ public class SoundEventProvider extends FabricSoundsProvider {
   @Override
   protected void configure(HolderLookup.Provider provider, SoundExporter soundExporter) {
     soundExporter.add(
-        ModSounds.SPLIT_WOOD,
-        blockSound(ModSounds.SPLIT_WOOD).sound(ofEvent(SoundEvents.AXE_STRIP).volume(0.8F))
+        ModSounds.SPLIT_WOOD.get(),
+        blockSound(ModSounds.SPLIT_WOOD.get()).sound(ofEvent(SoundEvents.AXE_STRIP).volume(0.8F))
     );
     soundExporter.add(
-        ModSounds.CRACK_WOOD,
-        blockSound(ModSounds.CRACK_WOOD).sound(ofEvent(SoundEvents.BAMBOO_HIT).volume(0.4F))
+        ModSounds.CRACK_WOOD.get(),
+        blockSound(ModSounds.CRACK_WOOD.get()).sound(ofEvent(SoundEvents.BAMBOO_HIT).volume(0.4F))
     );
 
     soundExporter.add(
-        ModSounds.HEAL_WOOD,
-        blockSound(ModSounds.HEAL_WOOD).sound(ofEvent(SoundEvents.MOSS_PLACE).volume(0.8F))
+        ModSounds.HEAL_WOOD.get(),
+        blockSound(ModSounds.HEAL_WOOD.get()).sound(ofEvent(SoundEvents.MOSS_PLACE).volume(0.8F))
     );
     soundExporter.add(
-        ModSounds.HEAL_WOOD_ALT,
-        blockSound(ModSounds.HEAL_WOOD_ALT).sound(ofEvent(SoundEvents.COMPOSTER_FILL_SUCCESS).volume(0.4F))
+        ModSounds.HEAL_WOOD_ALT.get(),
+        blockSound(ModSounds.HEAL_WOOD_ALT.get()).sound(ofEvent(SoundEvents.COMPOSTER_FILL_SUCCESS).volume(0.4F))
     );
   }
 
@@ -51,3 +53,5 @@ public class SoundEventProvider extends FabricSoundsProvider {
     return "SoundEventProvider";
   }
 }
+
+//? }

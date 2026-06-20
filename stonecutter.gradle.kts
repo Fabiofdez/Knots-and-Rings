@@ -48,6 +48,8 @@ stonecutter parameters {
 			replace("public boolean canSurvive", "protected boolean canSurvive")
 			replace("public List<ItemStack> getDrops", "protected List<ItemStack> getDrops")
 			replace("public InteractionResult use(", "protected ItemInteractionResult useItemOn(")
+			replace("public boolean isRandomlyTicking", "protected boolean isRandomlyTicking")
+			replace("public void randomTick", "protected void randomTick")
 		}
 
 		string(current.parsed eq "1.21.1", "has_interaction_result") {

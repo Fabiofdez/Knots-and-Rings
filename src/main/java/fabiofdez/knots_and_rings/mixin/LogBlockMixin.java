@@ -1,3 +1,5 @@
+//~ has_interaction_result
+
 package fabiofdez.knots_and_rings.mixin;
 
 import fabiofdez.knots_and_rings.ModSounds;
@@ -117,9 +119,17 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
     }
   }
 
+  @NotNull
   @Override
-  protected @NotNull InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+  protected InteractionResult useItemOn(/*? if >= 1.21 >> 'BlockState' */ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    //? < 1.21
+     //super.use(state, level, pos, player, hand, hitResult);
+    //? >= 1.21
     super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+
+    //? < 1.21
+    //ItemStack stack = player.getItemInHand(hand);
+
     if (!LivingWoodBlock.isNaturalWood(state)) return InteractionResult.PASS;
 
     if (stack.is(ItemTags.PICKAXES) && LivingWoodBlock.isTrunk(state)) {
@@ -139,8 +149,8 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
         LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, false);
 
         float pitch = 0.8F + level.random.nextFloat() * 0.2F;
-        level.playSound(null, pos, ModSounds.SPLIT_WOOD, SoundSource.BLOCKS, 1F, pitch);
-        level.playSound(null, pos, ModSounds.CRACK_WOOD, SoundSource.BLOCKS, 1F, pitch);
+        level.playSound(null, pos, ModSounds.SPLIT_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
+        level.playSound(null, pos, ModSounds.CRACK_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
         if (!player.isCreative() && stack.isDamageableItem()) stack.setDamageValue(stack.getDamageValue() - 1);
       }
       return InteractionResult.SUCCESS;
@@ -161,8 +171,12 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
         LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, true);
 
         float pitch = 0.8F + level.random.nextFloat() * 0.2F;
-        level.playSound(null, pos, ModSounds.HEAL_WOOD, SoundSource.BLOCKS, 1F, pitch);
-        level.playSound(null, pos, ModSounds.HEAL_WOOD_ALT, SoundSource.BLOCKS, 1F, 1.2F);
+        level.playSound(null, pos, ModSounds.HEAL_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
+        level.playSound(null, pos, ModSounds.HEAL_WOOD_ALT.get(), SoundSource.BLOCKS, 1F, 1.2F);
+
+        //? <= 1.20.1
+        //stack.shrink(1);
+        //? >= 1.21
         stack.consume(1, player);
       }
       return InteractionResult.SUCCESS;
@@ -182,7 +196,7 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
   }
 
   @Override
-  public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos pos, BlockState state) {
+  public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos pos, BlockState state/*? if < 1.21 >> ') {'*//*, boolean bl*/) {
     return LivingWoodBlock.isNaturalWood(state) && !LivingWoodBlock.isTrunk(state);
   }
 
@@ -195,10 +209,12 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
   public void performBonemeal(ServerLevel level, RandomSource src, BlockPos pos, BlockState state) {
   }
 
+  //? > 1.21 {
   @Override
   public @NotNull BlockPos getParticlePos(BlockPos pos) {
     return pos.above();
   }
+  //? }
 
   static {
     ALIVE = LivingWoodBlock.Properties.ALIVE;

@@ -4,6 +4,8 @@ package fabiofdez.knots_and_rings.platform.fabric;
 
 import fabiofdez.knots_and_rings.platform.Platform;
 import net.fabricmc.loader.api.FabricLoader;
+//? <= 1.21.1
+//import net.minecraft.client.Minecraft;
 
 public class FabricPlatform implements Platform {
 
@@ -19,7 +21,10 @@ public class FabricPlatform implements Platform {
 
 	@Override
 	public String mcVersion() {
-		return FabricLoader.getInstance().getRawGameVersion();
+		//? > 1.21.1
+    return FabricLoader.getInstance().getRawGameVersion();
+    //? <= 1.21.1
+    //return Minecraft.getInstance().getLaunchedVersion();
 	}
 
 	@Override

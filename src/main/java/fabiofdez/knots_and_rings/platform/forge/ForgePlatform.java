@@ -2,7 +2,7 @@ package fabiofdez.knots_and_rings.platform.forge;
 
 //? forge {
 
-/*import com.example.modtemplate.platform.Platform;
+/*import fabiofdez.knots_and_rings.platform.Platform;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLLoader;
 

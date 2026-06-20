@@ -2,18 +2,18 @@ package fabiofdez.knots_and_rings.platform.forge;
 
 //? forge {
 
-/*import com.example.modtemplate.ModTemplate;
+/*import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
-@Mod.EventBusSubscriber(modid = ModTemplate.MOD_ID, value = Dist.CLIENT)
+@Mod.EventBusSubscriber(modid = KnotsAndRings.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
 public class ForgeClientEventSubscriber {
 
-	@SubscribeEvent
-	public static void onClientSetup(final FMLClientSetupEvent event) {
-		ModTemplate.onInitializeClient();
-	}
+  @SubscribeEvent
+  public static void onClientSetup(final FMLClientSetupEvent event) {
+    KnotsAndRings.onInitializeClient();
+  }
 }
 *///?}

@@ -2,20 +2,10 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 
 //? neoforge {
 
-/*import com.example.modtemplate.event.ExampleEventHandler; // sample_content
-import net.minecraft.server.level.ServerPlayer; // sample_content
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+/*//import fabiofdez.knots_and_rings.KnotsAndRings;
+//import net.neoforged.fml.common.EventBusSubscriber;
 
-@EventBusSubscriber
+//@EventBusSubscriber(modid = KnotsAndRings.MOD_ID/^? if < 1.21.11 >> ')' ^/ , bus = EventBusSubscriber.Bus.MOD)
 public class NeoforgeEventSubscriber {
-
-	@SubscribeEvent // sample_content
-	public static void onPlayerDamage(LivingDamageEvent.Post event) { // sample_content
-		if (event.getEntity() instanceof ServerPlayer player && event.getNewDamage() > 0) { // sample_content
-			ExampleEventHandler.onPlayerHurt(player); // sample_content
-		} // sample_content
-	} // sample_content
 }
 *///?}

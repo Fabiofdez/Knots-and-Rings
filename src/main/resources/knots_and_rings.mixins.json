@@ -9,5 +9,6 @@
   "mixins": [
     "LogBlockMixin"
   ],
-  "client": []
+  "client": [],
+  "refmap": "knots_and_rings.mixins.refmap.json"
 }
