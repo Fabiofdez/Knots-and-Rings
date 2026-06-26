@@ -1,6 +1,11 @@
-- Port to 1.20.1 (Fabric)
-- Port to 1.20.1 (Forge)
-- Port to 1.21.1 (Fabric)
-- Port to 1.21.1 (NeoForge)
-- Port to 1.21.5 (NeoForge)
-- Port to 1.21.11 (NeoForge)
+### Additions
+- Now works with Fusion
+- Mod auto-detects Fusion and loads needed resources
+
+### Changes
+- Resource pack now supports more formats
+- Mod resources new enabled by default
+
+### Fixes
+- Stripped wood blocks now have overlay edges
+- Remove unused CTM assets for stripped log ends

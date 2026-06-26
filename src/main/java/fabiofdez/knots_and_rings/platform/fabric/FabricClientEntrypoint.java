@@ -4,14 +4,13 @@ package fabiofdez.knots_and_rings.platform.fabric;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
+import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
+import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.network.chat.Component;
-
-import java.util.Optional;
 
 @Entrypoint("client")
 public class FabricClientEntrypoint implements ClientModInitializer {
@@ -20,13 +19,25 @@ public class FabricClientEntrypoint implements ClientModInitializer {
   public void onInitializeClient() {
     KnotsAndRings.onInitializeClient();
 
-    Optional<ModContainer> modContainer = FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID);
-    modContainer.ifPresent((container) -> ResourceManagerHelper.registerBuiltinResourcePack(
-        KnotsAndRings.id("knots_and_rings_resources"),
+    FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).ifPresent((container) -> {
+      boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
+
+      if (hasFusion) addPack(container, ResourcePacks.PACK_FUSION);
+      else addPack(container, ResourcePacks.PACK_CTM);
+    });
+  }
+
+  private static void addPack(ModContainer container, BuiltInResourcePack pack) {
+    ResourceManagerHelper.registerBuiltinResourcePack(
+        KnotsAndRings.id(pack.id()),
         container,
-        Component.literal("Wood Connected Textures"),
-        ResourcePackActivationType.DEFAULT_ENABLED
-    ));
+        pack.name(),
+        activationFor(pack)
+    );
+  }
+
+  private static ResourcePackActivationType activationFor(BuiltInResourcePack pack) {
+    return pack.defaultEnabled() ? ResourcePackActivationType.DEFAULT_ENABLED : ResourcePackActivationType.NORMAL;
   }
 }
 //?}
