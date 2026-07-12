@@ -7,7 +7,7 @@ public class ResourcePacks {
   public static final BuiltInResourcePack PACK_FUSION;
 
   static {
-    PACK_CTM = BuiltInResourcePack.create("knots_and_rings_ctm", "Wood Connected Textures", true);
-    PACK_FUSION = BuiltInResourcePack.create("knots_and_rings_fusion", "Wood Connected Textures", true);
+    PACK_CTM = BuiltInResourcePack.create("pack_ctm", "Wood Connected Textures", true);
+    PACK_FUSION = BuiltInResourcePack.create("pack_fusion", "Wood Connected Textures", true);
   }
 }

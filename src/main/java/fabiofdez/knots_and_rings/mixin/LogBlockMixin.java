@@ -148,7 +148,7 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
         LivingWoodCluster.revivePathOrDecay((ServerLevel) level, pos, true);
         LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, false);
 
-        float pitch = 0.8F + level.random.nextFloat() * 0.2F;
+        float pitch = 0.8F + level.getRandom().nextFloat() * 0.2F;
         level.playSound(null, pos, ModSounds.SPLIT_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
         level.playSound(null, pos, ModSounds.CRACK_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
         if (!player.isCreative() && stack.isDamageableItem()) stack.setDamageValue(stack.getDamageValue() - 1);
@@ -170,7 +170,7 @@ public class LogBlockMixin extends Block implements BonemealableBlock {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
         LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, true);
 
-        float pitch = 0.8F + level.random.nextFloat() * 0.2F;
+        float pitch = 0.8F + level.getRandom().nextFloat() * 0.2F;
         level.playSound(null, pos, ModSounds.HEAL_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
         level.playSound(null, pos, ModSounds.HEAL_WOOD_ALT.get(), SoundSource.BLOCKS, 1F, 1.2F);
 
