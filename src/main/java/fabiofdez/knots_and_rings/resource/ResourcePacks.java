@@ -3,6 +3,7 @@ package fabiofdez.knots_and_rings.resource;
 public class ResourcePacks {
   public static final String FUSION_MOD_ID = "fusion";
 
+  // TODO: move common resources to single, separate pack
   public static final BuiltInResourcePack PACK_CTM;
   public static final BuiltInResourcePack PACK_FUSION;
 

@@ -37,7 +37,7 @@ public class NeoforgeClientEventSubscriber {
         PackType.CLIENT_RESOURCES,
         pack.name(),
         PackSource.BUILT_IN,
-        pack.defaultEnabled(),
+        false,
         Pack.Position.TOP
     );
   }

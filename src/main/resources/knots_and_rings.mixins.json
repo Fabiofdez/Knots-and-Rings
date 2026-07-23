@@ -7,7 +7,8 @@
     "defaultRequire": 1
   },
   "mixins": [
-    "LogBlockMixin"
+    "AxeItemMixin",
+    "BlocksMixin"
   ],
   "client": [],
   "refmap": "knots_and_rings.mixins.refmap.json"

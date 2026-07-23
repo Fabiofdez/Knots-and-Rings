@@ -49,7 +49,7 @@ public class ForgeClientEventSubscriber {
     Pack createdPack = Pack.readMetaAndCreate(
         pack.id(),
         pack.name(),
-        pack.defaultEnabled(),
+        false,
         (id) -> new PathPackResources(id, true, sourcePath),
         PackType.CLIENT_RESOURCES,
         Pack.Position.TOP,

@@ -99,13 +99,13 @@ public class LivingWoodCluster {
 
   public static void revivePath(ServerLevel level, List<BlockPos> path) {
     for (BlockPos pos : path) {
-      LivingWoodBlock.updateState(level, pos, true);
+      LivingWoodBlock.updateLivingState(level, pos, true);
     }
   }
 
   public static void decay(ServerLevel level, Set<BlockPos> cluster) {
     for (BlockPos pos : cluster) {
-      LivingWoodBlock.updateState(level, pos, false);
+      LivingWoodBlock.updateLivingState(level, pos, false);
     }
   }
 }
