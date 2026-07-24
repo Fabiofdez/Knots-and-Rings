@@ -24,6 +24,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
       if (hasFusion) addPack(container, ResourcePacks.PACK_FUSION);
       else addPack(container, ResourcePacks.PACK_CTM);
+
+      addPack(container, ResourcePacks.PACK_DEFAULT);
     });
   }
 

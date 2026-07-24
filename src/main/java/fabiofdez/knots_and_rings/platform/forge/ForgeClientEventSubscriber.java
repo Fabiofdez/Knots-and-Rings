@@ -41,6 +41,8 @@ public class ForgeClientEventSubscriber {
 
     if (hasFusion) addPack(modFile, event, ResourcePacks.PACK_FUSION);
     else addPack(modFile, event, ResourcePacks.PACK_CTM);
+
+    addPack(modFile, event, ResourcePacks.PACK_DEFAULT);
   }
 
   private static void addPack(IModFile modFile, final AddPackFindersEvent event, BuiltInResourcePack pack) {

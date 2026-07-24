@@ -29,6 +29,8 @@ public class NeoforgeClientEventSubscriber {
 
     if (hasFusion) addPack(event, ResourcePacks.PACK_FUSION);
     else addPack(event, ResourcePacks.PACK_CTM);
+
+    addPack(event, ResourcePacks.PACK_DEFAULT);
   }
 
   private static void addPack(final AddPackFindersEvent event, BuiltInResourcePack pack) {
