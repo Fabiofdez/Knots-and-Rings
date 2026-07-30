@@ -3,6 +3,8 @@ package fabiofdez.knots_and_rings.platform;
 public interface Platform {
 	boolean isModLoaded(String modId);
 
+  boolean isModLoading(String modId);
+
 	ModLoader loader();
 
 	String mcVersion();

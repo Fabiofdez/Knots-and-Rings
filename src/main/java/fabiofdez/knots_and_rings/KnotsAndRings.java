@@ -2,7 +2,9 @@ package fabiofdez.knots_and_rings;
 
 import fabiofdez.knots_and_rings.platform.Platform;
 
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,5 +62,16 @@ public class KnotsAndRings {
     return ResourceLocation.fromNamespaceAndPath(namespace, path);
     //? < 1.21
     //return new ResourceLocation(namespace, path);
+  }
+
+  public static ResourceLocation fromKey(ResourceKey<Block> blockKey) {
+    //? < 1.21.11
+    return blockKey.location();
+    //? >= 1.21.11
+    //return blockKey.identifier();
+  }
+
+  public static String packageName() {
+    return KnotsAndRings.class.getPackageName();
   }
 }

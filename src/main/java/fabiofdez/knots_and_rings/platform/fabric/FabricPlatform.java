@@ -14,6 +14,11 @@ public class FabricPlatform implements Platform {
 		return FabricLoader.getInstance().isModLoaded(modId);
 	}
 
+  @Override
+  public boolean isModLoading(String modId) {
+    return this.isModLoaded(modId);
+  }
+
 	@Override
 	public ModLoader loader() {
 		return ModLoader.FABRIC;

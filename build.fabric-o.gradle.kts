@@ -21,6 +21,9 @@ platform {
 		required("fabricloader") {
 			fabricLikeVersionRange = ">=${prop("deps.fabric-loader")}"
 		}
+		optional("regions-unexplored") {
+			fabricLikeVersionRange = "[0.5.7,)"
+		}
 		// optional("modmenu") {}
 	}
 }
@@ -80,6 +83,10 @@ dependencies {
 	// include(libs.moulberry.mixinconstraints)
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
 //	modLocalRuntime("com.terraformersmc:modmenu:${prop("deps.modmenu")}")
+
+	if (hasProperty("deps.regions-unexplored")) {
+		modCompileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
+	}
 }
 
 java {

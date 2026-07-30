@@ -23,20 +23,32 @@ import java.util.Map;
 
 public class LivingWoodBlock {
 
+  public static final String OLD_CONSTRUCTOR = "(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/RotatedPillarBlock;";
+
   private static final ImmutableMap<Direction.Axis, LinkedList<Direction>> SIDES_BY_AXIS = ImmutableMap.ofEntries(
       Map.entry(Direction.Axis.X, makeLoop(Direction.UP, Direction.NORTH, Direction.DOWN, Direction.SOUTH)),
       Map.entry(Direction.Axis.Y, makeLoop(Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST)),
       Map.entry(Direction.Axis.Z, makeLoop(Direction.UP, Direction.EAST, Direction.DOWN, Direction.WEST))
   );
 
+  public static boolean isLogBlock(ResourceLocation id) {
+    return id.getPath().endsWith("_log");
+  }
+
+  public static boolean isWoodBlock(ResourceLocation id) {
+    return id.getPath().endsWith("_wood");
+  }
+
+  public static boolean isStripped(ResourceLocation id) {
+    return id.getPath().startsWith("stripped_");
+  }
+
   public static boolean isNaturalWood(BlockState state) {
     if (!state.hasProperty(Properties.ALIVE)) return false;
 
-    String blockIdPath = BuiltInRegistries.BLOCK.getKey(state.getBlock()).getPath();
-
-    boolean isWood = blockIdPath.endsWith("_log") || blockIdPath.endsWith("_wood");
-    boolean isStripped = blockIdPath.startsWith("stripped_");
-    return isWood && !isStripped;
+    ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
+    boolean isWood = isLogBlock(blockId) || isWoodBlock(blockId);
+    return isWood && !isStripped(blockId);
   }
 
   public static boolean isNaturalLeaves(BlockState state) {
@@ -167,10 +179,8 @@ public class LivingWoodBlock {
     if (stateChanged) level.setBlockAndUpdate(pos, state);
   }
 
-  public static void updateIsTrunk(ServerLevel level, BlockPos pos, boolean isTrunk) {
-    BlockState state = level.getBlockState(pos);
+  public static void updateIsTrunk(BlockState state, ServerLevel level, BlockPos pos, boolean isTrunk) {
     if (isTrunk(state) == isTrunk) return;
-
     level.setBlockAndUpdate(pos, state.setValue(Properties.IS_TRUNK, isTrunk));
   }
 

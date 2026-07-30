@@ -50,6 +50,13 @@ stonecutter parameters {
 			replace("public InteractionResult use(", "protected ItemInteractionResult useItemOn(")
 			replace("public boolean isRandomlyTicking", "protected boolean isRandomlyTicking")
 			replace("public void randomTick", "protected void randomTick")
+
+			replace("block.RuBlocks", "registry.RUBlocks")
+			replace("RuBlocks", "RUBlocks")
+			replace("feature.tree.PineTreeFeature", "feature.tree.StrippedPineTreeFeature")
+			replace("PineTreeFeature.class", "StrippedPineTreeFeature.class")
+			replace("RuTreeConfiguration", "RUTreeConfiguration")
+			replace(".trunkProvider", ".trunkProvider()")
 		}
 
 		string(current.parsed eq "1.21.1", "has_interaction_result") {
@@ -104,6 +111,11 @@ stonecutter parameters {
 		string(loader == "forge") {
 			replace("BlockSupplier", "RegistryObject<Block>")
 			replace("ItemSupplier", "RegistryObject<Item>")
+		}
+
+		string(loader == "forge" || current.parsed > "1.21") {
+			replace("io.github.uhq_games.regions_unexplored", "net.regions_unexplored")
+			replace("Lio/github/uhq_games/regions_unexplored", "Lnet/regions_unexplored")
 		}
 	}
 }

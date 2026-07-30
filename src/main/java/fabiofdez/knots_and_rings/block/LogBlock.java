@@ -42,7 +42,7 @@ import java.util.function.Function;
 
 //? >= 1.21.5 {
 import net.minecraft.world.level.ScheduledTickAccess;
-//? }
+ //? }
 
 public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   // TODO: mixin for regions_unexplored logs
@@ -101,8 +101,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   @Override
       //? < 1.21.5
   //protected BlockState updateShape(BlockState state, Direction from, BlockState state2, LevelAccessor level, BlockPos pos, BlockPos pos2) {
-      //? >= 1.21.5
-  protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
+    //? >= 1.21.5
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
     if (!LivingWoodBlock.compatibleLogs(state, state2)) return state;
     if (!LivingWoodBlock.isNaturalWood(state)) return state;
     if (!LivingWoodBlock.isTrunk(state)) return state;
@@ -133,7 +133,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     }
 
     if (LivingWoodBlock.isTrunkNearby(state, level, pos)) {
-      LivingWoodBlock.updateIsTrunk(level, pos, true);
+      LivingWoodBlock.updateIsTrunk(state, level, pos, true);
     }
   }
 
@@ -197,7 +197,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
 
     if (isNatural && !isTrunk) return InteractionResult.PASS;
-    if (!isNatural && LivingWoodBlock.getSides(state).equals(LogSide.Mapping.M_0000)) return InteractionResult.PASS;
+    if (!isNatural && LivingWoodBlock.getSides(state).equals(LogSide.Mapping.M_0000))
+      return InteractionResult.PASS;
 
     if (level.isClientSide()) spawnParticles(level, pos, hitResult, BLOCK_PARTICLES.apply(state));
     else {
@@ -206,12 +207,13 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
       level.playSound(null, pos, ModSounds.CRACK_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
       if (!player.isCreative() && stack.isDamageableItem()) stack.setDamageValue(stack.getDamageValue() - 1);
 
+      state = state.setValue(SIDES, LogSide.Mapping.M_0000);
       if (isNatural) {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
         LivingWoodCluster.revivePathOrDecay((ServerLevel) level, pos, true);
-        LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, false);
+        LivingWoodBlock.updateIsTrunk(state, (ServerLevel) level, pos, false);
       } else {
-        level.setBlockAndUpdate(pos, state.setValue(SIDES, LogSide.Mapping.M_0000));
+        level.setBlockAndUpdate(pos, state);
       }
     }
 
@@ -222,7 +224,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
     BlockState newState = LivingWoodBlock.getLogShape(state, level, pos);
 
-    if (isTrunk && !LivingWoodBlock.changedSides(state, newState)) return InteractionResult.PASS;
+    if (isTrunk && !LivingWoodBlock.changedSides(state, newState))
+      return InteractionResult.PASS;
 
     if (level.isClientSide()) spawnParticles(level, pos, hitResult, ParticleTypes.HAPPY_VILLAGER);
     else {
@@ -239,7 +242,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
         level.setBlockAndUpdate(pos, newState);
       } else {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
-        LivingWoodBlock.updateIsTrunk((ServerLevel) level, pos, true);
+        LivingWoodBlock.updateIsTrunk(state, (ServerLevel) level, pos, true);
       }
     }
 

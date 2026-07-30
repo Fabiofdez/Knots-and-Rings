@@ -17,6 +17,9 @@ platform {
 		required("neoforge") {
 			forgeLikeVersionRange.set("[1,)")
 		}
+		optional("regions-unexplored") {
+			forgeLikeVersionRange.set("[0.5.7,)")
+		}
 	}
 }
 
@@ -61,6 +64,10 @@ repositories {
 dependencies {
 	// implementation(libs.moulberry.mixinconstraints)
 	// jarJar(libs.moulberry.mixinconstraints)
+
+	if (hasProperty("deps.regions-unexplored")) {
+		compileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
+	}
 }
 
 tasks.named("createMinecraftArtifacts") {
