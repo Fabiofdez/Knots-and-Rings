@@ -85,12 +85,13 @@ stonecutter parameters {
 			replace("renderer.RenderType", "renderer.rendertype.RenderType")
 			replace("ARGB.lerp", "ARGB.srgbLerp")
 			replace("ResourceLocation", "Identifier")
+			replace("LoadingModList.get()", "FMLLoader.getCurrent().getLoadingModList()")
 		}
 
 		string(current.parsed >= "26.1") {
-			replace("net.minecraft.client.renderer.state.CameraRenderState", "net.minecraft.client.renderer.state.level.CameraRenderState")
-			replace("net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry", "net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry")
-			replace("net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents", "net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents")
+			replace("renderer.state.CameraRenderState", "renderer.state.level.CameraRenderState")
+			replace("rendering.v1.ColorProviderRegistry", "rendering.v1.BlockColorRegistry")
+			replace("itemgroup.v1.ItemGroupEvents", "creativetab.v1.CreativeModeTabEvents")
 			replace("ColorProviderRegistry.BLOCK.register", "BlockColorRegistry.register")
 			replace("ItemGroupEvents.ModifyEntries", "CreativeModeTabEvents.ModifyOutput")
 			replace("ItemGroupEvents.modifyEntriesEvent", "CreativeModeTabEvents.modifyOutputEvent")
