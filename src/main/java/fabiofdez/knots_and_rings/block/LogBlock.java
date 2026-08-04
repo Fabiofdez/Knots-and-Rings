@@ -45,7 +45,6 @@ import net.minecraft.world.level.ScheduledTickAccess;
  //? }
 
 public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
-  // TODO: mixin for regions_unexplored logs
 
   public static final BooleanProperty ALIVE;
   public static final BooleanProperty IS_TRUNK;
@@ -84,16 +83,9 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     if (!LivingWoodBlock.isNaturalWood(state)) return state;
 
     BlockPos pos = ctx.getClickedPos();
-    boolean isAlive = LivingWoodBlock.isAliveNearby(state, (ServerLevel) level, pos);
-    boolean isTrunk = LivingWoodBlock.isTrunkNearby(state, (ServerLevel) level, pos);
+    state = LivingWoodBlock.checkLogsNearby(state, level, pos).setValue(SIDES, LogSide.Mapping.M_0000);
+    if (LivingWoodBlock.isTrunk(state)) state = LivingWoodBlock.getLogShape(state, level, pos);
 
-    state = state
-        .setValue(ALIVE, isAlive)
-        .setValue(IS_TRUNK, isTrunk)
-        .setValue(SINGLETON, false)
-        .setValue(SIDES, LogSide.Mapping.M_0000);
-
-    if (isTrunk) state = LivingWoodBlock.getLogShape(state, level, pos);
     return state;
   }
 
@@ -103,25 +95,25 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   //protected BlockState updateShape(BlockState state, Direction from, BlockState state2, LevelAccessor level, BlockPos pos, BlockPos pos2) {
     //? >= 1.21.5
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
-    if (!LivingWoodBlock.compatibleLogs(state, state2)) return state;
-    if (!LivingWoodBlock.isNaturalWood(state)) return state;
-    if (!LivingWoodBlock.isTrunk(state)) return state;
+    if (!LivingWoodBlock.identicalLogs(state, state2)) return state;
     if (from.getAxis() == LivingWoodBlock.getAxis(state)) return state;
+    if (!LivingWoodBlock.isTrunk(state)) return state;
 
     return LivingWoodBlock.getLogShape(state, level, pos);
   }
 
   @Override
-  protected boolean isRandomlyTicking(BlockState state) {
-    boolean defaultTicking = super.isRandomlyTicking(state);
-    if (!LivingWoodBlock.isNaturalWood(state)) return defaultTicking;
-
-    return true;
+  protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    randomTick(state, level, pos, random);
   }
 
   @Override
-  protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource tickSrc) {
-    super.randomTick(state, level, pos, tickSrc);
+  protected boolean isRandomlyTicking(BlockState state) {
+    return LivingWoodBlock.isNaturalWood(state) || super.isRandomlyTicking(state);
+  }
+
+  @Override
+  protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
     if (!LivingWoodBlock.isNaturalWood(state)) return;
 
     if (LogConnectivityCache.exploring(pos)) return;
@@ -162,12 +154,12 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
 
   @Override
-  public void destroy(LevelAccessor levelAccessor, BlockPos pos, BlockState state) {
-    super.destroy(levelAccessor, pos, state);
+  public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
+    super.destroy(level, pos, state);
     if (!LivingWoodBlock.isNaturalWood(state)) return;
 
     if (LogConnectivityCache.checkCached(pos) != null) {
-      LogConnectivityCache.invalidateAttachedTo(levelAccessor.getChunk(pos), pos);
+      LogConnectivityCache.invalidateAttachedTo(level.getChunk(pos), pos);
     }
   }
 
@@ -177,12 +169,12 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
 
   @Override
-  public boolean isBonemealSuccess(Level level, RandomSource src, BlockPos pos, BlockState state) {
+  public boolean isBonemealSuccess(Level level, RandomSource random, BlockPos pos, BlockState state) {
     return true;
   }
 
   @Override
-  public void performBonemeal(ServerLevel level, RandomSource src, BlockPos pos, BlockState state) {
+  public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
   }
 
   //? > 1.21 {
@@ -197,8 +189,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
 
     if (isNatural && !isTrunk) return InteractionResult.PASS;
-    if (!isNatural && LivingWoodBlock.getSides(state).equals(LogSide.Mapping.M_0000))
-      return InteractionResult.PASS;
+    if (!isNatural && LivingWoodBlock.getSides(state).equals(LogSide.Mapping.M_0000)) return InteractionResult.PASS;
 
     if (level.isClientSide()) spawnParticles(level, pos, hitResult, BLOCK_PARTICLES.apply(state));
     else {
@@ -210,8 +201,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
       state = state.setValue(SIDES, LogSide.Mapping.M_0000);
       if (isNatural) {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
-        LivingWoodCluster.revivePathOrDecay((ServerLevel) level, pos, true);
-        LivingWoodBlock.updateIsTrunk(state, (ServerLevel) level, pos, false);
+        LivingWoodCluster.revivePathOrDecay(level, pos, true);
+        LivingWoodBlock.updateIsTrunk(state, level, pos, false);
       } else {
         level.setBlockAndUpdate(pos, state);
       }
@@ -224,8 +215,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
     BlockState newState = LivingWoodBlock.getLogShape(state, level, pos);
 
-    if (isTrunk && !LivingWoodBlock.changedSides(state, newState))
-      return InteractionResult.PASS;
+    if (isTrunk && !LivingWoodBlock.changedShape(state, newState)) return InteractionResult.PASS;
 
     if (level.isClientSide()) spawnParticles(level, pos, hitResult, ParticleTypes.HAPPY_VILLAGER);
     else {
@@ -242,11 +232,24 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
         level.setBlockAndUpdate(pos, newState);
       } else {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
-        LivingWoodBlock.updateIsTrunk(state, (ServerLevel) level, pos, true);
+        LivingWoodBlock.updateIsTrunk(state, level, pos, true);
+        healRandomNeighbors(level, pos);
       }
     }
 
     return InteractionResult.SUCCESS;
+  }
+
+  private static void healRandomNeighbors(Level level, BlockPos pos) {
+    RandomSource random = level.getRandom();
+    LivingWoodBlock.neighborsOf(level, pos).forEach((neighborState, neighborPos) -> {
+      if (!(neighborState.getBlock() instanceof LogBlock neighbor) || LivingWoodBlock.isTrunk(neighborState)) return;
+
+      if (random.nextFloat() < 0.3) {
+        int delay = random.nextIntBetweenInclusive(5, 20);
+        level.scheduleTick(neighborPos, neighbor, delay);
+      }
+    });
   }
 
   private static void spawnParticles(Level level, BlockPos pos, BlockHitResult hitResult, ParticleOptions particleOpts) {

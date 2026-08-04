@@ -1,23 +1,32 @@
 package fabiofdez.knots_and_rings.util;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class LivingWoodCluster {
-  public static void attemptRevivePath(ServerLevel level, BlockPos pos) {
+
+  public static void attemptRevivePath(Level level, BlockPos pos) {
     revivePathOrDecay(level, pos, false);
   }
 
-  public static void revivePathOrDecay(ServerLevel level, BlockPos pos, boolean forceDecay) {
+  public static void revivePathOrDecay(Level level, BlockPos pos, boolean forceDecay) {
     Set<BlockPos> attachedLogs = new HashSet<>();
-    List<BlockPos> foundPath = LivingWoodCluster.findPathToLeaves(level, pos, attachedLogs);
+    Iterable<BlockPos> foundPath = LivingWoodCluster.findPathToLeaves(level, pos, attachedLogs);
 
     if (foundPath != null) {
-      LivingWoodCluster.revivePath(level, foundPath);
+      LivingWoodCluster.revive(level, attachedLogs);
     } else {
       LivingWoodCluster.decay(level, attachedLogs);
       if (forceDecay) {
@@ -26,7 +35,7 @@ public class LivingWoodCluster {
     }
   }
 
-  public static List<BlockPos> findPathToLeaves(LevelReader level, BlockPos start, Set<BlockPos> cluster) {
+  public static Iterable<BlockPos> findPathToLeaves(Level level, BlockPos start, Set<BlockPos> cluster) {
     Queue<BlockPos> queue = new ArrayDeque<>();
     Map<BlockPos, BlockPos> pathTrace = new HashMap<>();
     AtomicReference<List<BlockPos>> foundPath = new AtomicReference<>(null);
@@ -34,50 +43,44 @@ public class LivingWoodCluster {
 
     queue.add(start);
     pathTrace.put(start, null);
-    LogConnectivityCache.addToExploring(start);
+    LogConnectivityCache.markExploring(start);
+    BlockState startState = level.getBlockState(start);
 
     while (!queue.isEmpty()) {
       BlockPos current = queue.poll();
       if (!cluster.add(current)) continue; // already visited
 
-      boolean found = LivingWoodBlock
-          .neighborsOf(level, current)
-          .any((neighbor, neighborPos) -> {
-            if (LivingWoodBlock.isNaturalLeaves(neighbor)) {
-              foundPath.set(buildTracedPath(pathTrace, current));
-              return true;
-            }
+      LivingWoodBlock.neighborsOf(level, current).forEach((neighbor, neighborPos) -> {
+        if (cluster.contains(neighborPos)) return;
 
-            Boolean cachedNeighborAlive = LogConnectivityCache.checkCached(neighborPos);
-            if (cachedNeighborAlive != null) {
-              if (cachedNeighborAlive) {
-                foundPath.set(buildTracedPath(pathTrace, current));
-              }
-              existingAttachment.set(neighborPos.immutable());
-              return true;
-            }
+        if (LivingWoodBlock.isNaturalLeaves(neighbor)) {
+          if (foundPath.get() == null) foundPath.set(buildTracedPath(pathTrace, current));
+          return;
+        }
 
-            if (LivingWoodBlock.isNaturalWood(neighbor) && !pathTrace.containsKey(neighborPos)) {
-              queue.add(neighborPos);
-              pathTrace.put(neighborPos, current);
-              LogConnectivityCache.addToExploring(start);
-            }
+        if (!LivingWoodBlock.compatibleWoods(startState, neighbor)) return;
 
-            return false;
-          });
+        queue.add(neighborPos);
+        Boolean cachedNeighborAlive = LogConnectivityCache.checkCached(neighborPos);
+        if (cachedNeighborAlive != null) {
+          if (cachedNeighborAlive && foundPath.get() == null) foundPath.set(buildTracedPath(pathTrace, current));
+          existingAttachment.set(neighborPos.immutable());
+          return;
+        }
 
-      if (found) break;
+        if (!pathTrace.containsKey(neighborPos)) {
+          pathTrace.put(neighborPos, current);
+          LogConnectivityCache.markExploring(start);
+        }
+      });
     }
-    List<BlockPos> resolvedPath = foundPath.get();
 
-    List<BlockPos> pathToForget = Objects.requireNonNullElseGet(resolvedPath, () -> List.copyOf(cluster));
-    LogConnectivityCache.forgetPathExplored(pathToForget);
+    Iterable<BlockPos> resolvedPath = foundPath.get();
+    Iterable<BlockPos> explored = Optional.ofNullable(resolvedPath).orElse(cluster);
+    LogConnectivityCache.forgetExplored(explored);
+
     if (existingAttachment.get() != null) {
-      if (resolvedPath != null) {
-        LogConnectivityCache.attachToCluster(existingAttachment.get(), resolvedPath);
-      } else {
-        LogConnectivityCache.attachToCluster(existingAttachment.get(), cluster);
-      }
+      LogConnectivityCache.attachToCluster(existingAttachment.get(), explored);
     } else {
       LogConnectivityCache.cacheCluster(level.getChunk(start), cluster, resolvedPath != null);
     }
@@ -97,13 +100,13 @@ public class LivingWoodCluster {
     return path;
   }
 
-  public static void revivePath(ServerLevel level, List<BlockPos> path) {
-    for (BlockPos pos : path) {
+  public static void revive(Level level, Iterable<BlockPos> cluster) {
+    for (BlockPos pos : cluster) {
       LivingWoodBlock.updateLivingState(level, pos, true);
     }
   }
 
-  public static void decay(ServerLevel level, Set<BlockPos> cluster) {
+  public static void decay(Level level, Iterable<BlockPos> cluster) {
     for (BlockPos pos : cluster) {
       LivingWoodBlock.updateLivingState(level, pos, false);
     }

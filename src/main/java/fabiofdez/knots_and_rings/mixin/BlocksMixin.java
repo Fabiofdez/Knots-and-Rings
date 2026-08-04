@@ -1,10 +1,12 @@
+//~ blocks_mixin
+
 package fabiofdez.knots_and_rings.mixin;
 
 import fabiofdez.knots_and_rings.block.LogBlock;
+import fabiofdez.knots_and_rings.util.LivingWoodBlock;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 //? if <= 1.21.1 {
@@ -14,8 +16,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import fabiofdez.knots_and_rings.KnotsAndRings;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,21 +27,13 @@ import java.util.function.Function;
 @Mixin(Blocks.class)
 public class BlocksMixin {
   //? if <= 1.21.1 {
-  /*@Unique
-  private static final String OLD_CONSTRUCTOR = "(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/RotatedPillarBlock;";
-
-  //? < 1.21
-  //@Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;)Lnet/minecraft/world/level/block/RotatedPillarBlock;", at = @At(value = "NEW", target = OLD_CONSTRUCTOR))
-  //? > 1.21
-  @Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;)Lnet/minecraft/world/level/block/Block;", at = @At(value = "NEW", target = OLD_CONSTRUCTOR))
+  
+  /*@Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;)Lnet/minecraft/world/level/block/Block;", at = @At(value = "NEW", target = LivingWoodBlock.OLD_CONSTRUCTOR))
   private static RotatedPillarBlock knots_and_rings$customLog(BlockBehaviour.Properties properties) {
     return new LogBlock(properties);
   }
 
-  //? < 1.21
-  //@Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/block/SoundType;)Lnet/minecraft/world/level/block/RotatedPillarBlock;", at = @At(value = "NEW", target = OLD_CONSTRUCTOR))
-  //? > 1.21
-  @Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/block/SoundType;)Lnet/minecraft/world/level/block/Block;", at = @At(value = "NEW", target = OLD_CONSTRUCTOR))
+  @Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/block/SoundType;)Lnet/minecraft/world/level/block/Block;", at = @At(value = "NEW", target = LivingWoodBlock.OLD_CONSTRUCTOR))
   private static RotatedPillarBlock knots_and_rings$customLog2(BlockBehaviour.Properties properties) {
     return new LogBlock(properties);
   }

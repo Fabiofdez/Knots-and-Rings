@@ -7,9 +7,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -23,7 +23,8 @@ import java.util.Map;
 
 public class LivingWoodBlock {
 
-  public static final String OLD_CONSTRUCTOR = "(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/RotatedPillarBlock;";
+  //? <= 1.21.1
+  //public static final String OLD_CONSTRUCTOR = "(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/RotatedPillarBlock;";
 
   private static final ImmutableMap<Direction.Axis, LinkedList<Direction>> SIDES_BY_AXIS = ImmutableMap.ofEntries(
       Map.entry(Direction.Axis.X, makeLoop(Direction.UP, Direction.NORTH, Direction.DOWN, Direction.SOUTH)),
@@ -44,11 +45,13 @@ public class LivingWoodBlock {
   }
 
   public static boolean isNaturalWood(BlockState state) {
-    if (!state.hasProperty(Properties.ALIVE)) return false;
+    if (!(state.getBlock() instanceof LogBlock)) return false;
+    return isNaturalWood(blockId(state));
+  }
 
-    ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
-    boolean isWood = isLogBlock(blockId) || isWoodBlock(blockId);
-    return isWood && !isStripped(blockId);
+  public static boolean isNaturalWood(ResourceLocation id) {
+    boolean isWood = isLogBlock(id) || isWoodBlock(id);
+    return isWood && !isStripped(id);
   }
 
   public static boolean isNaturalLeaves(BlockState state) {
@@ -60,7 +63,7 @@ public class LivingWoodBlock {
     return new NeighborIterable(level, pos);
   }
 
-  public static boolean isAliveNearby(BlockState state, ServerLevel level, BlockPos pos) {
+  public static boolean isAliveNearby(BlockState state, LevelReader level, BlockPos pos) {
     if (!isNaturalWood(state)) return false;
 
     return neighborsOf(level, pos).any((neighbor, neighborPos) -> {
@@ -69,14 +72,14 @@ public class LivingWoodBlock {
       }
 
       if (isNaturalWood(neighbor)) {
-        return isAlive(neighbor);
+        return isAlive(neighbor) && !isSingleton(neighbor);
       }
 
       return false;
     });
   }
 
-  public static boolean isTrunkNearby(BlockState state, ServerLevel level, BlockPos pos) {
+  public static boolean isTrunkNearby(BlockState state, LevelReader level, BlockPos pos) {
     if (!isNaturalWood(state)) return false;
 
     return neighborsOf(level, pos).any((neighbor, neighborPos) -> {
@@ -85,7 +88,7 @@ public class LivingWoodBlock {
       }
 
       if (isNaturalWood(neighbor)) {
-        return isTrunk(neighbor);
+        return isTrunk(neighbor) && !isSingleton(neighbor);
       }
 
       return false;
@@ -112,12 +115,35 @@ public class LivingWoodBlock {
     return state.getValue(Properties.IS_TRUNK);
   }
 
-  public static boolean changedSides(BlockState oldState, BlockState newState) {
-    return !getSides(oldState).equals(getSides(newState));
+  public static boolean changedShape(BlockState oldState, BlockState newState) {
+    return getSides(oldState) != getSides(newState);
   }
 
   public static boolean compatibleLogs(BlockState thisState, BlockState neighborState) {
-    if (blockId(thisState) != blockId(neighborState)) return false;
+    ResourceLocation thisId = blockId(thisState);
+    ResourceLocation neighborId = blockId(neighborState);
+    if (!compatibleWoods(thisId, neighborId)) return false;
+
+    return isLogBlock(thisId) && isLogBlock(neighborId);
+  }
+
+  public static boolean compatibleWoods(BlockState thisState, BlockState neighborState) {
+    ResourceLocation thisId = blockId(thisState);
+    ResourceLocation neighborId = blockId(neighborState);
+    return compatibleWoods(thisId, neighborId);
+  }
+
+  public static boolean compatibleWoods(ResourceLocation thisId, ResourceLocation neighborId) {
+    if (!isNaturalWood(thisId) || !isNaturalWood(neighborId)) return false;
+
+    String thisWood = thisId.getPath().replaceAll("_log|_wood", "");
+    String neighborWood = neighborId.getPath().replaceAll("_log|_wood", "");
+
+    return thisWood.equals(neighborWood);
+  }
+
+  public static boolean identicalLogs(BlockState thisState, BlockState neighborState) {
+    if (!compatibleLogs(thisState, neighborState)) return false;
     if (getAxis(thisState) != getAxis(neighborState)) return false;
 
     return isTrunk(thisState) == isTrunk(neighborState);
@@ -135,7 +161,7 @@ public class LivingWoodBlock {
 
       BlockPos atFace = pos.relative(currFace);
       BlockState faceBlock = level.getBlockState(atFace);
-      if (!compatibleLogs(state, faceBlock)) {
+      if (!identicalLogs(state, faceBlock)) {
         sides.append("0");
         continue;
       }
@@ -147,10 +173,10 @@ public class LivingWoodBlock {
       Direction counterClockWise = currFace.getCounterClockWise(axis);
       BlockState atFaceCW = level.getBlockState(atFace.relative(clockWise));
       BlockState atFaceCCW = level.getBlockState(atFace.relative(counterClockWise));
-      boolean sameAtFaceCW = compatibleLogs(state, atFaceCW);
-      boolean sameAtFaceCCW = compatibleLogs(state, atFaceCCW);
-      boolean accessToCW = compatibleLogs(state, blockThruCW);
-      boolean accessToCCW = compatibleLogs(state, blockThruCCW);
+      boolean sameAtFaceCW = identicalLogs(state, atFaceCW);
+      boolean sameAtFaceCCW = identicalLogs(state, atFaceCCW);
+      boolean accessToCW = identicalLogs(state, blockThruCW);
+      boolean accessToCCW = identicalLogs(state, blockThruCCW);
 
       if ((sameAtFaceCW && accessToCW) && (sameAtFaceCCW && accessToCCW)) sides.append("2");
       else if (sameAtFaceCCW && accessToCCW) sides.append("l");
@@ -162,9 +188,21 @@ public class LivingWoodBlock {
     return state.setValue(Properties.SIDES, parsedSides);
   }
 
-  public static void updateLivingState(ServerLevel level, BlockPos pos, boolean nowAlive) {
+  public static BlockState checkLogsNearby(BlockState state, LevelReader level, BlockPos pos) {
+    if (!(state.getBlock() instanceof LogBlock)) return state;
+
+    boolean isAlive = LivingWoodBlock.isAliveNearby(state, level, pos);
+    boolean isTrunk = LivingWoodBlock.isTrunkNearby(state, level, pos);
+
+    return state
+        .setValue(Properties.ALIVE, isAlive)
+        .setValue(Properties.IS_TRUNK, isTrunk)
+        .setValue(Properties.SINGLETON, false);
+  }
+
+  public static void updateLivingState(Level level, BlockPos pos, boolean nowAlive) {
     BlockState state = level.getBlockState(pos);
-    if (!state.hasProperty(Properties.ALIVE)) return;
+    if (!(state.getBlock() instanceof LogBlock)) return;
 
     boolean stateChanged = false;
     if (isSingleton(state)) {
@@ -179,13 +217,16 @@ public class LivingWoodBlock {
     if (stateChanged) level.setBlockAndUpdate(pos, state);
   }
 
-  public static void updateIsTrunk(BlockState state, ServerLevel level, BlockPos pos, boolean isTrunk) {
+  public static void updateIsTrunk(BlockState state, Level level, BlockPos pos, boolean isTrunk) {
+    if (!(state.getBlock() instanceof LogBlock)) return;
     if (isTrunk(state) == isTrunk) return;
+
     level.setBlockAndUpdate(pos, state.setValue(Properties.IS_TRUNK, isTrunk));
   }
 
-  public static void resetSingleton(ServerLevel level, BlockPos pos) {
+  public static void resetSingleton(Level level, BlockPos pos) {
     BlockState state = level.getBlockState(pos);
+    if (!(state.getBlock() instanceof LogBlock)) return;
     if (isSingleton(state)) return;
 
     state = state.setValue(Properties.SINGLETON, true).setValue(Properties.IS_TRUNK, false);

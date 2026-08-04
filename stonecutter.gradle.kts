@@ -50,6 +50,7 @@ stonecutter parameters {
 			replace("public InteractionResult use(", "protected ItemInteractionResult useItemOn(")
 			replace("public boolean isRandomlyTicking", "protected boolean isRandomlyTicking")
 			replace("public void randomTick", "protected void randomTick")
+			replace("public void tick", "protected void tick")
 
 			replace("block.RuBlocks", "registry.RUBlocks")
 			replace("RuBlocks", "RUBlocks")
@@ -57,6 +58,12 @@ stonecutter parameters {
 			replace("PineTreeFeature.class", "StrippedPineTreeFeature.class")
 			replace("RuTreeConfiguration", "RUTreeConfiguration")
 			replace(".trunkProvider", ".trunkProvider()")
+			replace("grower.AbstractTreeGrower", "grower.TreeGrower")
+			replace("AbstractTreeGrower.class", "TreeGrower.class")
+		}
+
+		string(current.parsed > "1.21", "blocks_mixin") {
+			replace("block/RotatedPillarBlock;\", at = @At(value = \"NEW\"", "block/Block;\", at = @At(value = \"NEW\"")
 		}
 
 		string(current.parsed eq "1.21.1", "has_interaction_result") {
@@ -102,6 +109,11 @@ stonecutter parameters {
 			replace("entityCutoutNoCull", "entityCutout")
 			replace("level.getDayTime()", "level.getDefaultClockTime()")
 			replace("PayloadTypeRegistry.playC2S", "PayloadTypeRegistry.serverboundPlay")
+			replace("ServerWorldEvents", "ServerLevelEvents")
+		}
+
+		string(current.parsed >= "26.1", "place_log") {
+			replace("level/LevelSimulatedReader;", "level/WorldGenLevel;")
 		}
 
 		string(loader == "neoforge") {

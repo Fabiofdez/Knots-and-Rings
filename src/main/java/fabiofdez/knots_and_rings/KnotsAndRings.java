@@ -20,7 +20,7 @@ import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
 public class KnotsAndRings {
 
 	public static final String MOD_ID = /*$ mod_id*/ "knots_and_rings";
-	public static final String MOD_VERSION = /*$ mod_version*/ "1.4.0";
+	public static final String MOD_VERSION = /*$ mod_version*/ "2.1.0";
 	public static final String MOD_FRIENDLY_NAME = /*$ mod_name*/ "Knots & Rings";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 

@@ -9,7 +9,8 @@
   "plugin": "fabiofdez.knots_and_rings.plugin.KnotsAndRingsMixinPlugin",
   "mixins": [
     "AxeItemMixin",
-    "BlocksMixin"
+    "BlocksMixin",
+    "TrunkPlacerMixin"
   ],
   "client": [],
   "refmap": "knots_and_rings.mixins.refmap.json"
