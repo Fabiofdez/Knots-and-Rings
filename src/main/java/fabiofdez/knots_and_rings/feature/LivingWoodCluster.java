@@ -1,4 +1,4 @@
-package fabiofdez.knots_and_rings.util;
+package fabiofdez.knots_and_rings.feature;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;

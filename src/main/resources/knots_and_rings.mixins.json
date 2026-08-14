@@ -9,9 +9,20 @@
   "plugin": "fabiofdez.knots_and_rings.plugin.KnotsAndRingsMixinPlugin",
   "mixins": [
     "AxeItemMixin",
+    "BlockBehaviorMixin",
+    "BlockMixin",
     "BlocksMixin",
-    "TrunkPlacerMixin"
+    "MangrovePropaguleMixin",
+    "SaplingMixin",
+    "TrunkPlacerMixin",
+    "VegetationBlockMixin"
   ],
-  "client": [],
+  "mixinextras": {
+    "minVersion": "0.5.4"
+  },
+  "client": [
+    "ClientLevelMixin",
+    "ParticleEngineMixin"
+  ],
   "refmap": "knots_and_rings.mixins.refmap.json"
 }

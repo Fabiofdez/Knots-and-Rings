@@ -4,18 +4,20 @@ package fabiofdez.knots_and_rings.platform.fabric;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
+import fabiofdez.knots_and_rings.block.state.SaplingType;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.GrowingSapling;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.fabricmc.api.ClientModInitializer;
 //? < 26.1
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 //? <= 1.21.5
@@ -37,6 +39,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
       renderTranslucent(entry.getValue());
     });
 
+    SaplingType.definedValues().forEach((type) -> renderCutout(type.stem()));
+    GrowingSapling.TintHandler.registerTints(ColorProviderRegistry.BLOCK::register);
+
     FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).ifPresent((container) -> {
       boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
 
@@ -45,6 +50,13 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
       addPack(container, ResourcePacks.PACK_DEFAULT);
     });
+  }
+
+  private static void renderCutout(Block block) {
+    //? <= 1.21.5
+    BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutout());
+    //? > 1.21.5 && < 26.1
+    //BlockRenderLayerMap.INSTANCE.putBlock(block, ChunkSectionLayer.CUTOUT);
   }
 
   private static void renderTranslucent(Block block) {

@@ -3,6 +3,7 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 //? neoforge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.ModBlocks;
 import fabiofdez.knots_and_rings.ModSounds;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -16,6 +17,8 @@ public class NeoforgeEntrypoint {
 
 	public NeoforgeEntrypoint(IEventBus modEventBus, ModContainer ignored) {
 		KnotsAndRings.onInitialize();
+    ModBlocks.initialize();
+    ModSounds.initialize();
 
     NeoForge.EVENT_BUS.register(this);
     ModSounds.register(modEventBus);

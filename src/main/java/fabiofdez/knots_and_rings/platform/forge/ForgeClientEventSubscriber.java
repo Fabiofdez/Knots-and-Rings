@@ -6,10 +6,12 @@ package fabiofdez.knots_and_rings.platform.forge;
 import fabiofdez.knots_and_rings.platform.Platform;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
+import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterColorHandlersEvent;
 import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -27,6 +29,11 @@ public class ForgeClientEventSubscriber {
   @SubscribeEvent
   public static void onClientSetup(final FMLClientSetupEvent event) {
     KnotsAndRings.onInitializeClient();
+  }
+
+  @SubscribeEvent
+  public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
+    GrowingSapling.TintHandler.registerTints(event::register);
   }
 
   @SubscribeEvent

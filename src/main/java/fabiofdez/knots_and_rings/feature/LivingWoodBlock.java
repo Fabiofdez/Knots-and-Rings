@@ -1,8 +1,9 @@
-package fabiofdez.knots_and_rings.util;
+package fabiofdez.knots_and_rings.feature;
 
 import com.google.common.collect.ImmutableMap;
 import fabiofdez.knots_and_rings.block.LogBlock;
 import fabiofdez.knots_and_rings.block.state.LogSide;
+import fabiofdez.knots_and_rings.util.NeighborIterable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;

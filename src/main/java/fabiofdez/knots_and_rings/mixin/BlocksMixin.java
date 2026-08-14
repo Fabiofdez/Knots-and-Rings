@@ -2,32 +2,35 @@
 
 package fabiofdez.knots_and_rings.mixin;
 
+import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.function.Function;
+
 //? if <= 1.21.1 {
-/*import net.minecraft.world.level.block.RotatedPillarBlock;
+/*import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 *///? } else {
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.block.Block;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.function.Function;
-//?}
+//? }
 
 @Mixin(Blocks.class)
 public class BlocksMixin {
+
   //? if <= 1.21.1 {
-  
   /*@Redirect(method = "log(Lnet/minecraft/world/level/material/MapColor;Lnet/minecraft/world/level/material/MapColor;)Lnet/minecraft/world/level/block/Block;", at = @At(value = "NEW", target = LivingWoodBlock.OLD_CONSTRUCTOR))
   private static RotatedPillarBlock knots_and_rings$customLog(BlockBehaviour.Properties properties) {
     return new LogBlock(properties);

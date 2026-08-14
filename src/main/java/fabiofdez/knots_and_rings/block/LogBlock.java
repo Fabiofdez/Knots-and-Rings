@@ -4,20 +4,18 @@ package fabiofdez.knots_and_rings.block;
 
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.block.state.LogSide;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
-import fabiofdez.knots_and_rings.util.LivingWoodCluster;
-import fabiofdez.knots_and_rings.util.LogConnectivityCache;
+import fabiofdez.knots_and_rings.compat.ItemDamage;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodCluster;
+import fabiofdez.knots_and_rings.feature.LogConnectivityCache;
+import fabiofdez.knots_and_rings.compat.Particles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.BlockParticleOption;
-import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ParticleUtils;
 import net.minecraft.util.RandomSource;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -35,14 +33,11 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Function;
 
 //? >= 1.21.5 {
 import net.minecraft.world.level.ScheduledTickAccess;
- //? }
+//? }
 
 public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
 
@@ -50,8 +45,6 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   public static final BooleanProperty IS_TRUNK;
   public static final BooleanProperty SINGLETON;
   public static final EnumProperty<LogSide.Mapping> SIDES;
-
-  private static final Function<BlockState, ParticleOptions> BLOCK_PARTICLES;
 
   public LogBlock(Properties properties) {
     super(properties);
@@ -93,8 +86,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   @Override
       //? < 1.21.5
   //protected BlockState updateShape(BlockState state, Direction from, BlockState state2, LevelAccessor level, BlockPos pos, BlockPos pos2) {
-    //? >= 1.21.5
-    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
+      //? >= 1.21.5
+  protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
     if (!LivingWoodBlock.identicalLogs(state, state2)) return state;
     if (from.getAxis() == LivingWoodBlock.getAxis(state)) return state;
     if (!LivingWoodBlock.isTrunk(state)) return state;
@@ -133,24 +126,22 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   @Override
   protected InteractionResult useItemOn(/*? if >= 1.21 >> 'BlockState' */ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     //? < 1.21
-    //super.use(state, level, pos, player, hand, hitResult);
+    //InteractionResult result = super.use(state, level, pos, player, hand, hitResult);
     //? >= 1.21
-    super.useItemOn(stack, state, level, pos, player, hand, hitResult);
+    InteractionResult result = super.useItemOn(stack, state, level, pos, player, hand, hitResult);
 
     //? < 1.21
     //ItemStack stack = player.getItemInHand(hand);
 
     if (stack.is(ItemTags.PICKAXES)) {
-      return splitLog(stack, state, level, pos, player, hitResult);
+      return splitLog(stack, state, level, pos, player, hand, hitResult);
     }
 
-    if (!LivingWoodBlock.isNaturalWood(state)) return InteractionResult.PASS;
-
-    if (stack.is(Items.BONE_MEAL)) {
+    if (LivingWoodBlock.isNaturalWood(state) && stack.is(Items.BONE_MEAL)) {
       return healLog(stack, state, level, pos, player, hitResult);
     }
 
-    return InteractionResult.PASS;
+    return result;
   }
 
   @Override
@@ -184,20 +175,20 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
   //? }
 
-  private static InteractionResult splitLog(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+  private static InteractionResult splitLog(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     boolean isNatural = LivingWoodBlock.isNaturalWood(state);
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
 
     if (isNatural && !isTrunk) return InteractionResult.PASS;
     if (!isNatural && LivingWoodBlock.getSides(state).equals(LogSide.Mapping.M_0000)) return InteractionResult.PASS;
 
-    if (level.isClientSide()) spawnParticles(level, pos, hitResult, BLOCK_PARTICLES.apply(state));
+    if (level.isClientSide()) Particles.spawn(level, pos, hitResult, Particles.BLOCK.apply(state));
     else {
       float pitch = 0.8F + level.getRandom().nextFloat() * 0.2F;
       level.playSound(null, pos, ModSounds.SPLIT_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
       level.playSound(null, pos, ModSounds.CRACK_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
-      if (!player.isCreative() && stack.isDamageableItem()) stack.setDamageValue(stack.getDamageValue() - 1);
 
+      if (player != null) ItemDamage.hurtAndBreak(stack, hand, player, 1);
       state = state.setValue(SIDES, LogSide.Mapping.M_0000);
       if (isNatural) {
         LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
@@ -217,7 +208,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
 
     if (isTrunk && !LivingWoodBlock.changedShape(state, newState)) return InteractionResult.PASS;
 
-    if (level.isClientSide()) spawnParticles(level, pos, hitResult, ParticleTypes.HAPPY_VILLAGER);
+    if (level.isClientSide()) Particles.spawn(level, pos, hitResult, ParticleTypes.HAPPY_VILLAGER);
     else {
       float pitch = 0.8F + level.getRandom().nextFloat() * 0.2F;
       level.playSound(null, pos, ModSounds.HEAL_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
@@ -252,24 +243,10 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     });
   }
 
-  private static void spawnParticles(Level level, BlockPos pos, BlockHitResult hitResult, ParticleOptions particleOpts) {
-    ParticleUtils.spawnParticlesOnBlockFace(
-        level,
-        pos,
-        particleOpts,
-        UniformInt.of(10, 15),
-        hitResult.getDirection(),
-        () -> Vec3.ZERO,
-        0.5
-    );
-  }
-
   static {
     ALIVE = LivingWoodBlock.Properties.ALIVE;
     IS_TRUNK = LivingWoodBlock.Properties.IS_TRUNK;
     SINGLETON = LivingWoodBlock.Properties.SINGLETON;
     SIDES = LivingWoodBlock.Properties.SIDES;
-
-    BLOCK_PARTICLES = (state) -> new BlockParticleOption(ParticleTypes.BLOCK, state);
   }
 }

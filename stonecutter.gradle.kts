@@ -44,6 +44,7 @@ stonecutter parameters {
 			replace("public VoxelShape getShape", "protected VoxelShape getShape")
 			replace("public RenderShape getRenderShape", "protected RenderShape getRenderShape")
 			replace("public BlockState updateShape", "protected BlockState updateShape")
+			replace("public VoxelShape getCollisionShape", "protected VoxelShape getCollisionShape")
 			replace("public boolean isCollisionShapeFullBlock", "protected boolean isCollisionShapeFullBlock")
 			replace("public boolean canSurvive", "protected boolean canSurvive")
 			replace("public List<ItemStack> getDrops", "protected List<ItemStack> getDrops")
@@ -60,6 +61,22 @@ stonecutter parameters {
 			replace(".trunkProvider", ".trunkProvider()")
 			replace("grower.AbstractTreeGrower", "grower.TreeGrower")
 			replace("AbstractTreeGrower.class", "TreeGrower.class")
+			replace("/grower/AbstractTreeGrower;", "/grower/TreeGrower;")
+
+			replace("new AcaciaTreeGrower()", "TreeGrower.ACACIA")
+			replace("new BirchTreeGrower()", "TreeGrower.BIRCH")
+			replace("new CherryTreeGrower()", "TreeGrower.CHERRY")
+			replace("new DarkOakTreeGrower()", "TreeGrower.DARK_OAK")
+			replace("new JungleTreeGrower()", "TreeGrower.JUNGLE")
+			replace("new MangroveTreeGrower()", "TreeGrower.MANGROVE")
+			replace("new OakTreeGrower()", "TreeGrower.OAK")
+			replace("new SpruceTreeGrower()", "TreeGrower.SPRUCE")
+
+			replace("propaguleBlock(props)", "propaguleBlock(TreeGrower.MANGROVE, props)")
+		}
+
+		string(current.parsed >= "1.21", "uses_tree_grower") {
+			replace("(AbstractTreeGrower ", "(TreeGrower ")
 		}
 
 		string(current.parsed > "1.21", "blocks_mixin") {
@@ -74,6 +91,17 @@ stonecutter parameters {
 		string(current.parsed > "1.21.1") {
 			replace("RecipeProvider.has", "provider.has")
 			replace("protected ItemInteractionResult useItemOn(", "protected InteractionResult useItemOn(")
+			replace("level.block.BushBlock", "level.block.VegetationBlock")
+			replace("BushBlock.class", "VegetationBlock.class")
+			replace("level/block/BushBlock;", "level/block/VegetationBlock;")
+			replace("FoliageColor.getDefaultColor()", "FoliageColor.FOLIAGE_DEFAULT")
+			replace("FoliageColor.getEvergreenColor()", "FoliageColor.FOLIAGE_EVERGREEN")
+			replace("FoliageColor.getBirchColor()", "FoliageColor.FOLIAGE_BIRCH")
+			replace("FoliageColor.getMangroveColor()", "FoliageColor.FOLIAGE_MANGROVE")
+			replace("state.getOffset(null, ", "state.getOffset(") // BlockBehaviour.BlockStateBase.getOffset
+
+			replace("block.MossBlock", "block.BonemealableFeaturePlacerBlock")
+			replace("MossBlock.class", "BonemealableFeaturePlacerBlock.class")
 		}
 
 		string(current.parsed >= "1.21.4") {
@@ -93,6 +121,7 @@ stonecutter parameters {
 			replace("ARGB.lerp", "ARGB.srgbLerp")
 			replace("ResourceLocation", "Identifier")
 			replace("LoadingModList.get()", "FMLLoader.getCurrent().getLoadingModList()")
+			replace(".noCollission()", ".noCollision()")
 		}
 
 		string(current.parsed >= "26.1") {
@@ -100,20 +129,42 @@ stonecutter parameters {
 			replace("rendering.v1.ColorProviderRegistry", "rendering.v1.BlockColorRegistry")
 			replace("itemgroup.v1.ItemGroupEvents", "creativetab.v1.CreativeModeTabEvents")
 			replace("ColorProviderRegistry.BLOCK.register", "BlockColorRegistry.register")
+			replace("ColorProviderRegistry.BLOCK::register", "BlockColorRegistry::register")
 			replace("ItemGroupEvents.ModifyEntries", "CreativeModeTabEvents.ModifyOutput")
 			replace("ItemGroupEvents.modifyEntriesEvent", "CreativeModeTabEvents.modifyOutputEvent")
 			replace("SoundTypeBuilder.EntryBuilder", "SoundTypeBuilder.RegistrationBuilder")
 			replace("SoundTypeBuilder.of().category", "SoundTypeBuilder.of().source")
 			replace("FabricBlockLootTableProvider", "FabricBlockLootSubProvider")
+			replace("FabricTagProvider.BlockTagProvider", "FabricTagsProvider.BlockTagsProvider")
+			replace("FabricTagProvider", "FabricTagsProvider")
 			replace("FabricDataOutput", "FabricPackOutput")
 			replace("entityCutoutNoCull", "entityCutout")
 			replace("level.getDayTime()", "level.getDefaultClockTime()")
 			replace("PayloadTypeRegistry.playC2S", "PayloadTypeRegistry.serverboundPlay")
 			replace("ServerWorldEvents", "ServerLevelEvents")
+			replace("RegisterColorHandlersEvent.Block", "RegisterColorHandlersEvent.BlockTintSources")
+			replace("BlockElementFace", "CuboidFace")
+
+			replace("block.FarmBlock", "block.FarmlandBlock")
+			replace("block/FarmBlock;", "block/FarmlandBlock;")
+			replace("FarmBlock.class", "FarmlandBlock.class")
+			replace("block.SnowyDirtBlock", "block.SnowyBlock")
+			replace("block/SnowyDirtBlock;", "block/SnowyBlock;")
+			replace("SnowyDirtBlock.class", "SnowyBlock.class")
+			replace("block.SpreadingSnowyDirtBlock", "block.SpreadingSnowyBlock")
+			replace("block/SpreadingSnowyDirtBlock;", "block/SpreadingSnowyBlock;")
 		}
 
 		string(current.parsed >= "26.1", "place_log") {
 			replace("level/LevelSimulatedReader;", "level/WorldGenLevel;")
+		}
+
+		string(current.parsed >= "26.1", "has_tint_getter") {
+			replace("private static int getTint(", "private static BlockTintSource getTint(")
+		}
+
+		string(current.parsed >= "26.1", "get_drops") {
+			replace("world/item/ItemStack;", "world/item/ItemInstance;")
 		}
 
 		string(loader == "neoforge") {

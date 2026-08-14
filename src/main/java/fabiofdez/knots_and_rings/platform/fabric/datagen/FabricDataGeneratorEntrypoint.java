@@ -11,9 +11,8 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 		FabricDataGenerator.Pack pack = generator.createPack();
 
     //? > 1.21.1
-    pack.addProvider(SoundEventProvider::new);
+    pack.addProvider(ModSoundEventProvider::new);
     pack.addProvider(ModLangProvider::new);
 	}
-
 }
 //?}

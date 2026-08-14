@@ -3,7 +3,7 @@ package fabiofdez.knots_and_rings.compat.regions_unexplored;
 //? <= 1.21.1 {
 
 /*import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;

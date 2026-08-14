@@ -1,4 +1,4 @@
-package fabiofdez.knots_and_rings.util;
+package fabiofdez.knots_and_rings.feature;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.minecraft.core.BlockPos;

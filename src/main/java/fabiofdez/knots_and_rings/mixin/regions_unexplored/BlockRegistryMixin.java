@@ -3,7 +3,7 @@ package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 //? 1.20.1 {
 
 /*import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.regions_unexplored.registry.BlockRegistry;

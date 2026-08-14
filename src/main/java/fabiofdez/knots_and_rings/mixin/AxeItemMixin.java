@@ -2,7 +2,7 @@ package fabiofdez.knots_and_rings.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.util.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;

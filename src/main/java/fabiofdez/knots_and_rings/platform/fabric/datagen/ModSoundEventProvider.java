@@ -14,8 +14,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
 
-public class SoundEventProvider extends FabricSoundsProvider {
-  public SoundEventProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+public class ModSoundEventProvider extends FabricSoundsProvider {
+  public ModSoundEventProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
     super(output, registriesFuture);
   }
 
@@ -50,7 +50,7 @@ public class SoundEventProvider extends FabricSoundsProvider {
 
   @Override
   public @NotNull String getName() {
-    return "SoundEventProvider";
+    return "ModSoundEventProvider";
   }
 }
 

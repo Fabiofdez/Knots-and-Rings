@@ -43,9 +43,6 @@ public class ModSounds {
 
     return () -> registered;
   }
-
-  public static void initialize() {
-  }
   //? } else {
   /*private static Supplier<SoundEvent> register(String name) {
     ResourceLocation soundId = KnotsAndRings.id(name);
@@ -56,4 +53,7 @@ public class ModSounds {
     SOUND_EVENTS.register(eventBus);
   }
   *///? }
+
+  public static void initialize() {
+  }
 }

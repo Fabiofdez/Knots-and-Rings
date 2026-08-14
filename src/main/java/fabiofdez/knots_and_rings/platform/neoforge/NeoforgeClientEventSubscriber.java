@@ -5,14 +5,16 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
-import net.neoforged.api.distmarker.Dist;
+import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
+import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 
 @SuppressWarnings("removal")
 @EventBusSubscriber(modid = KnotsAndRings.MOD_ID, /^? if < 1.21.11 >> 'value' ^/ bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -21,6 +23,11 @@ public class NeoforgeClientEventSubscriber {
   @SubscribeEvent
   public static void onClientSetup(final FMLClientSetupEvent event) {
     KnotsAndRings.onInitializeClient();
+  }
+
+  @SubscribeEvent
+  public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
+    GrowingSapling.TintHandler.registerTints(event::register);
   }
 
   @SubscribeEvent

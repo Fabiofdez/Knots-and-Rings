@@ -3,7 +3,7 @@ package fabiofdez.knots_and_rings.platform.forge;
 //? forge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
-import fabiofdez.knots_and_rings.util.LogConnectivityCache;
+import fabiofdez.knots_and_rings.feature.LogConnectivityCache;
 import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
