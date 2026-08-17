@@ -13,7 +13,6 @@ import java.util.function.UnaryOperator;
 
 public enum BlockPosOffset implements StringRepresentable {
 
-  NONE("none", UnaryOperator.identity()),
   SELF("self", UnaryOperator.identity()),
   N("north", (pos) -> pos.relative(Direction.NORTH)),
   NE("northeast", (pos) -> pos.relative(Direction.NORTH).relative(Direction.EAST)),
@@ -39,7 +38,7 @@ public enum BlockPosOffset implements StringRepresentable {
   }
 
   public BlockPosOffset reverse() {
-    return REVERSE.getOrDefault(this, NONE);
+    return REVERSE.getOrDefault(this, SELF);
   }
 
   @Override
@@ -69,7 +68,6 @@ public enum BlockPosOffset implements StringRepresentable {
   public static class MemberSet {
     public static final Set<BlockPosOffset> ALL_AROUND;
     public static final Set<BlockPosOffset> CARDINAL;
-    public static final Set<BlockPosOffset> SELF;
 
     public static List<BlockPosOffset> from(BlockPosOffset offset) {
       return ALL_AROUND.stream().filter(awayBy1From(offset)).toList();
@@ -91,7 +89,6 @@ public enum BlockPosOffset implements StringRepresentable {
     static {
       ALL_AROUND = Set.of(N, NE, E, SE, S, SW, W, NW);
       CARDINAL = Set.of(N, E, S, W);
-      SELF = Set.of(BlockPosOffset.SELF);
     }
   }
 }

@@ -4,16 +4,14 @@ import fabiofdez.knots_and_rings.block.state.BlockPosOffset;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
-import static fabiofdez.knots_and_rings.block.state.BlockPosOffset.NONE;
-
 public class SaplingPlacement {
-  public static final SaplingPlacement CENTER = new SaplingPlacement(NONE);
+  public static final SaplingPlacement CENTER;
 
   private final Vec3 offsetVec;
 
   private SaplingPlacement(BlockPosOffset centerOffset) {
 
-    if (centerOffset == NONE) {
+    if (centerOffset == BlockPosOffset.SELF) {
       this.offsetVec = new Vec3(0, 0, 0);
       return;
     }
@@ -33,5 +31,9 @@ public class SaplingPlacement {
 
   public static SaplingPlacement to(BlockPosOffset offset) {
     return new SaplingPlacement(offset);
+  }
+
+  static {
+    CENTER = new SaplingPlacement(BlockPosOffset.SELF);
   }
 }

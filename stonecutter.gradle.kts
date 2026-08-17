@@ -122,6 +122,8 @@ stonecutter parameters {
 			replace("ResourceLocation", "Identifier")
 			replace("LoadingModList.get()", "FMLLoader.getCurrent().getLoadingModList()")
 			replace(".noCollission()", ".noCollision()")
+			replace(".getGameRules().getRule", ".getGameRules().get")
+			replace("GameRules.RULE_MOBGRIEFING", "GameRules.MOB_GRIEFING")
 		}
 
 		string(current.parsed >= "26.1") {

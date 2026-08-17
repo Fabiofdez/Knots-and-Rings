@@ -59,7 +59,7 @@ public class Particles {
     GrowingSapling.Stage stage = GrowingSapling.growthStage(state);
     return switch (stage) {
       case HIDDEN -> Blocks.AIR.defaultBlockState();
-      case SPROUT, SAPLING -> type.sapling().defaultBlockState();
+      case DECAYING, SPROUT, SAPLING -> type.sapling().defaultBlockState();
       case TALL_SAPLING, GIANT -> {
         if (half == DoubleBlockHalf.UPPER) yield type.leaves().defaultBlockState();
 

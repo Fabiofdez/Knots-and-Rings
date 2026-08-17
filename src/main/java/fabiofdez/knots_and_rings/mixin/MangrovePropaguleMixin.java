@@ -54,4 +54,10 @@ public abstract class MangrovePropaguleMixin {
     if (state.getValue(HANGING) || !GrowingSapling.isGrowingSapling(state)) return original;
     return GrowingSapling.getInteractShape(state, level, pos);
   }
+
+  @ModifyReturnValue(method = "createNewHangingPropagule(I)Lnet/minecraft/world/level/block/state/BlockState;", at = @At("RETURN"))
+  private static BlockState knots_and_rings$createNewHangingPropagule(BlockState state) {
+    if (!GrowingSapling.isGrowingSapling(state)) return state;
+    return state.setValue(GrowingSapling.Properties.GROWTH_STAGE, GrowingSapling.Stage.HIDDEN);
+  }
 }

@@ -18,6 +18,7 @@ import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -53,7 +54,7 @@ public class GrowingSapling {
         .setValue(Properties.PRUNED, false)
         .setValue(Properties.GROWTH_STAGE, Stage.SPROUT)
         .setValue(Properties.TREE_SHAPE, SaplingShape.Layout.SINGLETON)
-        .setValue(Properties.TREE_ROOT, BlockPosOffset.NONE)
+        .setValue(Properties.TREE_ROOT, BlockPosOffset.SELF)
         .setValue(Properties.HALF, DoubleBlockHalf.LOWER);
   }
 
@@ -71,24 +72,9 @@ public class GrowingSapling {
   public static boolean canRandomTick(BlockState state, RandomSource random) {
     Stage stage = growthStage(state);
     boolean isUpper = half(state) == DoubleBlockHalf.UPPER;
-    if (isPruned(state) || stage == Stage.HIDDEN || isUpper) return false;
+    if (isPruned(state) || stage.LEQ(Stage.DECAYING) || isUpper) return false;
 
-    return random.nextInt(stage.greaterThan(Stage.SAPLING) ? 6 : 4) == 0;
-  }
-
-  public static VoxelShape getInteractShape(BlockState state, BlockGetter level, BlockPos pos) {
-    if (growthStage(state) != Stage.HIDDEN) return VisualShape.INTERACT.parse(state, pos);
-
-    BlockPos treeRootPos = offsetToRoot(state).from(pos);
-    BlockState treeRoot = level.getBlockState(treeRootPos);
-    if (treeRootPos == pos || !isGrowingSapling(treeRoot)) return VisualShape.INTERACT.parse(state, pos);
-
-    Vec3 srcOffset = treeShape(treeRoot).centerOffset();
-    if (half(state) == DoubleBlockHalf.UPPER && srcOffset.length() <= 0) return Shapes.empty();
-
-    VoxelShape shape = getInteractShape(treeRoot, level, treeRootPos);
-    Vec3 shapeOffset = Vec3.atLowerCornerOf(treeRootPos.subtract(pos));
-    return shape.move(shapeOffset.x, 0, shapeOffset.z);
+    return random.nextInt(stage.GT(Stage.SAPLING) ? 6 : 4) == 0;
   }
 
   public static boolean isGrowingSapling(BlockState state) {
@@ -120,7 +106,14 @@ public class GrowingSapling {
   }
 
   public static boolean isDoubleSapling(BlockState state) {
-    return growthStage(state).greaterThanOrEqualTo(Stage.TALL_SAPLING);
+    return growthStage(state).GEQ(Stage.TALL_SAPLING);
+  }
+
+  public static boolean isImmature(BlockState state) {
+    Stage stage = growthStage(state);
+    Stage finalStage = markedGiant(state) ? Stage.GIANT : Stage.TALL_SAPLING;
+
+    return stage.LT(finalStage);
   }
 
   public static boolean partsOfSameSapling(BlockState state1, BlockState state2) {
@@ -144,7 +137,7 @@ public class GrowingSapling {
   }
 
   public static BlockState makeSaplingRoot(BlockState state, SaplingShape.Layout layout, boolean advanceStage) {
-    if (advanceStage && growthStage(state).greaterThanOrEqualTo(Stage.TALL_SAPLING)) {
+    if (advanceStage && growthStage(state).GEQ(Stage.TALL_SAPLING)) {
       state = state.setValue(Properties.GROWTH_STAGE, Stage.GIANT);
     } else if (advanceStage) {
       state = state.cycle(Properties.GROWTH_STAGE);
@@ -156,12 +149,19 @@ public class GrowingSapling {
         .setValue(Properties.TREE_ROOT, BlockPosOffset.SELF);
   }
 
-  public static BlockState absorbSapling(BlockState state, SaplingShape.Layout layout, BlockPosOffset toSrc) {
+  public static BlockState absorbSapling(BlockState state, SaplingShape.Layout layout, BlockPosOffset toRoot, RandomSource random) {
+    Stage saplingStage = growthStage(state);
+    if (saplingStage.GT(Stage.SPROUT)) saplingStage = Stage.SPROUT;
+
+    if (random.nextInt(3) == 0) {
+      saplingStage = saplingStage.GT(Stage.DECAYING) ? Stage.DECAYING : Stage.HIDDEN;
+    }
+
     return state
-        .setValue(Properties.GROWTH_STAGE, Stage.HIDDEN)
+        .setValue(Properties.GROWTH_STAGE, saplingStage)
         .setValue(Properties.GIANT, false)
         .setValue(Properties.TREE_SHAPE, layout)
-        .setValue(Properties.TREE_ROOT, toSrc);
+        .setValue(Properties.TREE_ROOT, toRoot);
   }
 
   public static BlockState convertToSapling(BlockState state) {
@@ -192,6 +192,22 @@ public class GrowingSapling {
         .setValue(Properties.HALF, half(state));
   }
 
+  public static void stompOnSapling(BlockState state, Level level, BlockPos pos) {
+    Stage newStage = growthStage(state) == Stage.SPROUT ? Stage.DECAYING : Stage.HIDDEN;
+    if (newStage == Stage.HIDDEN) {
+      if (offsetToRoot(state) == BlockPosOffset.SELF) {
+        level.destroyBlock(pos, true);
+        return;
+      }
+
+      BlockState singletonState = state.setValue(Properties.TREE_SHAPE, SaplingShape.Layout.SINGLETON);
+      level.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(singletonState));
+    }
+
+    BlockState newState = state.setValue(Properties.GROWTH_STAGE, newStage);
+    level.setBlockAndUpdate(pos, newState);
+  }
+
   public static SaplingShape findShapeForSapling(BlockState state, BlockGetter level, BlockPos pos) {
     for (SaplingShape.Layout layout : SaplingShape.Layout.values()) {
       SaplingShape inPlace = layout.nearbySource(state, level, pos);
@@ -206,7 +222,7 @@ public class GrowingSapling {
   }
 
   public static List<ItemStack> getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
-    if (drops.isEmpty() || growthStage(state) == Stage.HIDDEN) return List.of();
+    if (drops.isEmpty() || growthStage(state).LEQ(Stage.DECAYING)) return List.of();
 
     boolean isUpper = half(state) == DoubleBlockHalf.UPPER;
     boolean isTall = isDoubleSapling(state);
@@ -231,17 +247,47 @@ public class GrowingSapling {
     return drops;
   }
 
+  public static VoxelShape getInteractShape(BlockState state, BlockGetter level, BlockPos pos) {
+    VoxelShape selfShape = VisualShape.INTERACT.parse(state, pos);
+    BlockPosOffset toRoot = offsetToRoot(state);
+
+    if (toRoot == BlockPosOffset.SELF) {
+      Vec3 rootOffset = treeShape(state).centerOffset();
+      if (rootOffset.length() == 0) return selfShape;
+
+      if (growthStage(state) == Stage.SPROUT) {
+        VoxelShape singleSelfShape = selfShape.move(-rootOffset.x, 0, -rootOffset.z);
+        return Shapes.or(selfShape, singleSelfShape);
+      }
+
+      return selfShape;
+    }
+
+    BlockPos treeRootPos = toRoot.from(pos);
+    BlockState treeRoot = level.getBlockState(treeRootPos);
+    if (!isGrowingSapling(treeRoot)) return selfShape;
+
+    Vec3 rootOffset = treeShape(treeRoot).centerOffset();
+    if (rootOffset.length() == 0) return selfShape;
+
+    Vec3 shiftToRoot = Vec3.atLowerCornerOf(treeRootPos.subtract(pos));
+    VoxelShape rootShape = getInteractShape(treeRoot, level, treeRootPos).move(shiftToRoot.x, 0, shiftToRoot.z);
+
+    if (half(state) == DoubleBlockHalf.UPPER) return rootShape;
+    else return Shapes.or(rootShape, selfShape);
+  }
+
   public static void playBranchesBreakSound(Level level, BlockPos pos) {
     float pitch = 0.8F + level.getRandom().nextFloat() * 0.4F;
     level.playLocalSound(pos, SoundEvents.MANGROVE_ROOTS_HIT, SoundSource.BLOCKS, 1F, pitch, false);
   }
 
   public enum Stage implements StringRepresentable, Comparable<Stage> {
-
     HIDDEN(0),
-    SPROUT(1),
-    SAPLING(2),
-    TALL_SAPLING(3),
+    DECAYING(1),
+    SPROUT(2),
+    SAPLING(3),
+    TALL_SAPLING(4),
     GIANT(5);
 
     private final int VALUE;
@@ -254,19 +300,19 @@ public class GrowingSapling {
       return VALUE;
     }
 
-    public boolean lessThan(Stage other) {
+    public boolean LT(Stage other) {
       return value() < other.value();
     }
 
-    public boolean greaterThan(Stage other) {
+    public boolean GT(Stage other) {
       return value() > other.value();
     }
 
-    public boolean lessThanOrEqualTo(Stage other) {
+    public boolean LEQ(Stage other) {
       return value() <= other.value();
     }
 
-    public boolean greaterThanOrEqualTo(Stage other) {
+    public boolean GEQ(Stage other) {
       return value() >= other.value();
     }
 
@@ -344,7 +390,7 @@ public class GrowingSapling {
 
     static {
       INTERACT.defineShapes((stage, half) -> switch (stage) {
-        case SPROUT -> column(12, 8);
+        case DECAYING, SPROUT -> column(12, 8);
         case SAPLING -> column(12, 12);
         case TALL_SAPLING -> {
           if (half == DoubleBlockHalf.UPPER) yield block(-4);
@@ -352,7 +398,7 @@ public class GrowingSapling {
         }
         case GIANT -> {
           if (half == DoubleBlockHalf.LOWER) yield column(8, 16);
-          else yield Shapes.or(column(8, 12), block(6));
+          else yield Shapes.or(column(8, 14), block(10));
         }
 
         default -> Shapes.empty();
@@ -384,7 +430,7 @@ public class GrowingSapling {
     }
 
     private static int getTint(BlockState state /*? < 26.1 >> ') {' */, BlockAndTintGetter tintGetter, BlockPos pos, int ignoredTintIndex) {
-      boolean immatureSapling = growthStage(state).lessThan(Stage.TALL_SAPLING);
+      boolean immatureSapling = growthStage(state).LT(Stage.TALL_SAPLING);
       boolean isSaplingTop = half(state) == DoubleBlockHalf.UPPER;
       SaplingType type = SaplingType.of(state.getBlock());
 
@@ -399,7 +445,6 @@ public class GrowingSapling {
         //Integer staticTint = switch (type) {
         case SPRUCE -> FoliageColor.FOLIAGE_EVERGREEN;
         case BIRCH -> FoliageColor.FOLIAGE_BIRCH;
-        case MANGROVE -> FoliageColor.FOLIAGE_MANGROVE;
 
         default -> {
           //? < 26.1
