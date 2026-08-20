@@ -9,6 +9,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
@@ -17,12 +18,18 @@ public class NeoforgeEntrypoint {
 
 	public NeoforgeEntrypoint(IEventBus modEventBus, ModContainer ignored) {
 		KnotsAndRings.onInitialize();
+
+    ModBlocks.register(modEventBus);
+    ModSounds.register(modEventBus);
+    NeoForge.EVENT_BUS.register(this);
+
+    modEventBus.addListener(this::commonSetup);
+	}
+
+  private void commonSetup(final FMLCommonSetupEvent event) {
     ModBlocks.initialize();
     ModSounds.initialize();
-
-    NeoForge.EVENT_BUS.register(this);
-    ModSounds.register(modEventBus);
-	}
+  }
 
 	@SubscribeEvent
   public void onServerStarting(ServerStartingEvent event) {

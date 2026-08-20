@@ -3,9 +3,14 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 //? neoforge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.feature.GrowingSapling;
+//import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
-import fabiofdez.knots_and_rings.feature.GrowingSapling;
+//import net.minecraft.client.renderer.ItemBlockRenderTypes;
+//import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.core.registries.BuiltInRegistries;
+//import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -23,6 +28,12 @@ public class NeoforgeClientEventSubscriber {
   @SubscribeEvent
   public static void onClientSetup(final FMLClientSetupEvent event) {
     KnotsAndRings.onInitializeClient();
+
+//    BuiltInRegistries.BLOCK.entrySet().forEach((entry) -> {
+//      ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
+//      if (!LivingWoodBlock.isWoodBlock(blockId)) return;
+//      ItemBlockRenderTypes.setRenderLayer(entry.getValue(), RenderType.translucent());
+//    });
   }
 
   @SubscribeEvent
@@ -34,10 +45,14 @@ public class NeoforgeClientEventSubscriber {
   public static void addFeaturePacks(final AddPackFindersEvent event) {
     boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
 
-    if (hasFusion) addPack(event, ResourcePacks.PACK_FUSION);
-    else addPack(event, ResourcePacks.PACK_CTM);
+//    if (hasFusion) addPack(event, ResourcePacks.PACK_FUSION);
+//    else addPack(event, ResourcePacks.PACK_CTM);
+
+    if (!hasFusion) addPack(event, ResourcePacks.PACK_CTM);
 
     addPack(event, ResourcePacks.PACK_DEFAULT);
+    addPack(event, ResourcePacks.PACK_SAPLINGS);
+    addPack(event, ResourcePacks.PACK_STAY_TRUE_COMPAT);
   }
 
   private static void addPack(final AddPackFindersEvent event, BuiltInResourcePack pack) {
@@ -46,7 +61,7 @@ public class NeoforgeClientEventSubscriber {
         PackType.CLIENT_RESOURCES,
         pack.name(),
         PackSource.BUILT_IN,
-        false,
+        pack.defaultEnabled(),
         Pack.Position.TOP
     );
   }

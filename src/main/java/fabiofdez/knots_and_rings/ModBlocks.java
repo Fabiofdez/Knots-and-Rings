@@ -64,12 +64,6 @@ public class ModBlocks {
 
   public static final Map<String, BlockSupplier> STEM_MAPPING;
 
-  public static Map<String, BlockSupplier> buildStemBlocks() {
-    return Arrays
-        .stream(ModBlockBuilder.values())
-        .collect(Collectors.toMap(ModBlockBuilder::saplingName, ModBlocks::registerBlockOnly));
-  }
-
   //? if fabric {
   @SuppressWarnings("SameParameterValue")
   private static BlockSupplier registerBlockOnly(ModBlockBuilder builder) {
@@ -208,17 +202,15 @@ public class ModBlocks {
 
     for (SaplingType type : SaplingType.definedValues()) {
       ResourceLocation saplingId = BuiltInRegistries.BLOCK.getKey(type.sapling());
-      Block stem = STEM_MAPPING.get(saplingId.getPath()).get();
-      if (stem == null) continue;
-
-      type.setStem(stem);
-      SaplingType.mapStem(stem, type);
+      type.setStem(STEM_MAPPING.get(saplingId.getPath()));
     }
 
     SaplingType.freezeRegistry();
   }
 
   static {
-    STEM_MAPPING = buildStemBlocks();
+    STEM_MAPPING = Arrays
+        .stream(ModBlockBuilder.values())
+        .collect(Collectors.toMap(ModBlockBuilder::saplingName, ModBlocks::registerBlockOnly));
   }
 }

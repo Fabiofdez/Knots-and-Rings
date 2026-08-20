@@ -161,10 +161,6 @@ stonecutter parameters {
 			replace("level/LevelSimulatedReader;", "level/WorldGenLevel;")
 		}
 
-		string(current.parsed >= "26.1", "has_tint_getter") {
-			replace("private static int getTint(", "private static BlockTintSource getTint(")
-		}
-
 		string(current.parsed >= "26.1", "get_drops") {
 			replace("world/item/ItemStack;", "world/item/ItemInstance;")
 		}

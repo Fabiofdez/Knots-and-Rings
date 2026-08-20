@@ -1,9 +1,11 @@
-//~ has_tint_getter
-
 package fabiofdez.knots_and_rings.feature;
 
 import fabiofdez.knots_and_rings.block.state.SaplingType;
 import fabiofdez.knots_and_rings.block.state.BlockPosOffset;
+import fabiofdez.knots_and_rings.util.ShapeUtil;
+import net.minecraft.client.renderer.BiomeColors;
+//? >= 26.1
+//import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.server.level.ServerLevel;
@@ -13,6 +15,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+//? < 26.1
+import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.FoliageColor;
 import net.minecraft.world.level.Level;
@@ -36,12 +40,9 @@ import java.util.function.BiFunction;
 
 //? if < 26.1 {
 import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.world.level.BlockAndTintGetter;
 //? } else {
 /*import net.minecraft.client.color.block.BlockTintSource;
-import net.minecraft.client.color.block.BlockTintSources;
 import net.minecraft.client.resources.model.cuboid.BlockElementFace;
 *///? }
 
@@ -372,33 +373,17 @@ public class GrowingSapling {
       };
     }
 
-    private static VoxelShape block(double offsetY) {
-      return Shapes.block().move(0, offsetY / 16, 0);
-    }
-
-    private static VoxelShape column(double width, double height) {
-      return offsetColumn(width, height, 0, 0);
-    }
-
-    private static VoxelShape offsetColumn(double width, double height, double offsetX, double offsetZ) {
-      double halfWidth = width / 2.0;
-      offsetX += 8.0;
-      offsetZ += 8.0;
-
-      return Block.box(offsetX - halfWidth, 0, offsetZ - halfWidth, offsetX + halfWidth, height, offsetZ + halfWidth);
-    }
-
     static {
       INTERACT.defineShapes((stage, half) -> switch (stage) {
-        case DECAYING, SPROUT -> column(12, 8);
-        case SAPLING -> column(12, 12);
+        case DECAYING, SPROUT -> ShapeUtil.column(12, 8);
+        case SAPLING -> ShapeUtil.column(12, 12);
         case TALL_SAPLING -> {
-          if (half == DoubleBlockHalf.UPPER) yield block(-4);
-          yield offsetColumn(6, 16, -0.5, 0.5);
+          if (half == DoubleBlockHalf.UPPER) yield ShapeUtil.block(-4);
+          yield ShapeUtil.columnOffsetXZ(6, 16, -0.5, 0.5);
         }
         case GIANT -> {
-          if (half == DoubleBlockHalf.LOWER) yield column(8, 16);
-          else yield Shapes.or(column(8, 14), block(10));
+          if (half == DoubleBlockHalf.LOWER) yield ShapeUtil.column(8, 16);
+          else yield Shapes.or(ShapeUtil.column(8, 14), ShapeUtil.block(10));
         }
 
         default -> Shapes.empty();
@@ -407,9 +392,9 @@ public class GrowingSapling {
       COLLISION.defineShapes((stage, half) -> switch (stage) {
         case TALL_SAPLING -> {
           if (half == DoubleBlockHalf.UPPER) yield Shapes.empty();
-          yield offsetColumn(3, 16, -0.5, 0.5);
+          yield ShapeUtil.columnOffsetXZ(3, 16, -0.5, 0.5);
         }
-        case GIANT -> column(4, half == DoubleBlockHalf.LOWER ? 16 : 10);
+        case GIANT -> ShapeUtil.column(4, half == DoubleBlockHalf.LOWER ? 16 : 10);
 
         default -> Shapes.empty();
       });
@@ -429,44 +414,42 @@ public class GrowingSapling {
       registerTint(event, Blocks.MANGROVE_PROPAGULE);
     }
 
-    private static int getTint(BlockState state /*? < 26.1 >> ') {' */, BlockAndTintGetter tintGetter, BlockPos pos, int ignoredTintIndex) {
+    private static int getSaplingTint(BlockState state, BlockAndTintGetter tintGetter, BlockPos pos/*? < 26.1 { */, int ignoredTintIndex/*? } */) {
       boolean immatureSapling = growthStage(state).LT(Stage.TALL_SAPLING);
       boolean isSaplingTop = half(state) == DoubleBlockHalf.UPPER;
       SaplingType type = SaplingType.of(state.getBlock());
 
-      //? < 26.1
       if (immatureSapling || !isSaplingTop) return BlockElementFace.NO_TINT;
-      //? >= 26.1
-      //if (immatureSapling || !isSaplingTop) return BlockTintSources.constant(BlockElementFace.NO_TINT);
 
-      //? < 26.1
       return switch (type) {
-        //? >= 26.1
-        //Integer staticTint = switch (type) {
         case SPRUCE -> FoliageColor.FOLIAGE_EVERGREEN;
         case BIRCH -> FoliageColor.FOLIAGE_BIRCH;
 
         default -> {
-          //? < 26.1
           if (tintGetter == null || pos == null) yield FoliageColor.FOLIAGE_DEFAULT;
-            //? < 26.1
           else yield BiomeColors.getAverageFoliageColor(tintGetter, pos);
-          //? >= 26.1
-          //yield null;
         }
       };
-
-      //? >= 26.1 {
-      /*if (staticTint == null) return BlockTintSources.foliage();
-      else return BlockTintSources.constant(staticTint);
-      *///? }
     }
 
     private static void registerTint(ColorRegistryEvent event, Block... saplings) {
       //? < 26.1
-      event.accept(TintHandler::getTint, saplings);
-      //? >= 26.1
-      //event.accept(List.of(getTint(saplings[0].defaultBlockState())), saplings);
+      event.accept(TintHandler::getSaplingTint, saplings);
+      //? >= 26.1 {
+      /*event.accept(
+          List.of(new BlockTintSource() {
+            @Override
+            public int color(BlockState state) {
+              return FoliageColor.FOLIAGE_DEFAULT;
+            }
+
+            @Override
+            public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
+              return getSaplingTint(state, level, pos);
+            }
+          }), saplings
+      );
+      *///? }
     }
   }
 

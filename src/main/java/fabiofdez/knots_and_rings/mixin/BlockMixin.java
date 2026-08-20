@@ -41,7 +41,7 @@ public abstract class BlockMixin extends BlockBehaviorMixin {
   }
 
   @Inject(method = "fallOn", at = @At("HEAD"))
-  protected void knots_and_rings$fallOn(Level level, BlockState ignored, BlockPos pos, Entity entity, double fallDistance, CallbackInfo ci) {
+  protected void knots_and_rings$fallOn(Level level, BlockState ignored, BlockPos pos, Entity entity, /*? if <= 1.21.1 { */ /*float *//*? } else { */ double /*? } */ fallDistance, CallbackInfo ci) {
     BlockPos abovePos = pos.above();
     BlockState aboveState = level.getBlockState(abovePos);
     if (!GrowingSapling.isGrowingSapling(aboveState)) return;

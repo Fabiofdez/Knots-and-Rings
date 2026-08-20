@@ -1,7 +1,7 @@
 mod.id = "knots_and_rings"
 mod.name = "Knots & Rings"
 mod.group = "fabiofdez"
-mod.version = "2.1.0"
+mod.version = "2.2.0"
 mod.channel_tag = "-alpha"
 mod.description = "Bring trees to life with natural details like seamless growth rings and bark imperfections"
 mod.authors = ["Fabiofdez"]
@@ -24,7 +24,7 @@ url = "https://github.com/Fabiofdez"
 [fabric."1.20.1"]
 deps.minecraft = "1.20.1"
 deps.fabric-api = "0.90.0+1.20.1"
-deps.fabric-loader = "0.14.23"
+deps.fabric-loader = "0.15.0"
 deps.regions-unexplored = "A-0.5.6+1.20.1"
 
 [fabric."1.21.1"]

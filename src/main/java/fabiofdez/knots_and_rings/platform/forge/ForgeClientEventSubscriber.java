@@ -3,10 +3,15 @@ package fabiofdez.knots_and_rings.platform.forge;
 //? forge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.feature.GrowingSapling;
+//import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import fabiofdez.knots_and_rings.platform.Platform;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
-import fabiofdez.knots_and_rings.feature.GrowingSapling;
+//import net.minecraft.client.renderer.ItemBlockRenderTypes;
+//import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.core.registries.BuiltInRegistries;
+//import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -29,6 +34,12 @@ public class ForgeClientEventSubscriber {
   @SubscribeEvent
   public static void onClientSetup(final FMLClientSetupEvent event) {
     KnotsAndRings.onInitializeClient();
+
+//    BuiltInRegistries.BLOCK.entrySet().forEach((entry) -> {
+//      ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
+//      if (!LivingWoodBlock.isWoodBlock(blockId)) return;
+//      ItemBlockRenderTypes.setRenderLayer(entry.getValue(), RenderType.translucent());
+//    });
   }
 
   @SubscribeEvent
@@ -46,10 +57,14 @@ public class ForgeClientEventSubscriber {
 
     boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
 
-    if (hasFusion) addPack(modFile, event, ResourcePacks.PACK_FUSION);
-    else addPack(modFile, event, ResourcePacks.PACK_CTM);
+//    if (hasFusion) addPack(modFile, event, ResourcePacks.PACK_FUSION);
+//    else addPack(modFile, event, ResourcePacks.PACK_CTM);
+
+    if (!hasFusion) addPack(modFile, event, ResourcePacks.PACK_CTM);
 
     addPack(modFile, event, ResourcePacks.PACK_DEFAULT);
+    addPack(modFile, event, ResourcePacks.PACK_SAPLINGS);
+    addPack(modFile, event, ResourcePacks.PACK_STAY_TRUE_COMPAT);
   }
 
   private static void addPack(IModFile modFile, final AddPackFindersEvent event, BuiltInResourcePack pack) {
@@ -58,7 +73,7 @@ public class ForgeClientEventSubscriber {
     Pack createdPack = Pack.readMetaAndCreate(
         pack.id(),
         pack.name(),
-        false,
+        pack.defaultEnabled(),
         (id) -> new PathPackResources(id, true, sourcePath),
         PackType.CLIENT_RESOURCES,
         Pack.Position.TOP,

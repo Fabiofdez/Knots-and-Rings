@@ -75,9 +75,7 @@ dependencies {
 		})
 	modImplementation("net.fabricmc:fabric-loader:${prop("deps.fabric-loader")}")
 
-	annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.4")
-	implementation("io.github.llamalad7:mixinextras-fabric:0.5.4")
-	include("io.github.llamalad7:mixinextras-fabric:0.5.4")
+	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.4")!!)!!)
 
 	// implementation(libs.moulberry.mixinconstraints)
 	// include(libs.moulberry.mixinconstraints)

@@ -2,13 +2,13 @@ package fabiofdez.knots_and_rings.platform.fabric;
 
 //? fabric {
 
-import fabiofdez.knots_and_rings.KnotsAndRings;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
+import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.block.state.SaplingType;
-import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
-import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
+import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.api.ClientModInitializer;
 //? < 26.1
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
@@ -36,7 +36,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
       ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
       if (!LivingWoodBlock.isLogBlock(blockId)) return;
 
-      renderTranslucent(entry.getValue());
+      renderCutout(entry.getValue());
     });
 
     SaplingType.definedValues().forEach((type) -> renderCutout(type.stem()));
@@ -45,10 +45,14 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).ifPresent((container) -> {
       boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
 
-      if (hasFusion) addPack(container, ResourcePacks.PACK_FUSION);
-      else addPack(container, ResourcePacks.PACK_CTM);
+//      if (hasFusion) addPack(container, ResourcePacks.PACK_FUSION);
+//      else addPack(container, ResourcePacks.PACK_CTM);
+
+      if (!hasFusion) addPack(container, ResourcePacks.PACK_CTM);
 
       addPack(container, ResourcePacks.PACK_DEFAULT);
+      addPack(container, ResourcePacks.PACK_SAPLINGS);
+      addPack(container, ResourcePacks.PACK_STAY_TRUE_COMPAT);
     });
   }
 
@@ -57,13 +61,6 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutout());
     //? > 1.21.5 && < 26.1
     //BlockRenderLayerMap.INSTANCE.putBlock(block, ChunkSectionLayer.CUTOUT);
-  }
-
-  private static void renderTranslucent(Block block) {
-    //? <= 1.21.5
-    BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
-    //? > 1.21.5 && < 26.1
-    //BlockRenderLayerMap.INSTANCE.putBlock(block, ChunkSectionLayer.TRANSLUCENT);
   }
 
   private static void addPack(ModContainer container, BuiltInResourcePack pack) {

@@ -33,7 +33,7 @@ public enum SaplingType implements StringRepresentable {
   private final String NAME;
   private final Supplier<Block> SAPLING;
   private final Supplier<Block> LEAVES;
-  private Block STEM;
+  private Supplier<Block> STEM;
 
   SaplingType(String name) {
     this(name, () -> null, () -> null);
@@ -58,11 +58,11 @@ public enum SaplingType implements StringRepresentable {
   }
 
   public Block stem() {
-    return STEM;
+    return STEM.get();
   }
 
-  public void setStem(Block block) {
-    this.STEM = block;
+  public void setStem(Supplier<Block> blockSupplier) {
+    this.STEM = blockSupplier;
   }
 
   public static SaplingType of(Block sapling) {
@@ -71,10 +71,6 @@ public enum SaplingType implements StringRepresentable {
 
   public static SaplingType ofStem(Block saplingStem) {
     return STEM_TO_TYPE.getOrDefault(saplingStem, NONE);
-  }
-
-  public static void mapStem(Block stemBlock, SaplingType type) {
-    STEM_TO_TYPE.put(stemBlock, type);
   }
 
   public static void mapVanillaBlocks() {
@@ -87,6 +83,11 @@ public enum SaplingType implements StringRepresentable {
   }
 
   public static void freezeRegistry() {
+    for (SaplingType type : values()) {
+      if (type == NONE) continue;
+      STEM_TO_TYPE.put(type.stem(), type);
+    }
+
     SAPLING_TO_TYPE = ImmutableMap.copyOf(SAPLING_TO_TYPE);
     STEM_TO_TYPE = ImmutableMap.copyOf(STEM_TO_TYPE);
   }
