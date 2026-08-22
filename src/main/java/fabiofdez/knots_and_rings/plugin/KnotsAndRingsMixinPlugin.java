@@ -15,6 +15,9 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
 
   static final Map<String, Supplier<Boolean>> CONDITIONS = ImmutableMap.ofEntries(
 
+      //? <= 1.21.1
+      //modMixin("vanillabackport", "VanillaBackportMixin"),
+
       //? fabric
       mixinRU("RenderHelperMixin"),
 
@@ -62,8 +65,12 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
   }
 
   private static Map.Entry<String, Supplier<Boolean>> mixinRU(String simpleName) {
-    String fullMixinPath = mixin("regions_unexplored.".concat(simpleName));
-    return Map.entry(fullMixinPath, checkLoaded("regions_unexplored"));
+    return modMixin("regions_unexplored", simpleName);
+  }
+
+  private static Map.Entry<String, Supplier<Boolean>> modMixin(String modId, String simpleName) {
+    String fullMixinPath = mixin(String.join(".", modId, simpleName));
+    return Map.entry(fullMixinPath, checkLoaded(modId));
   }
 
   @SuppressWarnings("SameParameterValue")

@@ -1,7 +1,7 @@
 mod.id = "knots_and_rings"
 mod.name = "Knots & Rings"
 mod.group = "fabiofdez"
-mod.version = "2.2.0"
+mod.version = "2.2.1"
 mod.channel_tag = "-alpha"
 mod.description = "Bring trees to life with natural details like seamless growth rings and bark imperfections"
 mod.authors = ["Fabiofdez"]
@@ -26,12 +26,14 @@ deps.minecraft = "1.20.1"
 deps.fabric-api = "0.90.0+1.20.1"
 deps.fabric-loader = "0.15.0"
 deps.regions-unexplored = "A-0.5.6+1.20.1"
+deps.vanillabackport = "1.1.5.2"
 
 [fabric."1.21.1"]
 deps.minecraft = "1.21.1"
 deps.fabric-api = "0.116.0+1.21.1"
 deps.fabric-loader = "0.16.14"
 deps.regions-unexplored = "0.6.2-fabric-21.1"
+deps.vanillabackport = "1.1.5.2"
 
 [fabric."1.21.5"]
 deps.minecraft = "1.21.5"
@@ -59,6 +61,7 @@ deps.fabric-loader = "0.19.3"
 deps.minecraft = "1.20.1"
 deps.forge = "47.0.0"
 deps.regions-unexplored = "F-0.5.6+1.20.1"
+deps.vanillabackport = "1.1.5.2"
 
 [neoforge]
 
@@ -67,6 +70,7 @@ deps.minecraft = "1.21.1"
 deps.neoforge = "21.1.228"
 deps.parchment = "1.21.1:2024.11.17"
 deps.regions-unexplored = "0.6.2-neoforge-21.1"
+deps.vanillabackport = "1.1.5.2"
 
 [neoforge."1.21.5"]
 deps.minecraft = "1.21.5"

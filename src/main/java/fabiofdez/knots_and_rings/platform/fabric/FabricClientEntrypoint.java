@@ -4,6 +4,7 @@ package fabiofdez.knots_and_rings.platform.fabric;
 
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.ModBlocks;
 import fabiofdez.knots_and_rings.block.state.SaplingType;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
@@ -39,7 +40,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
       renderCutout(entry.getValue());
     });
 
-    SaplingType.definedValues().forEach((type) -> renderCutout(type.stem()));
+    ModBlocks.SaplingStems.forEach(FabricClientEntrypoint::renderCutout);
     GrowingSapling.TintHandler.registerTints(ColorProviderRegistry.BLOCK::register);
 
     FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).ifPresent((container) -> {

@@ -43,13 +43,10 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -67,10 +64,6 @@ import java.util.stream.Collectors;
 
 @Mixin(SaplingBlock.class)
 public abstract class SaplingMixin extends VegetationBlockMixin {
-
-  @Shadow
-  @Final
-  public static IntegerProperty STAGE;
 
   @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/VegetationBlock;<init>(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)V"))
   private static BlockBehaviour.Properties knots_and_rings$initSaplingBlock(BlockBehaviour.Properties properties) {
@@ -110,9 +103,9 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   }
 
   @Redirect(method = "advanceTree", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;setBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)Z"))
-  protected boolean knots_and_rings$advanceGrowthStage(ServerLevel level, BlockPos pos, BlockState state, int i) {
+  protected boolean knots_and_rings$advanceGrowthStage(ServerLevel level, BlockPos pos, BlockState state, int updateFlag) {
     if (!GrowingSapling.isGrowingSapling(state)) { // original
-      return level.setBlock(pos, state.cycle(STAGE), 260);
+      return level.setBlock(pos, state, updateFlag);
     }
 
     // TODO: resolve shape dynamically/data-driven from sapling type?
@@ -202,7 +195,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
 
   @Redirect(method = "advanceTree", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/grower/TreeGrower;growTree(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/util/RandomSource;)Z"))
   protected boolean knots_and_rings$growTree(TreeGrower treeGrower, ServerLevel level, ChunkGenerator generator, BlockPos pos, BlockState state, RandomSource random) {
-    if (!GrowingSapling.isGrowingSapling(state)) {
+    if (!GrowingSapling.isGrowingSapling(state)) { // original
       return treeGrower.growTree(level, generator, pos, state, random);
     }
 

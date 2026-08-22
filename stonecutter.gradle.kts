@@ -71,8 +71,6 @@ stonecutter parameters {
 			replace("new MangroveTreeGrower()", "TreeGrower.MANGROVE")
 			replace("new OakTreeGrower()", "TreeGrower.OAK")
 			replace("new SpruceTreeGrower()", "TreeGrower.SPRUCE")
-
-			replace("propaguleBlock(props)", "propaguleBlock(TreeGrower.MANGROVE, props)")
 		}
 
 		string(current.parsed >= "1.21", "uses_tree_grower") {
@@ -94,14 +92,17 @@ stonecutter parameters {
 			replace("level.block.BushBlock", "level.block.VegetationBlock")
 			replace("BushBlock.class", "VegetationBlock.class")
 			replace("level/block/BushBlock;", "level/block/VegetationBlock;")
+			replace("block.MossBlock", "block.BonemealableFeaturePlacerBlock")
+			replace("MossBlock.class", "BonemealableFeaturePlacerBlock.class")
+
+			replace("FoliageColor::getDefaultColor", "() -> FoliageColor.FOLIAGE_DEFAULT")
+			replace("FoliageColor::getEvergreenColor", "() -> FoliageColor.FOLIAGE_EVERGREEN")
+			replace("FoliageColor::getBirchColor", "() -> FoliageColor.FOLIAGE_BIRCH")
 			replace("FoliageColor.getDefaultColor()", "FoliageColor.FOLIAGE_DEFAULT")
 			replace("FoliageColor.getEvergreenColor()", "FoliageColor.FOLIAGE_EVERGREEN")
 			replace("FoliageColor.getBirchColor()", "FoliageColor.FOLIAGE_BIRCH")
-			replace("FoliageColor.getMangroveColor()", "FoliageColor.FOLIAGE_MANGROVE")
-			replace("state.getOffset(null, ", "state.getOffset(") // BlockBehaviour.BlockStateBase.getOffset
 
-			replace("block.MossBlock", "block.BonemealableFeaturePlacerBlock")
-			replace("MossBlock.class", "BonemealableFeaturePlacerBlock.class")
+			replace("state.getOffset(null, ", "state.getOffset(") // BlockBehaviour.BlockStateBase.getOffset
 		}
 
 		string(current.parsed >= "1.21.4") {

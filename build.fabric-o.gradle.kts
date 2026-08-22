@@ -21,9 +21,6 @@ platform {
 		required("fabricloader") {
 			fabricLikeVersionRange = ">=${prop("deps.fabric-loader")}"
 		}
-		optional("regions-unexplored") {
-			fabricLikeVersionRange = "[0.5.7,)"
-		}
 		// optional("modmenu") {}
 	}
 }
@@ -84,6 +81,10 @@ dependencies {
 
 	if (hasProperty("deps.regions-unexplored")) {
 		modCompileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
+	}
+
+	if (sc.current.version <= "1.21.1") {
+		modCompileOnly("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
 	}
 }
 

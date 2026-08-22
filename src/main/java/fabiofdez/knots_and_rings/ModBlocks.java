@@ -17,11 +17,11 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 //? fabric {
 import net.minecraft.core.Registry;
@@ -62,89 +62,54 @@ public class ModBlocks {
   //? forge
   //public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, KnotsAndRings.MOD_ID);
 
-  public static final Map<String, BlockSupplier> STEM_MAPPING;
+  private static BlockSupplier registerBlockOnly(BlockDef.Builder builder) {
+    return BlockDef.create(builder);
+  }
+
+  private static BlockSupplier register(BlockDef.Builder builder) {
+    BlockSupplier block = registerBlockOnly(builder);
+    ModItems.register(builder.name, (props) -> builder.itemClass.apply(block.get(), props));
+    return block;
+  }
+
+  public static void addCreative(KnotsAndRings.CreativeTabsModifier modifier) {
+    modifier.forTab(CreativeModeTabs.TOOLS_AND_UTILITIES).addBlocks((entries) -> {
+      // entries.accept();
+    });
+  }
+
+  public static void initialize() {
+  }
 
   //? if fabric {
-  @SuppressWarnings("SameParameterValue")
-  private static BlockSupplier registerBlockOnly(ModBlockBuilder builder) {
-    Block registeredBlock = BlockDef.create(builder).register();
-    return () -> registeredBlock;
-  }
-
-  private static BlockSupplier register(ModBlockBuilder builder) {
-    BlockDef toRegister = BlockDef.create(builder);
-
-    ResourceKey<Item> itemKey = KnotsAndRings.itemKey(builder.name);
-    Item.Properties itemProps = new Item.Properties() /*? if > 1.21.1 >> ';' */.setId(itemKey);
-    BlockItem blockItem = builder.itemClass.apply(toRegister.block(), itemProps);
-
-    Block registeredBlock = toRegister.register();
-    Registry.register(BuiltInRegistries.ITEM, itemKey, blockItem);
-
-    return () -> registeredBlock;
+  public interface BlockSupplier extends Supplier<Block> {
   }
   //? } else {
-  /*private static BlockSupplier registerBlockOnly(ModBlockBuilder builder) {
-    //? neoforge
-    //return BLOCKS.registerBlock(builder.name, builder.blockClass);
-    //? forge
-    //return BLOCKS.register(builder.name, () -> builder.blockClass.apply(BlockBehaviour.Properties.of()));
-  }
-
-  private static BlockSupplier register(ModBlockBuilder builder) {
-    BlockSupplier registeredBlock = registerBlockOnly(builder);
-
-    ////? > 1.21.1
-    //ModItems.ITEMS.registerItem(builder.name, (props) -> builder.itemClass.apply(registeredBlock.get(), props));
-    ////? <= 1.21.1
-    ////ModItems.ITEMS.register(builder.name, () -> builder.itemClass.apply(registeredBlock.get(), new Item.Properties()));
-
-    return registeredBlock;
-  }
-
-  public static void register(IEventBus eventBus) {
+  /*public static void register(IEventBus eventBus) {
     BLOCKS.register(eventBus);
   }
   *///? }
 
-  public static void addCreative(KnotsAndRings.CreativeTabsModifier modifier) {
-    modifier.forTab(CreativeModeTabs.TOOLS_AND_UTILITIES).addBlocks((entries) -> {
-//      entries.accept();
-    });
-  }
+  public static class SaplingStems {
+    private static final Map<String, BlockSupplier> STEMS = new HashMap<>();
 
-  enum ModBlockBuilder {
-    ACACIA_STEM("acacia_sapling_stem", (props) -> saplingBlock(TreeGrower.ACACIA, props)),
-    BIRCH_STEM("birch_sapling_stem", (props) -> saplingBlock(TreeGrower.BIRCH, props)),
-    CHERRY_STEM("cherry_sapling_stem", (props) -> cherrySaplingBlock(TreeGrower.CHERRY, props)),
-    DARK_OAK_STEM("dark_oak_sapling_stem", (props) -> saplingBlock(TreeGrower.DARK_OAK, props)),
-    JUNGLE_STEM("jungle_sapling_stem", (props) -> saplingBlock(TreeGrower.JUNGLE, props)),
-    MANGROVE_STEM("mangrove_propagule_stem", (props) -> propaguleBlock(TreeGrower.MANGROVE, props)),
-    OAK_STEM("oak_sapling_stem", (props) -> saplingBlock(TreeGrower.OAK, props)),
-    //? > 1.21.1
-    PALE_OAK_STEM("pale_oak_sapling_stem", (props) -> saplingBlock(TreeGrower.PALE_OAK, props)),
-    SPRUCE_STEM("spruce_sapling_stem", (props) -> saplingBlock(TreeGrower.SPRUCE, props));
-
-    private final String name;
-    private final Function<BlockBehaviour.Properties, Block> blockClass;
-    private final BiFunction<Block, Item.Properties, BlockItem> itemClass;
-
-    ModBlockBuilder(String name, Function<BlockBehaviour.Properties, Block> blockClass) {
-      this(name, blockClass, BlockItem::new);
+    public static String saplingId(String name) {
+      return name.replaceAll("_stem$", "");
     }
 
-    ModBlockBuilder(String name, Function<BlockBehaviour.Properties, Block> blockClass, BiFunction<Block, Item.Properties, BlockItem> itemClass) {
-      this.name = name;
-      this.blockClass = blockClass;
-      this.itemClass = itemClass;
+    static Block cherrySaplingBlock(BlockBehaviour.Properties props) {
+      return new SaplingBlock(
+          TreeGrower.CHERRY,
+          forSapling(props).mapColor(MapColor.COLOR_PINK).sound(SoundType.CHERRY_SAPLING)
+      );
     }
 
-    public static Block cherrySaplingBlock(TreeGrower treeGrower, BlockBehaviour.Properties props) {
-      return new SaplingBlock(treeGrower, forSapling(props).sound(SoundType.CHERRY_SAPLING));
+    static Block mangrovePropaguleBlock(BlockBehaviour.Properties props) {
+      return new MangrovePropaguleBlock(/*? > 1.21 >> 'forSapling' */TreeGrower.MANGROVE, forSapling(props));
     }
 
-    public static Block propaguleBlock(/*? > 1.21 >> 'BlockBehaviour' */TreeGrower treeGrower, BlockBehaviour.Properties props) {
-      return new MangrovePropaguleBlock(/*? > 1.21 >> 'forSapling' */treeGrower, forSapling(props));
+    public static Block paleOakSaplingBlock(TreeGrower treeGrower, BlockBehaviour.Properties props) {
+      return new SaplingBlock(treeGrower, forSapling(props).mapColor(MapColor.METAL));
     }
 
     public static Block saplingBlock(TreeGrower treeGrower, BlockBehaviour.Properties props) {
@@ -161,56 +126,59 @@ public class ModBlocks {
           .pushReaction(PushReaction.DESTROY);
     }
 
-    public static String saplingName(ModBlockBuilder builder) {
-      return builder.name.replaceAll("_stem$", "");
+    public static void add(String name, Function<BlockBehaviour.Properties, Block> blockClass) {
+      STEMS.put(saplingId(name), registerBlockOnly(new BlockDef.Builder(name, blockClass)));
     }
-  }
 
-  //? fabric {
-  public interface BlockSupplier extends Supplier<Block> {
+    public static void mapStemFor(SaplingType type) {
+      ResourceLocation saplingId = BuiltInRegistries.BLOCK.getKey(type.sapling());
+      BlockSupplier stemBlock = STEMS.get(saplingId.getPath());
+      if (stemBlock != null) type.setStem(stemBlock);
+    }
+
+    public static void forEach(Consumer<Block> action) {
+      for (BlockSupplier stem : STEMS.values()) action.accept(stem.get());
+    }
+
+    static {
+      add("acacia_sapling_stem", (props) -> saplingBlock(TreeGrower.ACACIA, props));
+      add("birch_sapling_stem", (props) -> saplingBlock(TreeGrower.BIRCH, props));
+      add("cherry_sapling_stem", SaplingStems::cherrySaplingBlock);
+      add("dark_oak_sapling_stem", (props) -> saplingBlock(TreeGrower.DARK_OAK, props));
+      add("jungle_sapling_stem", (props) -> saplingBlock(TreeGrower.JUNGLE, props));
+      add("mangrove_propagule_stem", SaplingStems::mangrovePropaguleBlock);
+      add("oak_sapling_stem", (props) -> saplingBlock(TreeGrower.OAK, props));
+      //? > 1.21.1
+      add("pale_oak_sapling_stem", (props) -> paleOakSaplingBlock(TreeGrower.PALE_OAK, props));
+      add("spruce_sapling_stem", (props) -> saplingBlock(TreeGrower.SPRUCE, props));
+    }
   }
 
   public static class BlockDef {
-    private final ResourceKey<Block> key;
-    private final Block block;
 
-    private BlockDef(ResourceKey<Block> key, Block block) {
-      this.key = key;
-      this.block = block;
+    private BlockDef() {
     }
 
-    static BlockDef create(ModBlockBuilder builder) {
+    static BlockSupplier create(Builder builder) {
+      BlockBehaviour.Properties blockProps = BlockBehaviour.Properties.of();
+
+      //? if neoforge {
+      /*return BLOCKS.registerBlock(builder.name, builder.blockClass);
+       *///? } else if forge {
+      /*return BLOCKS.register(builder.name, () -> builder.blockClass.apply(blockProps));
+       *///? } else {
       ResourceKey<Block> blockKey = KnotsAndRings.blockKey(builder.name);
-      BlockBehaviour.Properties props = BlockBehaviour.Properties.of();
-      Block toRegister = builder.blockClass.apply(props /*? if > 1.21.1 >> ');' */.setId(blockKey));
+      Block toRegister = builder.blockClass.apply(blockProps /*? if > 1.21.1 { */.setId(blockKey)/*? } */);
+      Block registered = Registry.register(BuiltInRegistries.BLOCK, blockKey, toRegister);
 
-      return new BlockDef(blockKey, toRegister);
+      return () -> registered;
+      //? }
     }
 
-    public Block block() {
-      return block;
+    private record Builder(String name, Function<BlockBehaviour.Properties, Block> blockClass, BiFunction<Block, Item.Properties, BlockItem> itemClass) {
+      Builder(String name, Function<BlockBehaviour.Properties, Block> blockClass) {
+        this(name, blockClass, BlockItem::new);
+      }
     }
-
-    public Block register() {
-      return Registry.register(BuiltInRegistries.BLOCK, key, block);
-    }
-  }
-  //? }
-
-  public static void initialize() {
-    SaplingType.mapVanillaBlocks();
-
-    for (SaplingType type : SaplingType.definedValues()) {
-      ResourceLocation saplingId = BuiltInRegistries.BLOCK.getKey(type.sapling());
-      type.setStem(STEM_MAPPING.get(saplingId.getPath()));
-    }
-
-    SaplingType.freezeRegistry();
-  }
-
-  static {
-    STEM_MAPPING = Arrays
-        .stream(ModBlockBuilder.values())
-        .collect(Collectors.toMap(ModBlockBuilder::saplingName, ModBlocks::registerBlockOnly));
   }
 }

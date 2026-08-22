@@ -4,6 +4,7 @@ package fabiofdez.knots_and_rings.platform.forge;
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
+import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -20,6 +21,7 @@ public class ForgeEntrypoint {
     KnotsAndRings.onInitialize();
 
     ModBlocks.register(modEventBus);
+    ModItems.register(modEventBus);
     ModSounds.register(modEventBus);
     MinecraftForge.EVENT_BUS.register(this);
 
@@ -28,6 +30,7 @@ public class ForgeEntrypoint {
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     ModBlocks.initialize();
+    ModItems.initialize();
     ModSounds.initialize();
   }
 }

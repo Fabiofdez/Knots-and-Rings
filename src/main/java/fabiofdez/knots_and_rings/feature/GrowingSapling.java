@@ -33,6 +33,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ import net.minecraft.client.resources.model.cuboid.BlockElementFace;
 public class GrowingSapling {
 
   public static BlockState registerDefaultState(BlockState state) {
-    if (!isGrowingSapling(state)) return state;
+    if (!state.hasProperty(Properties.GROWTH_STAGE)) return state;
     return state
         .setValue(Properties.GIANT, false)
         .setValue(Properties.PRUNED, false)
@@ -78,10 +79,6 @@ public class GrowingSapling {
     return random.nextInt(stage.GT(Stage.SAPLING) ? 6 : 4) == 0;
   }
 
-  public static boolean isGrowingSapling(BlockState state) {
-    return state.hasProperty(Properties.GROWTH_STAGE);
-  }
-
   public static boolean markedGiant(BlockState state) {
     return state.getValue(Properties.GIANT);
   }
@@ -108,6 +105,16 @@ public class GrowingSapling {
 
   public static boolean isDoubleSapling(BlockState state) {
     return growthStage(state).GEQ(Stage.TALL_SAPLING);
+  }
+
+  public static boolean isGrowingSapling(BlockState state) {
+    if (!state.hasProperty(Properties.GROWTH_STAGE)) return false;
+
+    Block block = state.getBlock();
+    SaplingType type = SaplingType.of(block);
+    if (type == SaplingType.NONE) type = SaplingType.ofStem(block);
+
+    return type != SaplingType.NONE;
   }
 
   public static boolean isImmature(BlockState state) {
@@ -408,44 +415,53 @@ public class GrowingSapling {
 
   public interface TintHandler {
     static void registerTints(ColorRegistryEvent event) {
-      registerTint(event, Blocks.OAK_SAPLING, Blocks.JUNGLE_SAPLING, Blocks.ACACIA_SAPLING, Blocks.DARK_OAK_SAPLING);
-      registerTint(event, Blocks.SPRUCE_SAPLING);
-      registerTint(event, Blocks.BIRCH_SAPLING);
-      registerTint(event, Blocks.MANGROVE_PROPAGULE);
+      registerTint(
+          event, Blocks.ACACIA_SAPLING,
+          Blocks.BIRCH_SAPLING,
+          Blocks.DARK_OAK_SAPLING,
+          Blocks.JUNGLE_SAPLING,
+          Blocks.MANGROVE_PROPAGULE,
+          Blocks.OAK_SAPLING,
+          Blocks.SPRUCE_SAPLING
+      );
+
+      // TODO: set up tint registration for modded saplings?
     }
 
-    private static int getSaplingTint(BlockState state, BlockAndTintGetter tintGetter, BlockPos pos/*? < 26.1 { */, int ignoredTintIndex/*? } */) {
+    private static TintResolver getSaplingTint(BlockState state) {
       boolean immatureSapling = growthStage(state).LT(Stage.TALL_SAPLING);
       boolean isSaplingTop = half(state) == DoubleBlockHalf.UPPER;
       SaplingType type = SaplingType.of(state.getBlock());
 
-      if (immatureSapling || !isSaplingTop) return BlockElementFace.NO_TINT;
+      if (immatureSapling || !isSaplingTop || type == SaplingType.NONE) {
+        return (tintGetter, pos) -> BlockElementFace.NO_TINT;
+      }
 
-      return switch (type) {
-        case SPRUCE -> FoliageColor.FOLIAGE_EVERGREEN;
-        case BIRCH -> FoliageColor.FOLIAGE_BIRCH;
+      int leavesTint = type.tint();
+      if (leavesTint != FoliageColor.FOLIAGE_DEFAULT) {
+        return (tintGetter, pos) -> leavesTint;
+      }
 
-        default -> {
-          if (tintGetter == null || pos == null) yield FoliageColor.FOLIAGE_DEFAULT;
-          else yield BiomeColors.getAverageFoliageColor(tintGetter, pos);
-        }
+      return (tintGetter, pos) -> {
+        if (tintGetter == null || pos == null) return leavesTint;
+        return BiomeColors.getAverageFoliageColor(tintGetter, pos);
       };
     }
 
     private static void registerTint(ColorRegistryEvent event, Block... saplings) {
-      //? < 26.1
-      event.accept(TintHandler::getSaplingTint, saplings);
-      //? >= 26.1 {
+      //? if < 26.1 {
+      event.accept((state, tintGetter, pos, tintIdx) -> getSaplingTint(state).apply(tintGetter, pos), saplings);
+      //? } else {
       /*event.accept(
           List.of(new BlockTintSource() {
             @Override
             public int color(BlockState state) {
-              return FoliageColor.FOLIAGE_DEFAULT;
+              return getSaplingTint(state).apply(null, null);
             }
 
             @Override
-            public int colorInWorld(BlockState state, BlockAndTintGetter level, BlockPos pos) {
-              return getSaplingTint(state, level, pos);
+            public int colorInWorld(BlockState state, BlockAndTintGetter tintGetter, BlockPos pos) {
+              return getSaplingTint(state).apply(tintGetter, pos);
             }
           }), saplings
       );
@@ -459,5 +475,10 @@ public class GrowingSapling {
     void accept(BlockColor provider, Block... blocks);
     //? >= 26.1
     //void accept(List<BlockTintSource> provider, Block... blocks);
+  }
+
+  @FunctionalInterface
+  public interface TintResolver {
+    int apply(@Nullable BlockAndTintGetter tintGetter, @Nullable BlockPos pos);
   }
 }

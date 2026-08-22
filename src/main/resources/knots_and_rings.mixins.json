@@ -12,6 +12,7 @@
     "BlockBehaviorMixin",
     "BlockMixin",
     "BlocksMixin",
+    "BuiltInRegistriesMixin",
     "MangrovePropaguleMixin",
     "SaplingMixin",
     "TrunkPlacerMixin",
