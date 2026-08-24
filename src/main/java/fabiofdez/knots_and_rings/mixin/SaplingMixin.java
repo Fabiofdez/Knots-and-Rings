@@ -199,8 +199,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
       return treeGrower.growTree(level, generator, pos, state, random);
     }
 
-    SaplingType type = SaplingType.ofStem(state.getBlock());
-    if (type == SaplingType.NONE) type = SaplingType.of(state.getBlock());
+    SaplingType type = SaplingType.resolve(state.getBlock());
     if (type == SaplingType.NONE) return false;
 
     final Block defaultSapling = type.sapling();

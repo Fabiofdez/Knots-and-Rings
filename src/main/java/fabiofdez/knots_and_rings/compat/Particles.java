@@ -45,12 +45,7 @@ public class Particles {
   public static BlockState getForSaplingParticle(BlockState state, ClientLevel level, BlockPos pos) {
     if (!GrowingSapling.isGrowingSapling(state)) return state;
 
-    SaplingType type = SaplingType.of(state.getBlock());
-    if (type == SaplingType.NONE) {
-      type = SaplingType.ofStem(state.getBlock());
-      state = GrowingSapling.convertToSapling(state);
-    }
-
+    SaplingType type = SaplingType.resolve(state.getBlock());
     if (type == SaplingType.NONE) {
       return Blocks.AIR.defaultBlockState();
     }

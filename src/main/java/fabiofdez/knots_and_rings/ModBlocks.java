@@ -6,7 +6,6 @@ import fabiofdez.knots_and_rings.block.state.SaplingType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
@@ -72,13 +71,8 @@ public class ModBlocks {
     return block;
   }
 
-  public static void addCreative(KnotsAndRings.CreativeTabsModifier modifier) {
-    modifier.forTab(CreativeModeTabs.TOOLS_AND_UTILITIES).addBlocks((entries) -> {
-      // entries.accept();
-    });
-  }
-
   public static void initialize() {
+    SaplingStems.initialize();
   }
 
   //? if fabric {
@@ -138,6 +132,9 @@ public class ModBlocks {
 
     public static void forEach(Consumer<Block> action) {
       for (BlockSupplier stem : STEMS.values()) action.accept(stem.get());
+    }
+
+    public static void initialize() {
     }
 
     static {

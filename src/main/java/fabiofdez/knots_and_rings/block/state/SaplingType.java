@@ -58,12 +58,18 @@ public class SaplingType {
     this.STEM = blockSupplier;
   }
 
-  public static SaplingType of(Block sapling) {
+  public static SaplingType ofSapling(Block sapling) {
     return SAPLING_TO_TYPE.getOrDefault(sapling, NONE);
   }
 
   public static SaplingType ofStem(Block saplingStem) {
     return STEM_TO_TYPE.getOrDefault(saplingStem, NONE);
+  }
+
+  public static SaplingType resolve(Block block) {
+    SaplingType type = ofSapling(block);
+    if (type == NONE) type = ofStem(block);
+    return type;
   }
 
   public static void add(String name, Supplier<Block> sapling, Supplier<Block> leaves) {

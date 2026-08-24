@@ -109,12 +109,7 @@ public class GrowingSapling {
 
   public static boolean isGrowingSapling(BlockState state) {
     if (!state.hasProperty(Properties.GROWTH_STAGE)) return false;
-
-    Block block = state.getBlock();
-    SaplingType type = SaplingType.of(block);
-    if (type == SaplingType.NONE) type = SaplingType.ofStem(block);
-
-    return type != SaplingType.NONE;
+    return SaplingType.resolve(state.getBlock()) != SaplingType.NONE;
   }
 
   public static boolean isImmature(BlockState state) {
@@ -125,19 +120,13 @@ public class GrowingSapling {
   }
 
   public static boolean partsOfSameSapling(BlockState state1, BlockState state2) {
-    Block sapling = state1.getBlock();
-    Block other = state2.getBlock();
-    SaplingType type = SaplingType.of(sapling);
+    SaplingType thisType = SaplingType.resolve(state1.getBlock());
+    if (thisType == SaplingType.NONE) return false;
 
-    if (type == SaplingType.NONE) {
-      other = state1.getBlock();
-      sapling = state2.getBlock();
-      type = SaplingType.of(sapling);
-      if (type == SaplingType.NONE) return state1.is(state2.getBlock());
-    }
+    SaplingType otherType = SaplingType.resolve(state2.getBlock());
+    if (otherType == SaplingType.NONE) return false;
 
-    BlockState otherState = other.defaultBlockState();
-    return otherState.is(sapling) || otherState.is(type.stem());
+    return thisType == otherType;
   }
 
   public static SaplingShape resolveTreeShape(BlockState state, BlockPos pos) {
@@ -187,7 +176,7 @@ public class GrowingSapling {
   }
 
   public static BlockState convertToStem(BlockState state) {
-    SaplingType type = SaplingType.of(state.getBlock());
+    SaplingType type = SaplingType.ofSapling(state.getBlock());
     if (type == SaplingType.NONE) return state;
 
     BlockState stemState = type.stem().defaultBlockState();
@@ -431,7 +420,7 @@ public class GrowingSapling {
     private static TintResolver getSaplingTint(BlockState state) {
       boolean immatureSapling = growthStage(state).LT(Stage.TALL_SAPLING);
       boolean isSaplingTop = half(state) == DoubleBlockHalf.UPPER;
-      SaplingType type = SaplingType.of(state.getBlock());
+      SaplingType type = SaplingType.ofSapling(state.getBlock());
 
       if (immatureSapling || !isSaplingTop || type == SaplingType.NONE) {
         return (tintGetter, pos) -> BlockElementFace.NO_TINT;

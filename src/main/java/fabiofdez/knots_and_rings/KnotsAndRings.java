@@ -31,7 +31,7 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 public class KnotsAndRings {
 
   public static final String MOD_ID = /*$ mod_id*/ "knots_and_rings";
-  public static final String MOD_VERSION = /*$ mod_version*/ "2.2.0";
+  public static final String MOD_VERSION = /*$ mod_version*/ "2.2.2";
   public static final String MOD_FRIENDLY_NAME = /*$ mod_name*/ "Knots & Rings";
   public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
