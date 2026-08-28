@@ -1,5 +1,9 @@
 package fabiofdez.knots_and_rings.resource;
 
+import fabiofdez.knots_and_rings.KnotsAndRings;
+
+import java.util.function.Consumer;
+
 public class ResourcePacks {
   public static final String FUSION_MOD_ID = "fusion";
 
@@ -9,6 +13,19 @@ public class ResourcePacks {
 
   public static final BuiltInResourcePack PACK_SAPLINGS;
   public static final BuiltInResourcePack PACK_STAY_TRUE_COMPAT;
+
+  public static void registerWith(Consumer<BuiltInResourcePack> handler) {
+    boolean hasFusion = KnotsAndRings.xplat().isModLoaded(FUSION_MOD_ID);
+
+    // TODO: resolve issues with log edges (Fusion)
+    // if (hasFusion) handler.accept(ResourcePacks.PACK_FUSION);
+    // else handler.accept(ResourcePacks.PACK_CTM);
+    if (!hasFusion) handler.accept(PACK_CTM);
+
+    handler.accept(PACK_DEFAULT);
+    handler.accept(PACK_SAPLINGS);
+    handler.accept(PACK_STAY_TRUE_COMPAT);
+  }
 
   static {
     PACK_DEFAULT = BuiltInResourcePack.create("pack_default", "Connected Wood Resources", true);

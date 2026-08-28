@@ -1,6 +1,7 @@
 package fabiofdez.knots_and_rings.mixin;
 
-import fabiofdez.knots_and_rings.block.state.SaplingType;
+//? fabric
+import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +13,7 @@ public class BuiltInRegistriesMixin {
 
   @Inject(method = "bootStrap", at = @At("TAIL"))
   private static void knots_and_rings$bootStrapRegistries(CallbackInfo ci) {
+    //? fabric
     SaplingType.freezeTypes();
   }
 }

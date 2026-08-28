@@ -15,8 +15,7 @@ import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Properties;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Stage;
 import fabiofdez.knots_and_rings.compat.ItemDamage;
-import fabiofdez.knots_and_rings.block.state.SaplingType;
-import fabiofdez.knots_and_rings.util.BlockFluidContext;
+import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
@@ -41,10 +40,8 @@ import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -55,6 +52,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,6 +60,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("MixinSuperClass")
 @Mixin(SaplingBlock.class)
 public abstract class SaplingMixin extends VegetationBlockMixin {
 
@@ -128,8 +127,8 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
       if (!GrowingSapling.isImmature(treeRoot)) return false;
     }
 
-    final Map<BlockPos, BlockState> topsBuilder = new HashMap<>();
-    final Map<BlockPos, BlockState> baseBuilder = new HashMap<>();
+    final Map<BlockPos, BlockState> saplingTops = new HashMap<>();
+    final Map<BlockPos, BlockState> saplingBases = new HashMap<>();
     final AtomicBoolean isDoubleSapling = new AtomicBoolean();
     final AtomicBoolean spaceAbove = new AtomicBoolean(true);
     final AtomicBoolean success = new AtomicBoolean(true);
@@ -149,16 +148,17 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
           : GrowingSapling.absorbSapling(saplingState, layout, offset.reverse(), level.getRandom());
 
       if (isTreeRoot && GrowingSapling.isDoubleSapling(finalState)) isDoubleSapling.set(true);
-      baseBuilder.put(saplingPos, finalState);
+      saplingBases.put(saplingPos, finalState);
 
       if (!spaceAbove.get()) return;
 
-      BlockState aboveSapling = level.getBlockState(saplingPos.above());
+      BlockPos abovePos = saplingPos.above();
+      BlockState aboveSapling = level.getBlockState(abovePos);
       boolean partOfOwnTreeAbove = GrowingSapling.partsOfSameSapling(finalState, aboveSapling);
       boolean replaceableBlockAbove = aboveSapling.is(BlockTags.REPLACEABLE_BY_TREES);
       if (!aboveSapling.is(Blocks.AIR) && !partOfOwnTreeAbove && !replaceableBlockAbove) {
         spaceAbove.set(false);
-        topsBuilder.clear();
+        saplingTops.clear();
         return;
       }
 
@@ -167,10 +167,11 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
         newAboveState = newAboveState.setValue(Properties.GROWTH_STAGE, Stage.HIDDEN);
       }
 
-      topsBuilder.put(saplingPos.above(), GrowingSapling.convertToSapling(newAboveState));
+      saplingTops.put(abovePos, GrowingSapling.convertToSapling(newAboveState, level, abovePos));
     });
+
     if (!success.get()) {
-      if (baseBuilder.size() < shape.allPositions().size()) level.destroyBlock(treeRootPos, true);
+      if (saplingBases.size() < shape.allPositions().size()) level.destroyBlock(treeRootPos, true);
       return false;
     }
 
@@ -180,16 +181,17 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
         return false;
       }
 
-      baseBuilder.replaceAll((p, oldState) -> GrowingSapling.convertToStem(oldState));
-      topsBuilder.forEach((p, newState) -> setWithFluid(newState, level, p));
+      saplingBases.replaceAll((p, oldState) -> GrowingSapling.convertToStem(oldState, level, p));
+      saplingTops.forEach(level::setBlockAndUpdate);
     } else {
-      topsBuilder.keySet().forEach((p) -> {
+      saplingBases.replaceAll((p, oldState) -> resolvePlacedState(oldState, level, p));
+      saplingTops.keySet().forEach((p) -> {
         if (!GrowingSapling.isGrowingSapling(level.getBlockState(p))) return;
         level.destroyBlock(p, true);
       });
     }
 
-    baseBuilder.forEach((p, newState) -> setWithFluid(newState, level, p));
+    saplingBases.forEach(level::setBlockAndUpdate);
     return true;
   }
 
@@ -201,11 +203,6 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
 
     SaplingType type = SaplingType.resolve(state.getBlock());
     if (type == SaplingType.NONE) return false;
-
-    final Block defaultSapling = type.sapling();
-    final BlockState defaultSaplingState = defaultSapling.defaultBlockState();
-    BlockFluidContext saplingFluidCtx = getBlockWithFluid(defaultSaplingState, level);
-    BlockFluidContext emptyFluidCtx = getEmptyWithFluid(level);
 
     SaplingShape shape = GrowingSapling.resolveTreeShape(state, pos);
     if (shape.isEmpty()) return false;
@@ -219,31 +216,31 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
     Map<BlockPos, BlockState> oldSaplingStems = mapSetToValues(stemSpots, level::getBlockState);
     Map<BlockPos, BlockState> oldPerimeterBlocks = mapSetToValues(perimeterSpots, level::getBlockState);
 
-    Map<BlockPos, BlockState> emptySaplingTops = mapSetToValues(topSpots, emptyFluidCtx::getAt);
-    Map<BlockPos, BlockState> defaultStemSaplings = mapSetToValues(stemSpots, saplingFluidCtx::getAt);
+    Map<BlockPos, BlockState> emptySaplingTops = mapSetToValues(topSpots, (p) -> emptyAt(level, p));
+    Map<BlockPos, BlockState> defaultStemSaplings = mapSetToValues(stemSpots, (p) -> type.placedSapling(level, p));
 
     emptySaplingTops.forEach((p, placeholder) -> level.setBlock(p, placeholder, 16));
     defaultStemSaplings.forEach((p, placeholder) -> level.setBlock(p, placeholder, 16));
-    perimeterSpots.forEach((p) -> level.setBlock(p, emptyFluidCtx.getAt(p), 16));
+    perimeterSpots.forEach((p) -> level.setBlock(p, emptyAt(level, p), 16));
 
-    treeGrower.growTree(level, generator, pos, defaultSaplingState, random);
+    treeGrower.growTree(level, generator, pos, type.placedSapling(level, pos), random);
     oldPerimeterBlocks.forEach((p, oldState) -> {
       if (level.getBlockState(p) != getAsEmptyBlock(oldState)) return;
       level.setBlock(p, oldState, 16);
     });
 
-    Predicate<BlockPos> notDefaultSapling = (p) -> !level.getBlockState(p).is(defaultSapling);
+    Predicate<BlockPos> notDefaultSapling = (p) -> !level.getBlockState(p).is(type.sapling());
     boolean success = oldSaplingStems.keySet().stream().anyMatch(notDefaultSapling);
 
     if (success) {
       emptySaplingTops.forEach((p, empty) -> {
         if (level.getBlockState(p) != empty) return;
-        level.setBlock(p, saplingFluidCtx.getAt(p), 16);
+        level.setBlock(p, type.placedSapling(level, p), 16);
         level.setBlockAndUpdate(p, empty);
       });
       defaultStemSaplings.forEach((p, sapling) -> {
         if (level.getBlockState(p) != sapling) return;
-        level.setBlockAndUpdate(p, emptyFluidCtx.getAt(p));
+        level.setBlockAndUpdate(p, emptyAt(level, p));
       });
 
       return true;
@@ -280,7 +277,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   }
 
   @Override
-  protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 >> 'BlockState' */ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand) {
+  protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand) {
     if (!GrowingSapling.isGrowingSapling(state)) return result;
 
     //? < 1.21
@@ -348,6 +345,20 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
         level.destroyBlock(neighborPos.above(), true);
       }
     });
+  }
+
+  @Override
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
+    if (GrowingSapling.isGrowingSapling(state)) return GrowingSapling.getDrops(drops, state, level);
+    return drops;
+  }
+
+  @Override
+  protected ItemStack knots_and_rings$pickBlock(ItemStack original, BlockState state) {
+    SaplingType type = SaplingType.ofStem(state.getBlock());
+    if (type == SaplingType.NONE) return original;
+
+    return type.sapling().asItem().getDefaultInstance();
   }
 
   @ModifyReturnValue(method = "getShape", at = @At("RETURN"))
@@ -429,30 +440,13 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   }
 
   @Unique
-  private static BlockFluidContext getEmptyWithFluid(Level level) {
-    return (pos) -> level.getFluidState(pos).createLegacyBlock();
+  private static BlockState emptyAt(Level level, BlockPos pos) {
+    return level.getFluidState(pos).createLegacyBlock();
   }
 
   @Unique
-  private static BlockFluidContext getBlockWithFluid(BlockState state, Level level) {
-    boolean waterloggable = state.hasProperty(BlockStateProperties.WATERLOGGED);
-
-    return (pos) -> {
-      if (!waterloggable) return state;
-
-      boolean waterlogged = level.getFluidState(pos).is(Fluids.WATER);
-      return state.setValue(BlockStateProperties.WATERLOGGED, waterlogged);
-    };
-  }
-
-  @Unique
-  private static void setWithFluid(BlockState state, Level level, BlockPos pos) {
-    boolean waterloggable = state.hasProperty(BlockStateProperties.WATERLOGGED);
-    if (waterloggable) {
-      boolean waterlogged = level.getFluidState(pos).is(Fluids.WATER);
-      state = state.setValue(BlockStateProperties.WATERLOGGED, waterlogged);
-    }
-
-    level.setBlockAndUpdate(pos, state);
+  private static BlockState resolvePlacedState(BlockState state, Level level, BlockPos pos) {
+    SaplingType type = SaplingType.resolve(state.getBlock());
+    return type.placedState(state, level, pos);
   }
 }

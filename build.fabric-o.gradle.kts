@@ -55,6 +55,12 @@ repositories {
 	mavenCentral()
 	strictMaven("https://maven.terraformersmc.com/", "com.terraformersmc") { name = "TerraformersMC" }
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
+
+	if (sc.current.version == "1.21.1") {
+		maven("https://maven.bawnorton.com/releases")
+		// Mirror
+		maven("https://maven.enjarai.dev/mirrors")
+	}
 }
 
 configurations.all {
@@ -82,6 +88,15 @@ dependencies {
 	if (hasProperty("deps.regions-unexplored")) {
 		modCompileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
 	}
+
+//	if (sc.current.version == "1.21.1") {
+//		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.7-beta.3")!!)!!)
+//
+//		modImplementation("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
+//		modImplementation("maven.modrinth:platform:1.2.11.4-fabric,${sc.current.version}")
+//	} else if (sc.current.version < "1.21") {
+//		modCompileOnly("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
+//	}
 
 	if (sc.current.version <= "1.21.1") {
 		modCompileOnly("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")

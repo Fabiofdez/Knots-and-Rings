@@ -47,6 +47,7 @@ stonecutter parameters {
 			replace("public VoxelShape getCollisionShape", "protected VoxelShape getCollisionShape")
 			replace("public boolean isCollisionShapeFullBlock", "protected boolean isCollisionShapeFullBlock")
 			replace("public boolean canSurvive", "protected boolean canSurvive")
+			replace("public FluidState getFluidState", "protected FluidState getFluidState")
 			replace("public List<ItemStack> getDrops", "protected List<ItemStack> getDrops")
 			replace("public InteractionResult use(", "protected ItemInteractionResult useItemOn(")
 			replace("public boolean isRandomlyTicking", "protected boolean isRandomlyTicking")
@@ -131,10 +132,12 @@ stonecutter parameters {
 			replace("renderer.state.CameraRenderState", "renderer.state.level.CameraRenderState")
 			replace("rendering.v1.ColorProviderRegistry", "rendering.v1.BlockColorRegistry")
 			replace("itemgroup.v1.ItemGroupEvents", "creativetab.v1.CreativeModeTabEvents")
+			replace("itemgroup.v1.FabricItemGroupEntries", "creativetab.v1.FabricCreativeModeTabOutput")
 			replace("ColorProviderRegistry.BLOCK.register", "BlockColorRegistry.register")
 			replace("ColorProviderRegistry.BLOCK::register", "BlockColorRegistry::register")
 			replace("ItemGroupEvents.ModifyEntries", "CreativeModeTabEvents.ModifyOutput")
 			replace("ItemGroupEvents.modifyEntriesEvent", "CreativeModeTabEvents.modifyOutputEvent")
+			replace("CompostingChanceRegistry", "CompostableRegistry")
 			replace("SoundTypeBuilder.EntryBuilder", "SoundTypeBuilder.RegistrationBuilder")
 			replace("SoundTypeBuilder.of().category", "SoundTypeBuilder.of().source")
 			replace("FabricBlockLootTableProvider", "FabricBlockLootSubProvider")
@@ -148,14 +151,11 @@ stonecutter parameters {
 			replace("RegisterColorHandlersEvent.Block", "RegisterColorHandlersEvent.BlockTintSources")
 			replace("BlockElementFace", "CuboidFace")
 
-			replace("block.FarmBlock", "block.FarmlandBlock")
-			replace("block/FarmBlock;", "block/FarmlandBlock;")
-			replace("FarmBlock.class", "FarmlandBlock.class")
-			replace("block.SnowyDirtBlock", "block.SnowyBlock")
-			replace("block/SnowyDirtBlock;", "block/SnowyBlock;")
-			replace("SnowyDirtBlock.class", "SnowyBlock.class")
-			replace("block.SpreadingSnowyDirtBlock", "block.SpreadingSnowyBlock")
-			replace("block/SpreadingSnowyDirtBlock;", "block/SpreadingSnowyBlock;")
+			replace("Consumer<FabricItemGroupEntries>", "Consumer<FabricCreativeModeTabOutput>")
+		}
+
+		string(current.parsed >= "26.2") {
+			replace("BlockTags.SAPLINGS", "BlockItemTags.SAPLINGS.block()")
 		}
 
 		string(current.parsed >= "26.1", "place_log") {

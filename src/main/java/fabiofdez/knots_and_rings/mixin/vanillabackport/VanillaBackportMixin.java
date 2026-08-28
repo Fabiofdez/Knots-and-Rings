@@ -8,8 +8,9 @@ package fabiofdez.knots_and_rings.mixin.vanillabackport;
 import com.llamalad7.mixinextras.expression.Definition;
 import com.llamalad7.mixinextras.expression.Expression;
 import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
+import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
 import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.block.state.SaplingType;
+import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.grower.TreeGrower;
@@ -25,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 import java.util.function.Function;
+
+import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 
 @SuppressWarnings("UnusedMixin")
 @Mixin(ModBlocks.class)
@@ -49,8 +52,9 @@ public class VanillaBackportMixin {
   private static void knots_and_rings$initVanillaBackportBlocks(CallbackInfo ci) {
     if (paleOakTreeGrower == null) return;
 
-    SaplingStems.add("pale_oak_sapling_stem", (props) -> SaplingStems.paleOakSaplingBlock(paleOakTreeGrower, props));
-    SaplingType.add("pale_oak", ModBlocks.PALE_OAK_SAPLING, ModBlocks.PALE_OAK_LEAVES);
+    SaplingType.add(PALE_OAK, ModBlocks.PALE_OAK_SAPLING, ModBlocks.PALE_OAK_LEAVES);
+    SaplingStems.add(PALE_OAK, (props) -> SaplingStems.paleOakSaplingBlock(paleOakTreeGrower, props));
+    TreeSeeds.add(PALE_OAK, (props) -> TreeSeeds.seedBlock(ModBlocks.PALE_OAK_SAPLING.get(), props));
   }
 
   @Definition(id = "RotatedPillarBlock", type = RotatedPillarBlock.class)

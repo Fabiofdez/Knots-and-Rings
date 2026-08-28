@@ -2,12 +2,16 @@
 
 package fabiofdez.knots_and_rings;
 
-import fabiofdez.knots_and_rings.block.state.SaplingType;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import fabiofdez.knots_and_rings.block.TreeSeedBlock;
+import fabiofdez.knots_and_rings.block.WaterloggedTreeSeedBlock;
+import fabiofdez.knots_and_rings.feature.SaplingType;
+import fabiofdez.knots_and_rings.feature.SaplingTypeID;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -16,14 +20,19 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.material.PushReaction;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
+
 //? fabric {
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 
 import java.util.function.Supplier;
@@ -66,13 +75,24 @@ public class ModBlocks {
   }
 
   private static BlockSupplier register(BlockDef.Builder builder) {
-    BlockSupplier block = registerBlockOnly(builder);
+    BlockSupplier block = BlockDef.create(builder);
     ModItems.register(builder.name, (props) -> builder.itemClass.apply(block.get(), props));
     return block;
   }
 
   public static void initialize() {
     SaplingStems.initialize();
+    TreeSeeds.initialize();
+  }
+
+  public static void addCreative(KnotsAndRings.CreativeTabsModifier modifier) {
+    modifier
+        .switchTo(CreativeModeTabs.NATURAL_BLOCKS)
+        .addAfter(SaplingType::lastSaplingInOrder, TreeSeeds::getAsOrderedItems);
+  }
+
+  public static void registerCompostables(CompostableRegisterEvent event) {
+    ModBlocks.TreeSeeds.forEach((seed) -> event.accept(seed.asItem(), 0.3F));
   }
 
   //? if fabric {
@@ -84,12 +104,67 @@ public class ModBlocks {
   }
   *///? }
 
-  public static class SaplingStems {
-    private static final Map<String, BlockSupplier> STEMS = new HashMap<>();
+  public interface CompostableRegisterEvent extends BiConsumer<Item, Float> {
+  }
 
-    public static String saplingId(String name) {
-      return name.replaceAll("_stem$", "");
+  public static class TreeSeeds {
+    private static final Map<SaplingTypeID, BlockSupplier> SEEDS = new LinkedHashMap<>();
+
+    public static Block seedBlock(Block saplingBlock, BlockBehaviour.Properties props) {
+      return new TreeSeedBlock(saplingBlock, forSeed(props));
     }
+
+    public static Block aquaticSeedBlock(Block saplingBlock, BlockBehaviour.Properties props) {
+      return new WaterloggedTreeSeedBlock(saplingBlock, forSeed(props));
+    }
+
+    public static BlockBehaviour.Properties forSeed(BlockBehaviour.Properties baseProps) {
+      return baseProps
+          .offsetType(BlockBehaviour.OffsetType.XZ)
+          .mapColor(MapColor.PLANT)
+          .noCollission()
+          .randomTicks()
+          .instabreak()
+          .sound(SoundType.CROP)
+          .pushReaction(PushReaction.DESTROY);
+    }
+
+    public static void add(SaplingTypeID type, Function<BlockBehaviour.Properties, Block> blockClass) {
+      SEEDS.put(type, register(new BlockDef.Builder(type.seedId(), blockClass)));
+    }
+
+    public static void mapSeedFor(SaplingType type) {
+      BlockSupplier seedBlock = SEEDS.get(type.id());
+      if (seedBlock != null) type.setSeed(seedBlock);
+    }
+
+    public static void forEach(Consumer<Block> action) {
+      for (BlockSupplier seed : SEEDS.values()) action.accept(seed.get());
+    }
+
+    private static List<ItemStack> getAsOrderedItems() {
+      return SEEDS.values().stream().map((seed) -> seed.get().asItem().getDefaultInstance()).toList();
+    }
+
+    public static void initialize() {
+    }
+
+    static {
+      add(OAK, (props) -> seedBlock(Blocks.OAK_SAPLING, props));
+      add(SPRUCE, (props) -> seedBlock(Blocks.SPRUCE_SAPLING, props));
+      add(BIRCH, (props) -> seedBlock(Blocks.BIRCH_SAPLING, props));
+      add(JUNGLE, (props) -> seedBlock(Blocks.JUNGLE_SAPLING, props));
+      add(ACACIA, (props) -> seedBlock(Blocks.ACACIA_SAPLING, props));
+      add(DARK_OAK, (props) -> seedBlock(Blocks.DARK_OAK_SAPLING, props));
+      add(MANGROVE, (props) -> aquaticSeedBlock(Blocks.MANGROVE_PROPAGULE, props));
+      add(CHERRY, (props) -> seedBlock(Blocks.CHERRY_SAPLING, props));
+      //? > 1.21.1
+      add(PALE_OAK, (props) -> seedBlock(Blocks.PALE_OAK_SAPLING, props));
+    }
+  }
+
+  public static class SaplingStems {
+    private static final Map<SaplingTypeID, BlockSupplier> STEMS = new LinkedHashMap<>();
 
     static Block cherrySaplingBlock(BlockBehaviour.Properties props) {
       return new SaplingBlock(
@@ -99,7 +174,7 @@ public class ModBlocks {
     }
 
     static Block mangrovePropaguleBlock(BlockBehaviour.Properties props) {
-      return new MangrovePropaguleBlock(/*? > 1.21 >> 'forSapling' */TreeGrower.MANGROVE, forSapling(props));
+      return new MangrovePropaguleBlock(/*? > 1.21 { */TreeGrower.MANGROVE, /*? } */forSapling(props));
     }
 
     public static Block paleOakSaplingBlock(TreeGrower treeGrower, BlockBehaviour.Properties props) {
@@ -120,13 +195,12 @@ public class ModBlocks {
           .pushReaction(PushReaction.DESTROY);
     }
 
-    public static void add(String name, Function<BlockBehaviour.Properties, Block> blockClass) {
-      STEMS.put(saplingId(name), registerBlockOnly(new BlockDef.Builder(name, blockClass)));
+    public static void add(SaplingTypeID type, Function<BlockBehaviour.Properties, Block> blockClass) {
+      STEMS.put(type, registerBlockOnly(new BlockDef.Builder(type.stemId(), blockClass)));
     }
 
     public static void mapStemFor(SaplingType type) {
-      ResourceLocation saplingId = BuiltInRegistries.BLOCK.getKey(type.sapling());
-      BlockSupplier stemBlock = STEMS.get(saplingId.getPath());
+      BlockSupplier stemBlock = STEMS.get(type.id());
       if (stemBlock != null) type.setStem(stemBlock);
     }
 
@@ -138,16 +212,16 @@ public class ModBlocks {
     }
 
     static {
-      add("acacia_sapling_stem", (props) -> saplingBlock(TreeGrower.ACACIA, props));
-      add("birch_sapling_stem", (props) -> saplingBlock(TreeGrower.BIRCH, props));
-      add("cherry_sapling_stem", SaplingStems::cherrySaplingBlock);
-      add("dark_oak_sapling_stem", (props) -> saplingBlock(TreeGrower.DARK_OAK, props));
-      add("jungle_sapling_stem", (props) -> saplingBlock(TreeGrower.JUNGLE, props));
-      add("mangrove_propagule_stem", SaplingStems::mangrovePropaguleBlock);
-      add("oak_sapling_stem", (props) -> saplingBlock(TreeGrower.OAK, props));
+      add(OAK, (props) -> saplingBlock(TreeGrower.OAK, props));
+      add(SPRUCE, (props) -> saplingBlock(TreeGrower.SPRUCE, props));
+      add(BIRCH, (props) -> saplingBlock(TreeGrower.BIRCH, props));
+      add(JUNGLE, (props) -> saplingBlock(TreeGrower.JUNGLE, props));
+      add(ACACIA, (props) -> saplingBlock(TreeGrower.ACACIA, props));
+      add(DARK_OAK, (props) -> saplingBlock(TreeGrower.DARK_OAK, props));
+      add(MANGROVE, SaplingStems::mangrovePropaguleBlock);
+      add(CHERRY, SaplingStems::cherrySaplingBlock);
       //? > 1.21.1
-      add("pale_oak_sapling_stem", (props) -> paleOakSaplingBlock(TreeGrower.PALE_OAK, props));
-      add("spruce_sapling_stem", (props) -> saplingBlock(TreeGrower.SPRUCE, props));
+      add(PALE_OAK, (props) -> paleOakSaplingBlock(TreeGrower.PALE_OAK, props));
     }
   }
 

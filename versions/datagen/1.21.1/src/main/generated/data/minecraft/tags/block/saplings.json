@@ -1,0 +1,16 @@
+{
+  "values": [
+    "knots_and_rings:acacia_seeds",
+    "knots_and_rings:birch_seeds",
+    "knots_and_rings:cherry_seed",
+    "knots_and_rings:dark_oak_seed",
+    "knots_and_rings:jungle_seed",
+    "knots_and_rings:mangrove_seed",
+    "knots_and_rings:oak_seed",
+    {
+      "id": "knots_and_rings:pale_oak_seed",
+      "required": false
+    },
+    "knots_and_rings:spruce_seeds"
+  ]
+}

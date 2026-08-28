@@ -5,9 +5,8 @@ package fabiofdez.knots_and_rings.platform.fabric;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
-import fabiofdez.knots_and_rings.block.state.SaplingType;
-import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.SaplingTint;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.api.ClientModInitializer;
@@ -41,20 +40,13 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     });
 
     ModBlocks.SaplingStems.forEach(FabricClientEntrypoint::renderCutout);
-    GrowingSapling.TintHandler.registerTints(ColorProviderRegistry.BLOCK::register);
+    ModBlocks.TreeSeeds.forEach(FabricClientEntrypoint::renderCutout);
+    SaplingTint.registerWith(ColorProviderRegistry.BLOCK::register);
 
-    FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).ifPresent((container) -> {
-      boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
+    ModContainer container = FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).orElse(null);
+    if (container == null) return;
 
-//      if (hasFusion) addPack(container, ResourcePacks.PACK_FUSION);
-//      else addPack(container, ResourcePacks.PACK_CTM);
-
-      if (!hasFusion) addPack(container, ResourcePacks.PACK_CTM);
-
-      addPack(container, ResourcePacks.PACK_DEFAULT);
-      addPack(container, ResourcePacks.PACK_SAPLINGS);
-      addPack(container, ResourcePacks.PACK_STAY_TRUE_COMPAT);
-    });
+    ResourcePacks.registerWith((pack) -> addPack(container, pack));
   }
 
   private static void renderCutout(Block block) {

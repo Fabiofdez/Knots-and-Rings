@@ -13,9 +13,11 @@
     "BlockMixin",
     "BlocksMixin",
     "BuiltInRegistriesMixin",
+    "LeavesMixin",
     "MangrovePropaguleMixin",
     "SaplingMixin",
     "TrunkPlacerMixin",
+    "VegetationBlockAccessor",
     "VegetationBlockMixin"
   ],
   "mixinextras": {

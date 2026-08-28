@@ -3,8 +3,8 @@ package fabiofdez.knots_and_rings.platform.forge;
 //? forge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
-import fabiofdez.knots_and_rings.feature.GrowingSapling;
 //import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.SaplingTint;
 import fabiofdez.knots_and_rings.platform.Platform;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
@@ -44,7 +44,7 @@ public class ForgeClientEventSubscriber {
 
   @SubscribeEvent
   public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
-    GrowingSapling.TintHandler.registerTints(event::register);
+    SaplingTint.registerWith(event::register);
   }
 
   @SubscribeEvent
@@ -55,16 +55,7 @@ public class ForgeClientEventSubscriber {
     if (modFileInfo == null) return;
     IModFile modFile = modFileInfo.getFile();
 
-    boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
-
-//    if (hasFusion) addPack(modFile, event, ResourcePacks.PACK_FUSION);
-//    else addPack(modFile, event, ResourcePacks.PACK_CTM);
-
-    if (!hasFusion) addPack(modFile, event, ResourcePacks.PACK_CTM);
-
-    addPack(modFile, event, ResourcePacks.PACK_DEFAULT);
-    addPack(modFile, event, ResourcePacks.PACK_SAPLINGS);
-    addPack(modFile, event, ResourcePacks.PACK_STAY_TRUE_COMPAT);
+    ResourcePacks.registerWith((pack) -> addPack(modFile, event, pack));
   }
 
   private static void addPack(IModFile modFile, final AddPackFindersEvent event, BuiltInResourcePack pack) {

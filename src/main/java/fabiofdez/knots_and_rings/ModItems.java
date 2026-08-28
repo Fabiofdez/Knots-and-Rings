@@ -1,6 +1,5 @@
 package fabiofdez.knots_and_rings;
 
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 
 import java.util.function.Function;
@@ -14,7 +13,6 @@ import java.util.function.Supplier;
 
 //? if neoforge {
 /*import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredItem;
 *///? } else {
@@ -23,7 +21,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 
 //? forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -34,8 +31,6 @@ public class ModItems {
   //public static DeferredRegister.Items ITEMS = DeferredRegister.createItems(KnotsAndRings.MOD_ID);
   //? forge
   //public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, KnotsAndRings.MOD_ID);
-
-  // TODO: add sapling seeds
 
   public static ItemSupplier register(String name, Function<Item.Properties, Item> itemBuilder) {
     Item.Properties itemProps = new Item.Properties();
@@ -51,12 +46,6 @@ public class ModItems {
 
     return () -> registered;
     //? }
-  }
-
-  public static void addCreative(KnotsAndRings.CreativeTabsModifier modifier) {
-    modifier.forTab(CreativeModeTabs.TOOLS_AND_UTILITIES).addItems((entries) -> {
-      // entries.accept();
-    });
   }
 
   public static void initialize() {

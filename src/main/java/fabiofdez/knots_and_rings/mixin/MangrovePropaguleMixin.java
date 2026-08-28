@@ -6,16 +6,19 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
+import fabiofdez.knots_and_rings.feature.SaplingType;
 //? <= 1.21.1
 //import fabiofdez.knots_and_rings.util.ShapeUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,12 +29,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(MangrovePropaguleBlock.class)
-public abstract class MangrovePropaguleMixin {
+import java.util.List;
 
-  @Shadow
-  @Final
-  public static BooleanProperty HANGING;
+import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
+
+@Mixin(MangrovePropaguleBlock.class)
+public abstract class MangrovePropaguleMixin extends SaplingMixin {
 
   //? > 1.21.1 {
   @Mutable
@@ -44,6 +47,11 @@ public abstract class MangrovePropaguleMixin {
   @Shadow
   @Final
   private static VoxelShape[] SHAPE_PER_AGE;
+
+  @Shadow
+  private static boolean isHanging(BlockState blockState) {
+    throw new UnsupportedOperationException("Implemented via mixin");
+  }
 
   @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/MangrovePropaguleBlock;registerDefaultState(Lnet/minecraft/world/level/block/state/BlockState;)V"))
   protected BlockState knots_and_rings$initSaplingGrowthStageProperty(BlockState state) {
@@ -66,7 +74,7 @@ public abstract class MangrovePropaguleMixin {
 
   @ModifyReturnValue(method = "getShape", at = @At("RETURN"))
   protected VoxelShape knots_and_rings$getShape(VoxelShape original, @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) BlockGetter level, @Local(argsOnly = true) BlockPos pos) {
-    if (state.getValue(HANGING) || !GrowingSapling.isGrowingSapling(state)) return original;
+    if (isHanging(state) || !GrowingSapling.isGrowingSapling(state)) return original;
     return GrowingSapling.getInteractShape(state, level, pos);
   }
 
@@ -74,6 +82,32 @@ public abstract class MangrovePropaguleMixin {
   private static BlockState knots_and_rings$createNewHangingPropagule(BlockState state) {
     if (!GrowingSapling.isGrowingSapling(state)) return state;
     return state.setValue(GrowingSapling.Properties.GROWTH_STAGE, GrowingSapling.Stage.HIDDEN);
+  }
+
+  @Override
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
+    if (!isHanging(state)) return super.knots_and_rings$getDrops(drops, state, level);
+
+    drops.replaceAll((stack) -> {
+      if (!stack.is(Items.MANGROVE_PROPAGULE)) return stack;
+
+      SaplingType type = SaplingType.of(MANGROVE);
+      ItemStack newStack = type.seed().asItem().getDefaultInstance();
+      newStack.setCount(stack.getCount());
+      return newStack;
+    });
+
+    return drops;
+  }
+
+  @Override
+  protected ItemStack knots_and_rings$pickBlock(ItemStack original, BlockState state) {
+    if (!isHanging(state)) return super.knots_and_rings$pickBlock(original, state);
+
+    SaplingType type = SaplingType.ofSapling(state.getBlock());
+    if (type == SaplingType.NONE) return super.knots_and_rings$pickBlock(original, state);
+
+    return type.seed().asItem().getDefaultInstance();
   }
 
   @Inject(method = "<clinit>", at = @At("TAIL"))

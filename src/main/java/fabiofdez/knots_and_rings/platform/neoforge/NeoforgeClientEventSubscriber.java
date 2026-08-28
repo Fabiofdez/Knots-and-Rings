@@ -3,8 +3,8 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 //? neoforge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
-import fabiofdez.knots_and_rings.feature.GrowingSapling;
 //import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.SaplingTint;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
 //import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -38,21 +38,12 @@ public class NeoforgeClientEventSubscriber {
 
   @SubscribeEvent
   public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
-    GrowingSapling.TintHandler.registerTints(event::register);
+    SaplingTint.registerWith(event::register);
   }
 
   @SubscribeEvent
   public static void addFeaturePacks(final AddPackFindersEvent event) {
-    boolean hasFusion = KnotsAndRings.xplat().isModLoaded(ResourcePacks.FUSION_MOD_ID);
-
-//    if (hasFusion) addPack(event, ResourcePacks.PACK_FUSION);
-//    else addPack(event, ResourcePacks.PACK_CTM);
-
-    if (!hasFusion) addPack(event, ResourcePacks.PACK_CTM);
-
-    addPack(event, ResourcePacks.PACK_DEFAULT);
-    addPack(event, ResourcePacks.PACK_SAPLINGS);
-    addPack(event, ResourcePacks.PACK_STAY_TRUE_COMPAT);
+    ResourcePacks.registerWith((pack) -> addPack(event, pack));
   }
 
   private static void addPack(final AddPackFindersEvent event, BuiltInResourcePack pack) {

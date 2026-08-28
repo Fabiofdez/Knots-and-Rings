@@ -1,7 +1,10 @@
 package fabiofdez.knots_and_rings.compat;
 
-import fabiofdez.knots_and_rings.block.state.SaplingType;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
+import fabiofdez.knots_and_rings.feature.GrowingSapling.Properties;
+import fabiofdez.knots_and_rings.feature.GrowingSapling.Stage;
+import fabiofdez.knots_and_rings.feature.SaplingShape;
+import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -42,24 +45,27 @@ public class Particles {
     );
   }
 
-  public static BlockState getForSaplingParticle(BlockState state, ClientLevel level, BlockPos pos) {
+  public static BlockState getStateForSapling(BlockState state, ClientLevel level, BlockPos pos) {
     if (!GrowingSapling.isGrowingSapling(state)) return state;
 
     SaplingType type = SaplingType.resolve(state.getBlock());
-    if (type == SaplingType.NONE) {
-      return Blocks.AIR.defaultBlockState();
-    }
+    if (type == SaplingType.NONE) return Blocks.AIR.defaultBlockState();
 
     DoubleBlockHalf half = GrowingSapling.half(state);
-    GrowingSapling.Stage stage = GrowingSapling.growthStage(state);
+    Stage stage = GrowingSapling.growthStage(state);
     return switch (stage) {
       case HIDDEN -> Blocks.AIR.defaultBlockState();
-      case DECAYING, SPROUT, SAPLING -> type.sapling().defaultBlockState();
+      case DECAYING, SPROUT, SAPLING -> {
+        BlockState defaultSapling = type.sapling().defaultBlockState();
+        yield GrowingSapling.treeShape(state) == SaplingShape.Layout.SINGLETON
+            ? defaultSapling.setValue(Properties.GROWTH_STAGE, stage)
+            : defaultSapling.setValue(Properties.GROWTH_STAGE, Stage.HIDDEN);
+      }
       case TALL_SAPLING, GIANT -> {
         if (half == DoubleBlockHalf.UPPER) yield type.leaves().defaultBlockState();
 
         GrowingSapling.playBranchesBreakSound(level, pos);
-        yield GrowingSapling.convertToStem(state);
+        yield GrowingSapling.convertToStem(state, level, pos);
       }
     };
   }

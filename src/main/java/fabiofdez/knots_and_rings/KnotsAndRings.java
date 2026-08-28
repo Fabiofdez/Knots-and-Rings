@@ -6,18 +6,25 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-//? !fabric
-//import java.util.function.Supplier;
+//? !fabric {
+/*import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
+*///? }
 
 //? fabric {
 import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.minecraft.core.registries.Registries;
 //?} neoforge {
 /*import fabiofdez.knots_and_rings.platform.neoforge.NeoforgePlatform;
@@ -92,70 +99,70 @@ public class KnotsAndRings {
   }
   //?}
 
-  public static void modifyCreativeTabs(/*? if !fabric >> 'Consumer' */ /*BuildCreativeModeTabContentsEvent event, */Consumer<CreativeTabsModifier> runnable) {
-    //? fabric
-    runnable.accept(new CreativeTabsModifier());
-    //? !fabric
-    //runnable.accept(new CreativeTabsModifier(event));
+  public static void modifyCreativeTabs(/*? if !fabric { *//*BuildCreativeModeTabContentsEvent event, *//*? } */Consumer<CreativeTabsModifier> runnable) {
+    runnable.accept(new CreativeTabsModifier(/*? if !fabric { *//*event*//*? } */));
   }
 
   public static class CreativeTabsModifier {
+
     private ResourceKey<CreativeModeTab> currentTab;
-
-    public CreativeTabsModifier forTab(ResourceKey<CreativeModeTab> tab) {
-      this.currentTab = tab;
-      return this;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public CreativeTabsModifier addItems(ItemEntryModifier entryModifier) {
-      //? fabric
-      return addEntries((entries) -> entryModifier.accept((item) -> entries.accept(item.get())));
-      //? !fabric
-      //return addEntries(entryModifier);
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    public CreativeTabsModifier addBlocks(BlockEntryModifier entryModifier) {
-      //? fabric
-      return addEntries((entries) -> entryModifier.accept((item) -> entries.accept(item.get())));
-      //? !fabric
-      //return addEntries(entryModifier);
-    }
-
-    //? if fabric {
-    private CreativeTabsModifier addEntries(ItemGroupEvents.ModifyEntries entryModifier) {
-      if (currentTab == null) return this;
-      ItemGroupEvents.modifyEntriesEvent(currentTab).register(entryModifier);
-      return this;
-    }
-
-    public interface ItemEntryModifier extends Consumer<Consumer<ModItems.ItemSupplier>> {
-    }
-
-    public interface BlockEntryModifier extends Consumer<Consumer<ModBlocks.BlockSupplier>> {
-    }
-    //? } else {
+    //? if !fabric {
     /*private BuildCreativeModeTabContentsEvent event;
 
     public CreativeTabsModifier(BuildCreativeModeTabContentsEvent event) {
       this.event = event;
     }
+    *///? }
 
-    private CreativeTabsModifier addEntries(Consumer<BuildCreativeModeTabContentsEvent> entryModifier) {
-      if (this.event == null || this.currentTab == null) return this;
-      if (this.event.getTabKey() != this.currentTab) return this;
-
-      entryModifier.accept(this.event);
+    public CreativeTabsModifier switchTo(ResourceKey<CreativeModeTab> tab) {
+      this.currentTab = tab;
       return this;
     }
 
-    public interface ItemEntryModifier extends Consumer<BuildCreativeModeTabContentsEvent> {
+    @SuppressWarnings("UnusedReturnValue")
+    public CreativeTabsModifier add(Collection<ItemStack> toAdd) {
+      return addEntries((entries) -> entries.acceptAll(toAdd));
     }
 
-    public interface BlockEntryModifier extends Consumer<BuildCreativeModeTabContentsEvent> {
+    @SuppressWarnings("UnusedReturnValue")
+    public CreativeTabsModifier addAfter(Supplier<ItemLike> item, Supplier<Collection<ItemStack>> toAdd) {
+      //? if !fabric {
+      /*return addEntries((entries) -> insertAllAfter(entries, item.get(), toAdd.get()));
+      *///? } else if >= 26.1 {
+      /*return addEntries((entries) -> entries.insertAfter(item.get(), toAdd.get()));
+      *///? } else {
+      return addEntries((entries) -> entries.addAfter(item.get(), toAdd.get()));
+      //? }
+    }
+
+    private CreativeTabsModifier addEntries(ItemEntryModifier entryModifier) {
+      if (currentTab == null) return this;
+      //? !fabric
+      //if (event == null || event.getTabKey() != currentTab) return this;
+
+      //? fabric
+      ItemGroupEvents.modifyEntriesEvent(currentTab).register(entryModifier::accept);
+      //? !fabric
+      //entryModifier.accept(event);
+
+      return this;
+    }
+
+    //? if !fabric {
+    /*private void insertAllAfter(BuildCreativeModeTabContentsEvent event, ItemLike lastItem, Collection<ItemStack> toAdd) {
+      AtomicReference<ItemStack> currentItem = new AtomicReference<>(lastItem.asItem().getDefaultInstance());
+      toAdd.forEach((newItem) -> {
+        //? forge
+        event.getEntries().putAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        //? neoforge
+        event.insertAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        currentItem.set(newItem);
+      });
     }
     *///? }
+
+    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { *//* Consumer<BuildCreativeModeTabContentsEvent> *//*? } */{
+    }
   }
 
   public static String packageName() {

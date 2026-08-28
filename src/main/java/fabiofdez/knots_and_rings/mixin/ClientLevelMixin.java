@@ -29,9 +29,9 @@ public abstract class ClientLevelMixin {
   }
 
   //? >= 1.21.11 {
-  /*@Inject(method = "addDestroyBlockEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;", shift = At.Shift.AFTER))
-  protected void knots_and_rings$changeDestroyParticles(CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> stateRef, @Local(argsOnly = true) BlockPos pos) {
-    stateRef.set(Particles.getForSaplingParticle(stateRef.get(), (ClientLevel) (Object) this, pos));
+  /*@Inject(method = "addDestroyBlockEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;"))
+  protected void knots_and_rings$setStateForParticles(CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> stateRef, @Local(argsOnly = true) BlockPos pos) {
+    stateRef.set(Particles.getStateForSapling(stateRef.get(), (ClientLevel) (Object) this, pos));
   }
   *///? }
 }
