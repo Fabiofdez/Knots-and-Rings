@@ -38,7 +38,7 @@ import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 public class KnotsAndRings {
 
   public static final String MOD_ID = /*$ mod_id*/ "knots_and_rings";
-  public static final String MOD_VERSION = /*$ mod_version*/ "2.2.2";
+  public static final String MOD_VERSION = /*$ mod_version*/ "2.3.0";
   public static final String MOD_FRIENDLY_NAME = /*$ mod_name*/ "Knots & Rings";
   public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
@@ -69,10 +69,11 @@ public class KnotsAndRings {
   }
 
   public static ResourceLocation id(String path) {
-    //? >= 1.21
-    return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    //? < 1.21
-    //return new ResourceLocation(MOD_ID, path);
+    return id(MOD_ID, path);
+  }
+
+  public static ResourceLocation minecraftId(String path) {
+    return id(ResourceLocation.DEFAULT_NAMESPACE, path);
   }
 
   public static ResourceLocation id(String namespace, String path) {
@@ -153,15 +154,15 @@ public class KnotsAndRings {
       AtomicReference<ItemStack> currentItem = new AtomicReference<>(lastItem.asItem().getDefaultInstance());
       toAdd.forEach((newItem) -> {
         //? forge
-        event.getEntries().putAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        //event.getEntries().putAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         //? neoforge
-        event.insertAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        //event.insertAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         currentItem.set(newItem);
       });
     }
     *///? }
 
-    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { *//* Consumer<BuildCreativeModeTabContentsEvent> *//*? } */{
+    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { */ /*Consumer<BuildCreativeModeTabContentsEvent> *//*? } */{
     }
   }
 

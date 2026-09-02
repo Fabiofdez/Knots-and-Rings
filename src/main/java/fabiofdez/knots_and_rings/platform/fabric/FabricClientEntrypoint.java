@@ -36,7 +36,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
       ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
       if (!LivingWoodBlock.isLogBlock(blockId)) return;
 
-      renderCutout(entry.getValue());
+      renderTranslucent(entry.getValue());
     });
 
     ModBlocks.SaplingStems.forEach(FabricClientEntrypoint::renderCutout);
@@ -50,10 +50,13 @@ public class FabricClientEntrypoint implements ClientModInitializer {
   }
 
   private static void renderCutout(Block block) {
-    //? <= 1.21.5
+    //? < 26.1
     BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutout());
-    //? > 1.21.5 && < 26.1
-    //BlockRenderLayerMap.INSTANCE.putBlock(block, ChunkSectionLayer.CUTOUT);
+  }
+
+  private static void renderTranslucent(Block block) {
+    //? < 26.1
+    BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
   }
 
   private static void addPack(ModContainer container, BuiltInResourcePack pack) {

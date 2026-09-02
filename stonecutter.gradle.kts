@@ -120,6 +120,8 @@ stonecutter parameters {
 			replace("blockrenderlayer.v1.BlockRenderLayerMap", "client.rendering.v1.BlockRenderLayerMap")
 			replace("BlockRenderLayerMap.INSTANCE.putBlock", "BlockRenderLayerMap.putBlock")
 			replace("renderer.RenderType", "renderer.rendertype.RenderType")
+			replace("RenderType.cutout()", "ChunkSectionLayer.CUTOUT")
+			replace("RenderType.translucent()", "ChunkSectionLayer.TRANSLUCENT")
 			replace("ARGB.lerp", "ARGB.srgbLerp")
 			replace("ResourceLocation", "Identifier")
 			replace("LoadingModList.get()", "FMLLoader.getCurrent().getLoadingModList()")
