@@ -34,7 +34,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
     BuiltInRegistries.BLOCK.entrySet().forEach((entry) -> {
       ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
-      if (!LivingWoodBlock.isLogBlock(blockId)) return;
+      if (!LivingWoodBlock.isLogBlock(blockId) && !LivingWoodBlock.isWoodBlock(blockId)) return;
 
       renderTranslucent(entry.getValue());
     });

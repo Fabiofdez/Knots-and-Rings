@@ -129,6 +129,8 @@ public class SaplingType {
   }
 
   public static void freezeTypes() {
+    if (!SAPLING_TO_TYPE.isEmpty()) return;
+
     TYPES = Collections.unmodifiableMap(TYPES);
 
     for (SaplingType type : TYPES.values()) {

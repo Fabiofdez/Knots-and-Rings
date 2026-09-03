@@ -8,6 +8,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.List;
+
 //? if < 1.21 {
 /^import net.regions_unexplored.client.render.type.RuBlockCropOuts;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -30,11 +32,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class RenderHelperMixin {
 
   @Unique
-  private static final Block EUCALYPTUS_LOG = RUBlocks
-      //? < 1.21
-      //.EUCALYPTUS_LOG;
-      //? >= 1.21
-      .EUCALYPTUS_WOOD_SET.getLog();
+  private static final List<Block> EUCALYPTUS_BLOCKS = List.of(
+    RUBlocks/^? if < 1.21 { ^//^.EUCALYPTUS_LOG^//^? } else { ^/.EUCALYPTUS_WOOD_SET.getLog()/^? } ^/,
+    RUBlocks/^? if < 1.21 { ^//^.EUCALYPTUS_WOOD^//^? } else { ^/.EUCALYPTUS_WOOD_SET.getWood()/^? } ^/
+  );
 
   //? if < 1.21 {
 
@@ -43,12 +44,12 @@ public class RenderHelperMixin {
 
   @ModifyArg(method = "register", at = @At(value = "INVOKE", target = PUT_BLOCKS), index = 1)
   private static Block[] knots_and_rings$setEucalyptusTranslucent(Block[] blocks) {
-    return (Block[]) Arrays.stream(blocks).filter((block) -> block != EUCALYPTUS_LOG).toArray();
+    return (Block[]) Arrays.stream(blocks).filter((block) -> !EUCALYPTUS_BLOCKS.contains(block)).toArray();
   }
   ^///? } else {
   @Inject(method = "setRenderType", at = @At("HEAD"))
   private static void knots_and_rings$setEucalyptusTranslucent(CallbackInfo ci, @Local(argsOnly = true) Block block, @Local(argsOnly = true) LocalRef<RenderType> renderType) {
-    if (block == EUCALYPTUS_LOG) renderType.set(RenderType.translucent());
+    if (EUCALYPTUS_BLOCKS.contains(block)) renderType.set(RenderType.translucent());
   }
   //? }
 }
