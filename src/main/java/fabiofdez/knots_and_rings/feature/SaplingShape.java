@@ -201,6 +201,17 @@ public class SaplingShape {
       return NO_SHAPE;
     }
 
+    public SaplingShape spaceAvailableAt(BlockPos pos, Predicate<BlockPos> isEmpty) {
+      for (BlockPos neighbor : possibleSourcesNear(pos)) {
+        if (!isEmpty.test(neighbor)) continue;
+        if (!membersAround(neighbor).stream().allMatch(isEmpty)) continue;
+
+        return inPlace(neighbor);
+      }
+
+      return NO_SHAPE;
+    }
+
     private static boolean saplingsMatch(BlockState state, BlockGetter level, BlockPos otherPos) {
       BlockState other = level.getBlockState(otherPos);
       if (!GrowingSapling.partsOfSameSapling(state, other)) return false;

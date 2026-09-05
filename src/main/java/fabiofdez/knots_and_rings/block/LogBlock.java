@@ -109,8 +109,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
     if (!LivingWoodBlock.isNaturalWood(state)) return;
 
-    if (LogConnectivityCache.exploring(pos)) return;
-    Boolean cachedAlive = LogConnectivityCache.checkCached(pos);
+    if (LogConnectivityCache.exploring(level, pos)) return;
+    Boolean cachedAlive = LogConnectivityCache.checkCached(level, pos);
     if (cachedAlive == null) {
       LivingWoodCluster.attemptRevivePath(level, pos);
     } else {
@@ -145,12 +145,13 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
 
   @Override
-  public void destroy(LevelAccessor level, BlockPos pos, BlockState state) {
-    super.destroy(level, pos, state);
+  public void destroy(LevelAccessor levelAccess, BlockPos pos, BlockState state) {
+    super.destroy(levelAccess, pos, state);
     if (!LivingWoodBlock.isNaturalWood(state)) return;
+    if (!(levelAccess instanceof Level level)) return;
 
-    if (LogConnectivityCache.checkCached(pos) != null) {
-      LogConnectivityCache.invalidateAttachedTo(level.getChunk(pos), pos);
+    if (LogConnectivityCache.checkCached(level, pos) != null) {
+      LogConnectivityCache.invalidateAttachedTo(level, pos);
     }
   }
 
@@ -191,7 +192,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
       if (player != null) ItemDamage.hurtAndBreak(stack, hand, player, 1);
       state = state.setValue(SIDES, LogSide.Mapping.M_0000);
       if (isNatural) {
-        LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
+        LogConnectivityCache.invalidateAttachedTo(level, pos);
         LivingWoodCluster.revivePathOrDecay(level, pos, true);
         LivingWoodBlock.updateIsTrunk(state, level, pos, false);
       } else {
@@ -222,7 +223,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
       if (isTrunk) {
         level.setBlockAndUpdate(pos, newState);
       } else {
-        LogConnectivityCache.invalidateAttachedTo(level.getChunkAt(pos), pos);
+        LogConnectivityCache.invalidateAttachedTo(level, pos);
         LivingWoodBlock.updateIsTrunk(state, level, pos, true);
         healRandomNeighbors(level, pos);
       }

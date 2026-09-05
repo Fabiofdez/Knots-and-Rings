@@ -146,7 +146,7 @@ public class GrowingSapling {
         .setValue(Properties.TREE_ROOT, toRoot);
   }
 
-  public static BlockState convertToSapling(BlockState state, Level level, BlockPos pos) {
+  public static BlockState convertToSapling(BlockState state, BlockGetter level, BlockPos pos) {
     SaplingType type = SaplingType.resolve(state.getBlock());
     if (type == SaplingType.NONE) return state;
 
@@ -160,7 +160,7 @@ public class GrowingSapling {
         .setValue(Properties.HALF, half(state));
   }
 
-  public static BlockState convertToStem(BlockState state, Level level, BlockPos pos) {
+  public static BlockState convertToStem(BlockState state, BlockGetter level, BlockPos pos) {
     SaplingType type = SaplingType.resolve(state.getBlock());
     if (type == SaplingType.NONE) return state;
 

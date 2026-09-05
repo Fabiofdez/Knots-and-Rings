@@ -13,7 +13,7 @@ public class NeoforgeEventSubscriber {
 
   @SubscribeEvent
   public static void onChunkUnload(ChunkEvent.Unload event) {
-    LogConnectivityCache.invalidateInChunk(event.getChunk());
+    LogConnectivityCache.invalidateInChunk(event.getChunk().getLevel(), event.getChunk().getPos());
   }
 }
 *///?}

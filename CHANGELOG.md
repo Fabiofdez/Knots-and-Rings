@@ -1,8 +1,8 @@
+### Additions
+- During world generation, trees can now appear with tall/giant saplings nearby: a tree has a 5% chance to generate 1-3 saplings in the area 2-5 blocks around it. The saplings can be single or 2x2 (if 2x2, they have a 50% chance of being giant).
+
 ### Changes
-- Simplify log models, blockstates
-- Significantly reduce resource pack sizes
+- Minor update to textures for sapling destroy particles
 
 ### Fixes
-- Resolve issues with Fusion mod (now requires >=1.3.14a)
-- Improve performance of rendering log/wood block models
-- Reduce delays in resource reload time
+- Resolve potential issues with living tree trunks in the same chunk/position across dimensions affecting each other

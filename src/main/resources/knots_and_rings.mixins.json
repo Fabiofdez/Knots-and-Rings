@@ -13,9 +13,11 @@
     "BlockMixin",
     "BlocksMixin",
     "BuiltInRegistriesMixin",
+    "ChunkGeneratorMixin",
     "LeavesMixin",
     "MangrovePropaguleMixin",
     "SaplingMixin",
+    "TreeFeatureMixin",
     "TrunkPlacerMixin",
     "VegetationBlockAccessor",
     "VegetationBlockMixin"

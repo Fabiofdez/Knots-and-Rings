@@ -3,8 +3,8 @@ package fabiofdez.knots_and_rings.feature;
 import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
 import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.FoliageColor;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.MangrovePropaguleBlock;
@@ -23,6 +23,7 @@ import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 public class SaplingType {
 
   private static Map<SaplingTypeID, SaplingType> TYPES = new LinkedHashMap<>();
+  private static Map<Block, SaplingType> LEAVES_TO_TYPE = new LinkedHashMap<>();
   private static Map<Block, SaplingType> SAPLING_TO_TYPE = new LinkedHashMap<>();
   private static Map<Block, SaplingType> STEM_TO_TYPE = new LinkedHashMap<>();
   private static Map<Block, SaplingType> SEED_TO_TYPE = new LinkedHashMap<>();
@@ -80,21 +81,25 @@ public class SaplingType {
     this.SEED = blockSupplier;
   }
 
-  public BlockState placedSapling(Level level, BlockPos pos) {
+  public BlockState placedSapling(BlockGetter level, BlockPos pos) {
     return placedState(sapling().defaultBlockState(), level, pos);
   }
 
-  public BlockState placedStem(Level level, BlockPos pos) {
+  public BlockState placedStem(BlockGetter level, BlockPos pos) {
     return placedState(stem().defaultBlockState(), level, pos);
   }
 
-  public BlockState placedState(BlockState state, Level level, BlockPos pos) {
+  public BlockState placedState(BlockState state, BlockGetter level, BlockPos pos) {
     return TYPES_PLACE_TRANSFORM.getOrDefault(id(), PlacedStatePredicate.DEFAULT).resolve(state, level, pos);
   }
 
   public static SaplingType of(SaplingTypeID type) {
     if (SAPLING_TO_TYPE.isEmpty()) return NONE;
     return TYPES.getOrDefault(type, NONE);
+  }
+
+  public static SaplingType ofLeaves(Block leaves) {
+    return LEAVES_TO_TYPE.getOrDefault(leaves, NONE);
   }
 
   public static SaplingType ofSapling(Block sapling) {
@@ -137,12 +142,14 @@ public class SaplingType {
       SaplingStems.mapStemFor(type);
       TreeSeeds.mapSeedFor(type);
 
+      LEAVES_TO_TYPE.put(type.leaves(), type);
       SAPLING_TO_TYPE.put(type.sapling(), type);
       STEM_TO_TYPE.put(type.stem(), type);
       SEED_TO_TYPE.put(type.seed(), type);
     }
 
     TYPES_PLACE_TRANSFORM = Collections.unmodifiableMap(TYPES_PLACE_TRANSFORM);
+    LEAVES_TO_TYPE = Collections.unmodifiableMap(LEAVES_TO_TYPE);
     SAPLING_TO_TYPE = Collections.unmodifiableMap(SAPLING_TO_TYPE);
     STEM_TO_TYPE = Collections.unmodifiableMap(STEM_TO_TYPE);
     SEED_TO_TYPE = Collections.unmodifiableMap(SEED_TO_TYPE);
@@ -187,6 +194,6 @@ public class SaplingType {
   public interface PlacedStatePredicate {
     PlacedStatePredicate DEFAULT = (state, level, pos) -> state;
 
-    BlockState resolve(BlockState state, Level level, BlockPos pos);
+    BlockState resolve(BlockState state, BlockGetter level, BlockPos pos);
   }
 }

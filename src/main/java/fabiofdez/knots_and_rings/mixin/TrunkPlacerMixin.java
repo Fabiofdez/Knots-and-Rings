@@ -12,7 +12,6 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(TrunkPlacer.class)
 public class TrunkPlacerMixin {
-  // TODO: mixin into TreeFeature.place() inside BoundingBox.encapsulatingPositions()
 
   @Unique
   private static final String PLACE_LOG = "placeLog(Lnet/minecraft/world/level/LevelSimulatedReader;Ljava/util/function/BiConsumer;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/levelgen/feature/configurations/TreeConfiguration;Ljava/util/function/Function;)Z";

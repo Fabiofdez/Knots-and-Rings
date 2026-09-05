@@ -2,8 +2,9 @@ package fabiofdez.knots_and_rings.feature;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.Level;
 
 import java.util.Map;
 import java.util.Set;
@@ -12,97 +13,118 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LogConnectivityCache {
   private static int clusterCounter = 1;
 
-  private static final Set<BlockPos> currentlyExploring = ConcurrentHashMap.newKeySet();
-  private static final Map<ChunkPos, Set<Integer>> clustersPerChunk = new ConcurrentHashMap<>();
-  private static final Map<BlockPos, Integer> clusterByPos = new ConcurrentHashMap<>();
-  private static final Map<Integer, Boolean> clusterAlive = new ConcurrentHashMap<>();
-  private static final Map<Integer, Set<BlockPos>> clusterById = new ConcurrentHashMap<>();
+  private static final Map<ResourceKey<Level>, Set<BlockPos>> EXPLORING = new ConcurrentHashMap<>();
+  private static final Map<ResourceKey<Level>, Map<ChunkPos, Set<Integer>>> CLUSTERS_PER_CHUNK = new ConcurrentHashMap<>();
+  private static final Map<ResourceKey<Level>, Map<BlockPos, Integer>> POS_TO_CLUSTER_ID = new ConcurrentHashMap<>();
+  private static final Map<Integer, Boolean> CLUSTER_ALIVE = new ConcurrentHashMap<>();
+  private static final Map<Integer, Set<BlockPos>> CLUSTERS = new ConcurrentHashMap<>();
 
-  public static boolean exploring(BlockPos pos) {
-    return currentlyExploring.contains(pos);
+  public static boolean exploring(Level level, BlockPos pos) {
+    return EXPLORING.getOrDefault(level.dimension(), ConcurrentHashMap.newKeySet()).contains(pos);
   }
 
-  public static void markExploring(BlockPos pos) {
-    currentlyExploring.add(pos);
+  public static void markExploring(Level level, BlockPos pos) {
+    EXPLORING.computeIfAbsent(level.dimension(), (levelKey) -> ConcurrentHashMap.newKeySet()).add(pos);
   }
 
-  public static void forgetExplored(BlockPos pos) {
-    currentlyExploring.remove(pos);
+  public static void forgetExplored(Level level, BlockPos pos) {
+    Set<BlockPos> exploringInLevel = EXPLORING.get(level.dimension());
+    if (exploringInLevel == null) return;
+
+    exploringInLevel.remove(pos);
+    if (exploringInLevel.isEmpty()) EXPLORING.remove(level.dimension());
   }
 
-  public static void forgetExplored(Iterable<BlockPos> cluster) {
-    for (BlockPos pos : cluster) forgetExplored(pos);
+  public static void forgetExplored(Level level, Iterable<BlockPos> cluster) {
+    for (BlockPos pos : cluster) forgetExplored(level, pos);
   }
 
-  public static Boolean checkCached(BlockPos pos) {
-    Integer clusterId = clusterByPos.get(pos);
-    if (clusterId != null) {
-      return clusterAlive.get(clusterId);
-    }
+  public static Boolean checkCached(Level level, BlockPos pos) {
+    Map<BlockPos, Integer> byPos = POS_TO_CLUSTER_ID.get(level.dimension());
+    if (byPos == null) return null;
 
-    return null;
+    Integer clusterId = byPos.get(pos);
+    if (clusterId == null) return null;
+
+    return CLUSTER_ALIVE.get(clusterId);
   }
 
-  public static void cacheCluster(ChunkAccess chunk, Set<BlockPos> cluster, boolean alive) {
+  public static void cacheCluster(Level level, BlockPos start, Set<BlockPos> cluster, boolean alive) {
     int clusterId = clusterCounter++;
-    clusterAlive.put(clusterId, alive);
-    clustersPerChunk.computeIfAbsent(chunk.getPos(), (k) -> ConcurrentHashMap.newKeySet()).add(clusterId);
+    CLUSTER_ALIVE.put(clusterId, alive);
 
-    for (BlockPos pos : cluster) {
-      clusterByPos.put(pos.immutable(), clusterId);
-    }
+    ChunkPos pos = level.getChunk(start).getPos();
+    CLUSTERS_PER_CHUNK
+        .computeIfAbsent(level.dimension(), (k) -> new ConcurrentHashMap<>())
+        .computeIfAbsent(pos, (k) -> ConcurrentHashMap.newKeySet())
+        .add(clusterId);
+
+    Map<BlockPos, Integer> byPos = newBlockPosMapping(level);
+    cluster.forEach((p) -> byPos.put(p, clusterId));
 
     Set<BlockPos> toStore = ConcurrentHashMap.newKeySet(cluster.size());
     toStore.addAll(cluster);
 
-    clusterById.put(clusterId, toStore);
+    CLUSTERS.put(clusterId, toStore);
   }
 
-  public static void attachToCluster(BlockPos origin, Iterable<BlockPos> path) {
-    Integer clusterId = clusterByPos.get(origin);
+  public static void attachToCluster(Level level, BlockPos origin, Iterable<BlockPos> path) {
+    Map<BlockPos, Integer> byPos = newBlockPosMapping(level);
+    Integer clusterId = byPos.get(origin);
     if (clusterId == null) return;
 
-    Set<BlockPos> attachedBlocks = clusterById.get(clusterId);
+    Set<BlockPos> attachedBlocks = CLUSTERS.get(clusterId);
     if (attachedBlocks == null) return;
 
-    for (BlockPos newPos : path) {
-      clusterByPos.put(newPos.immutable(), clusterId);
+    path.forEach((newPos) -> {
+      byPos.put(newPos.immutable(), clusterId);
       attachedBlocks.add(newPos);
-    }
+    });
   }
 
-  public static void invalidateAttachedTo(ChunkAccess chunk, BlockPos origin) {
-    Integer clusterId = clusterByPos.remove(origin);
+  public static void invalidateAttachedTo(Level level, BlockPos origin) {
+    Map<BlockPos, Integer> byPos = POS_TO_CLUSTER_ID.get(level.dimension());
+    if (byPos == null) return;
+
+    Integer clusterId = byPos.remove(origin);
     if (clusterId == null) return;
 
-    Set<Integer> clustersAtChunk = clustersPerChunk.get(chunk.getPos());
-    if (clustersAtChunk != null) {
-      clustersAtChunk.remove(clusterId);
-    }
+    Map<ChunkPos, Set<Integer>> perChunk = CLUSTERS_PER_CHUNK.get(level.dimension());
+    if (perChunk == null) return;
 
-    invalidateClusterById(clusterId);
+    ChunkPos pos = level.getChunk(origin).getPos();
+    Set<Integer> clustersAtChunk = perChunk.get(pos);
+    if (clustersAtChunk != null) clustersAtChunk.remove(clusterId);
+
+    invalidateClusterById(level, clusterId);
   }
 
-  public static void invalidateInChunk(ChunkAccess chunk) {
-    KnotsAndRings.LOGGER.debug("Clearing log clusters in chunk {}", chunk.getPos());
+  public static void invalidateInChunk(Level level, ChunkPos pos) {
+    KnotsAndRings.LOGGER.debug("Clearing log clusters in chunk {}", pos);
 
-    Set<Integer> clustersAtChunk = clustersPerChunk.remove(chunk.getPos());
+    Map<ChunkPos, Set<Integer>> perChunk = CLUSTERS_PER_CHUNK.get(level.dimension());
+    if (perChunk == null) return;
+
+    Set<Integer> clustersAtChunk = perChunk.remove(pos);
     if (clustersAtChunk == null) return;
 
-    for (Integer clusterId : clustersAtChunk) {
-      invalidateClusterById(clusterId);
-    }
+    clustersAtChunk.forEach(clusterId -> invalidateClusterById(level, clusterId));
   }
 
-  private static void invalidateClusterById(Integer clusterId) {
+  private static Map<BlockPos, Integer> newBlockPosMapping(Level level) {
+    return POS_TO_CLUSTER_ID.computeIfAbsent(level.dimension(), (k) -> new ConcurrentHashMap<>());
+  }
+
+  private static void invalidateClusterById(Level level, Integer clusterId) {
     if (clusterId == null) return;
 
-    clusterAlive.remove(clusterId);
-    Set<BlockPos> attachedBlocks = clusterById.remove(clusterId);
+    CLUSTER_ALIVE.remove(clusterId);
+    Set<BlockPos> attachedBlocks = CLUSTERS.remove(clusterId);
     if (attachedBlocks == null) return;
 
-    for (BlockPos pos : attachedBlocks) {
-      clusterByPos.remove(pos);
-    }
+    Map<BlockPos, Integer> byPos = POS_TO_CLUSTER_ID.get(level.dimension());
+    if (byPos == null) return;
+
+    attachedBlocks.forEach(byPos::remove);
   }
 }

@@ -12,7 +12,7 @@ public class FabricEventSubscriber {
   public static void registerEvents() {
     KnotsAndRings.modifyCreativeTabs(ModBlocks::addCreative);
 
-    ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> LogConnectivityCache.invalidateInChunk(chunk));
+    ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> LogConnectivityCache.invalidateInChunk(level, chunk.getPos()));
   }
 }
 //?}
