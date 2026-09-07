@@ -2,14 +2,14 @@ package fabiofdez.knots_and_rings.compat.regions_unexplored;
 
 //? <= 1.21.1 {
 
-/*import fabiofdez.knots_and_rings.block.LogBlock;
-import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+/*import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 import net.minecraft.world.level.ScheduledTickAccess;
  //? }
 
-public class PineLogBlock extends LogBlock {
+public class PineLogBlock extends RotatedPillarBlock {
 
   public static final BooleanProperty TRANSITION_BLOCK;
 

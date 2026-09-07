@@ -1,8 +1,8 @@
 package fabiofdez.knots_and_rings.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import fabiofdez.knots_and_rings.block.LogBlock;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock.Properties;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +21,6 @@ public class AxeItemMixin {
     BlockState initialState = ctx.getLevel().getBlockState(ctx.getClickedPos());
     if (!LivingWoodBlock.isNaturalWood(initialState)) return strippedState;
 
-    return strippedState.map((state) -> state.setValue(LogBlock.SIDES, initialState.getValue(LogBlock.SIDES)));
+    return strippedState.map((state) -> state.setValue(Properties.SIDES, initialState.getValue(Properties.SIDES)));
   }
 }

@@ -21,12 +21,7 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
       //? fabric
       mixinRU("RenderHelperMixin"),
 
-      //? if < 1.21 {
-      /*mixinRU("BlockRegistryMixin"), mixinRU("RUBlocksMixin")
-       *///? } else {
-      mixinRU("WoodSetMixin"), mixinRU("BlockUtilsAccessor")
-      //? }
-
+      /*? if < 1.21 { *//* mixinRU("RUBlocksMixin") *//*? } else { */ mixinRU("WoodSetMixin") /*? } */
   );
 
   @Override

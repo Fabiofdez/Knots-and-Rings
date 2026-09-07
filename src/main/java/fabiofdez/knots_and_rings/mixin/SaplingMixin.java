@@ -42,6 +42,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -277,7 +278,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   }
 
   @Override
-  protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand) {
+  protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     if (!GrowingSapling.isGrowingSapling(state)) return result;
 
     //? < 1.21

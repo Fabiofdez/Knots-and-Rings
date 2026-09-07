@@ -1,7 +1,6 @@
 package fabiofdez.knots_and_rings.feature;
 
 import com.google.common.collect.ImmutableMap;
-import fabiofdez.knots_and_rings.block.LogBlock;
 import fabiofdez.knots_and_rings.block.state.LogSide;
 import fabiofdez.knots_and_rings.util.NeighborIterable;
 import net.minecraft.core.BlockPos;
@@ -13,6 +12,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -45,9 +45,12 @@ public class LivingWoodBlock {
     return id.getPath().startsWith("stripped_");
   }
 
+  public static boolean isLivingWoodBlock(BlockState state) {
+    return state.hasProperty(Properties.SIDES);
+  }
+
   public static boolean isNaturalWood(BlockState state) {
-    if (!(state.getBlock() instanceof LogBlock)) return false;
-    return isNaturalWood(blockId(state));
+    return isLivingWoodBlock(state) && isNaturalWood(blockId(state));
   }
 
   public static boolean isNaturalWood(ResourceLocation id) {
@@ -97,7 +100,7 @@ public class LivingWoodBlock {
   }
 
   public static Direction.Axis getAxis(BlockState state) {
-    return state.getValue(LogBlock.AXIS);
+    return state.getValue(RotatedPillarBlock.AXIS);
   }
 
   public static LogSide.Mapping getSides(BlockState state) {
@@ -190,7 +193,7 @@ public class LivingWoodBlock {
   }
 
   public static BlockState checkLogsNearby(BlockState state, LevelReader level, BlockPos pos) {
-    if (!(state.getBlock() instanceof LogBlock)) return state;
+    if (!isLivingWoodBlock(state)) return state;
 
     boolean isAlive = LivingWoodBlock.isAliveNearby(state, level, pos);
     boolean isTrunk = LivingWoodBlock.isTrunkNearby(state, level, pos);
@@ -203,7 +206,7 @@ public class LivingWoodBlock {
 
   public static void updateLivingState(Level level, BlockPos pos, boolean nowAlive) {
     BlockState state = level.getBlockState(pos);
-    if (!(state.getBlock() instanceof LogBlock)) return;
+    if (!isLivingWoodBlock(state)) return;
 
     boolean stateChanged = false;
     if (isSingleton(state)) {
@@ -219,16 +222,14 @@ public class LivingWoodBlock {
   }
 
   public static void updateIsTrunk(BlockState state, Level level, BlockPos pos, boolean isTrunk) {
-    if (!(state.getBlock() instanceof LogBlock)) return;
-    if (isTrunk(state) == isTrunk) return;
+    if (!isLivingWoodBlock(state) || isTrunk(state) == isTrunk) return;
 
     level.setBlockAndUpdate(pos, state.setValue(Properties.IS_TRUNK, isTrunk));
   }
 
   public static void resetSingleton(Level level, BlockPos pos) {
     BlockState state = level.getBlockState(pos);
-    if (!(state.getBlock() instanceof LogBlock)) return;
-    if (isSingleton(state)) return;
+    if (!isLivingWoodBlock(state) || isSingleton(state)) return;
 
     state = state.setValue(Properties.SINGLETON, true).setValue(Properties.IS_TRUNK, false);
     level.setBlockAndUpdate(pos, state);

@@ -17,6 +17,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,6 +30,12 @@ import net.minecraft.world.item.ItemStack;
 
 @Mixin(Block.class)
 public abstract class BlockMixin extends BlockBehaviorMixin {
+
+  @Shadow
+  protected abstract void registerDefaultState(BlockState blockState);
+
+  @Shadow
+  public abstract BlockState defaultBlockState();
 
   @Inject(method = "fallOn", at = @At("HEAD"))
   protected void knots_and_rings$fallOn(Level level, BlockState ignored, BlockPos pos, Entity entity, /*? if <= 1.21.1 { *//*float*//*? } else { */double/*? } */ fallDistance, CallbackInfo ci) {
@@ -62,6 +69,13 @@ public abstract class BlockMixin extends BlockBehaviorMixin {
   @Inject(method = "destroy", at = @At("RETURN"))
   protected void knots_and_rings$destroy(LevelAccessor level, BlockPos pos, BlockState state, CallbackInfo ci) {
   }
+
+  //? < 1.21 {
+  /*@ModifyReturnValue(method = "isRandomlyTicking", at = @At("RETURN"))
+  protected boolean knots_and_rings$isRandomlyTicking(boolean original, @Local(argsOnly = true) BlockState state) {
+    return original;
+  }
+  *///? }
 
   //? <= 1.21.1 {
   /*@ModifyReturnValue(method = "getCloneItemStack", at = @At("RETURN"))

@@ -2,7 +2,7 @@
 
 package fabiofdez.knots_and_rings.mixin;
 
-import fabiofdez.knots_and_rings.block.LogBlock;
+import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.trunkplacers.TrunkPlacer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,8 +20,8 @@ public class TrunkPlacerMixin {
   @ModifyArg(method = PLACE_LOG, at = @At(value = "INVOKE", target = "Ljava/util/function/BiConsumer;accept(Ljava/lang/Object;Ljava/lang/Object;)V"), index = 1)
   private <T> T knots_and_rings$markTrunk(T t) {
     if (!(t instanceof BlockState state)) return t;
-    if (!(state.getBlock() instanceof LogBlock)) return (T) state;
+    if (!LivingWoodBlock.isLivingWoodBlock(state)) return (T) state;
 
-    return (T) state.setValue(LogBlock.IS_TRUNK, true);
+    return (T) state.setValue(LivingWoodBlock.Properties.IS_TRUNK, true);
   }
 }

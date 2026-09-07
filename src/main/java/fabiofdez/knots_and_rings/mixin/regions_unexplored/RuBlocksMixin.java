@@ -4,11 +4,11 @@ package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 
 /*import com.google.common.collect.ImmutableMap;
 import fabiofdez.knots_and_rings.KnotsAndRings;
-import fabiofdez.knots_and_rings.block.LogBlock;
 import fabiofdez.knots_and_rings.compat.regions_unexplored.AspenLogBlock;
 import fabiofdez.knots_and_rings.compat.regions_unexplored.PineLogBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
@@ -45,7 +45,7 @@ public class RUBlocksMixin {
   private static Block knots_and_rings$customAspenLog() {
     return new AspenLogBlock(BlockBehaviour.Properties
         .of()
-        .mapColor((state) -> state.getValue(LogBlock.AXIS) == Direction.Axis.Y ? MapColor.SAND : MapColor.QUARTZ)
+        .mapColor((state) -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? MapColor.SAND : MapColor.QUARTZ)
         .instrument(NoteBlockInstrument.BASS)
         .strength(2.0F)
         .sound(SoundType.BAMBOO_WOOD)

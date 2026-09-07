@@ -1,7 +1,9 @@
 //~ has_interaction_result
 
-package fabiofdez.knots_and_rings.block;
+package fabiofdez.knots_and_rings.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.block.state.LogSide;
 import fabiofdez.knots_and_rings.compat.ItemDamage;
@@ -27,6 +29,8 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.ChainBlock;
+import net.minecraft.world.level.block.HayBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -34,39 +38,50 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? >= 1.21.5 {
-import net.minecraft.world.level.ScheduledTickAccess;
-//? }
+import java.util.Arrays;
 
-public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
+@Mixin(RotatedPillarBlock.class)
+public abstract class RotatedPillarBlockMixin extends BlockMixin implements BonemealableBlock {
 
-  public static final BooleanProperty ALIVE;
-  public static final BooleanProperty IS_TRUNK;
-  public static final BooleanProperty SINGLETON;
-  public static final EnumProperty<LogSide.Mapping> SIDES;
+  @Unique
+  private static final BooleanProperty ALIVE;
+  @Unique
+  private static final BooleanProperty IS_TRUNK;
+  @Unique
+  private static final BooleanProperty SINGLETON;
+  @Unique
+  private static final EnumProperty<LogSide.Mapping> SIDES;
 
-  public LogBlock(Properties properties) {
-    super(properties);
-    this.registerDefaultState(this
-        .defaultBlockState()
+  @Unique
+  private static final Class<?>[] INVALID_SUBCLASSES = new Class[]{ChainBlock.class, HayBlock.class};
+
+  @Inject(method = "<init>", at = @At("TAIL"))
+  private void knots_and_rings$logInit(CallbackInfo ci) {
+    if (!this.isValidSubclass()) return;
+
+    BlockState state = this.defaultBlockState();
+    if (!LivingWoodBlock.isLivingWoodBlock(state)) return;
+
+    this.registerDefaultState(state
         .setValue(ALIVE, false)
         .setValue(IS_TRUNK, false)
         .setValue(SINGLETON, true)
         .setValue(SIDES, LogSide.Mapping.M_0000));
   }
 
-  @Override
-  protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-    super.createBlockStateDefinition(builder);
-    builder.add(ALIVE, SINGLETON, IS_TRUNK, SIDES);
+  @Inject(method = "createBlockStateDefinition", at = @At("TAIL"))
+  private void knots_and_rings$createLogStateDef(StateDefinition.Builder<Block, BlockState> builder, CallbackInfo ci) {
+    if (this.isValidSubclass()) builder.add(ALIVE, SINGLETON, IS_TRUNK, SIDES);
   }
 
-  @NotNull
-  @Override
-  public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-    BlockState state = super.getStateForPlacement(ctx);
-
+  @ModifyReturnValue(method = "getStateForPlacement", at = @At("RETURN"))
+  private BlockState knots_and_rings$getStateForLogPlacement(BlockState state, @Local(argsOnly = true) BlockPlaceContext ctx) {
     Level level = ctx.getLevel();
     if (level.isClientSide()) return state;
 
@@ -82,12 +97,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     return state;
   }
 
-  @NotNull
   @Override
-      //? < 1.21.5
-  //protected BlockState updateShape(BlockState state, Direction from, BlockState state2, LevelAccessor level, BlockPos pos, BlockPos pos2) {
-      //? >= 1.21.5
-  protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ignored, BlockPos pos, Direction from, BlockPos pos2, BlockState state2, RandomSource random) {
+  protected BlockState knots_and_rings$updateShape(BlockState state, /*? if < 1.21.5 { *//*LevelAccessor*//*? } else { */LevelReader/*? } */ level, BlockPos pos, Direction from, BlockState state2) {
     if (!LivingWoodBlock.identicalLogs(state, state2)) return state;
     if (from.getAxis() == LivingWoodBlock.getAxis(state)) return state;
     if (!LivingWoodBlock.isTrunk(state)) return state;
@@ -96,17 +107,17 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
 
   @Override
-  protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-    randomTick(state, level, pos, random);
+  protected void knots_and_rings$tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
+    knots_and_rings$randomTick(state, level, pos, random, ci);
   }
 
   @Override
-  protected boolean isRandomlyTicking(BlockState state) {
-    return LivingWoodBlock.isNaturalWood(state) || super.isRandomlyTicking(state);
+  protected boolean knots_and_rings$isRandomlyTicking(boolean original, BlockState state) {
+    return LivingWoodBlock.isNaturalWood(state) || original;
   }
 
   @Override
-  protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+  protected void knots_and_rings$randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (!LivingWoodBlock.isNaturalWood(state)) return;
 
     if (LogConnectivityCache.exploring(level, pos)) return;
@@ -122,14 +133,8 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     }
   }
 
-  @NotNull
   @Override
-  protected InteractionResult useItemOn(/*? if >= 1.21 >> 'BlockState' */ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-    //? < 1.21
-    //InteractionResult result = super.use(state, level, pos, player, hand, hitResult);
-    //? >= 1.21
-    InteractionResult result = super.useItemOn(stack, state, level, pos, player, hand, hitResult);
-
+  protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     //? < 1.21
     //ItemStack stack = player.getItemInHand(hand);
 
@@ -145,8 +150,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
 
   @Override
-  public void destroy(LevelAccessor levelAccess, BlockPos pos, BlockState state) {
-    super.destroy(levelAccess, pos, state);
+  protected void knots_and_rings$destroy(LevelAccessor levelAccess, BlockPos pos, BlockState state, CallbackInfo ci) {
     if (!LivingWoodBlock.isNaturalWood(state)) return;
     if (!(levelAccess instanceof Level level)) return;
 
@@ -176,6 +180,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
   }
   //? }
 
+  @Unique
   private static InteractionResult splitLog(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     boolean isNatural = LivingWoodBlock.isNaturalWood(state);
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
@@ -203,6 +208,7 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     return InteractionResult.SUCCESS;
   }
 
+  @Unique
   private static InteractionResult healLog(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
     boolean isTrunk = LivingWoodBlock.isTrunk(state);
     BlockState newState = LivingWoodBlock.getLogShape(state, level, pos);
@@ -232,16 +238,22 @@ public class LogBlock extends RotatedPillarBlock implements BonemealableBlock {
     return InteractionResult.SUCCESS;
   }
 
+  @Unique
   private static void healRandomNeighbors(Level level, BlockPos pos) {
     RandomSource random = level.getRandom();
     LivingWoodBlock.neighborsOf(level, pos).forEach((neighborState, neighborPos) -> {
-      if (!(neighborState.getBlock() instanceof LogBlock neighbor) || LivingWoodBlock.isTrunk(neighborState)) return;
+      if (!LivingWoodBlock.isLivingWoodBlock(neighborState) || LivingWoodBlock.isTrunk(neighborState)) return;
 
       if (random.nextFloat() < 0.3) {
         int delay = random.nextIntBetweenInclusive(5, 20);
-        level.scheduleTick(neighborPos, neighbor, delay);
+        level.scheduleTick(neighborPos, neighborState.getBlock(), delay);
       }
     });
+  }
+
+  @Unique
+  private boolean isValidSubclass() {
+    return Arrays.stream(INVALID_SUBCLASSES).noneMatch((c) -> c.isInstance(this));
   }
 
   static {
