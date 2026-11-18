@@ -1,7 +1,6 @@
 package fabiofdez.knots_and_rings.mixin;
 
 import fabiofdez.knots_and_rings.feature.SaplingType;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LeavesBlock;
@@ -14,7 +13,7 @@ import java.util.List;
 public abstract class LeavesMixin extends BlockBehaviorMixin {
 
   @Override
-  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state) {
     drops.replaceAll((stack) -> {
       if (!(stack.getItem() instanceof BlockItem item)) return stack;
 

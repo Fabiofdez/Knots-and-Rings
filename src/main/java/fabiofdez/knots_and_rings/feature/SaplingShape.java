@@ -6,7 +6,6 @@ import fabiofdez.knots_and_rings.block.state.BlockPosOffset.MemberSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.Vec3;
@@ -17,8 +16,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fabiofdez.knots_and_rings.block.state.BlockPosOffset.E;
 import static fabiofdez.knots_and_rings.block.state.BlockPosOffset.N;
@@ -91,22 +92,26 @@ public class SaplingShape {
     LAYOUT.forEachOffset((offset) -> action.accept(offset, offset.from(ROOT)));
   }
 
-  public Set<BlockPos> perimeter(Level level) {
-    Set<BlockPos> perimeter = new HashSet<>();
+  public Set<BlockPos> perimeter() {
+    Set<BlockPos> shapePositions = allPositions();
 
-    Set<BlockPos> treeShape = allPositions();
-    treeShape.forEach((pos) -> MemberSet.ALL_AROUND
+    Function<BlockPos, Stream<BlockPos>> perimeterAroundPos = (pos) -> MemberSet.ALL_AROUND
         .stream()
         .map((offset) -> offset.from(pos))
-        .filter((offsetPos) -> !treeShape.contains(offsetPos))
-        .forEach(perimeter::add));
+        .filter((offsetPos) -> !shapePositions.contains(offsetPos));
 
-    Set<BlockPos> saplingPerimeter = perimeter
+    return shapePositions
+        .stream()
+        .map(perimeterAroundPos)
+        .reduce(Stream.empty(), Stream::concat)
+        .collect(Collectors.toUnmodifiableSet());
+  }
+
+  public Set<BlockPos> perimeterSaplings(BlockGetter level) {
+    return perimeter()
         .stream()
         .filter((pos) -> GrowingSapling.isGrowingSapling(level.getBlockState(pos)))
-        .collect(Collectors.toSet());
-
-    return ImmutableSet.copyOf(saplingPerimeter);
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   public enum Layout implements StringRepresentable {
@@ -114,7 +119,7 @@ public class SaplingShape {
 
     SQUARE_LG("3x3", MemberSet.ALL_AROUND, MemberSet.ALL_AROUND),
     SQUARE_SM("2x2", Set.of(E, SE, S), Set.of(W, NW, N), SE),
-    SINGLETON("single", Set.of(SELF)),
+    SINGLETON("single", Set.of()),
     NONE("none");
 
     private final Set<BlockPosOffset> OFFSETS;
@@ -143,17 +148,17 @@ public class SaplingShape {
       this.NAME = name;
       this.ROOT_PLACEMENT = rootPlacement;
 
-      if (offsets == null || possibleRootOffsets == null) {
-        this.OFFSETS = ImmutableSet.of();
-        this.POSSIBLE_ROOT_OFFSETS = ImmutableSet.of();
-        return;
+      if (offsets == null) offsets = Set.of();
+      else {
+        offsets = new HashSet<>(offsets);
+        offsets.add(SELF);
       }
 
-      offsets = new HashSet<>(offsets);
-      offsets.add(SELF);
-
-      possibleRootOffsets = new HashSet<>(possibleRootOffsets);
-      possibleRootOffsets.add(SELF);
+      if (possibleRootOffsets == null) possibleRootOffsets = Set.of();
+      else {
+        possibleRootOffsets = new HashSet<>(possibleRootOffsets);
+        possibleRootOffsets.add(SELF);
+      }
 
       this.OFFSETS = ImmutableSet.copyOf(offsets);
       this.POSSIBLE_ROOT_OFFSETS = ImmutableSet.copyOf(possibleRootOffsets);

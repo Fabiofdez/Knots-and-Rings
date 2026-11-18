@@ -41,7 +41,7 @@ public class VanillaBackportMixin {
   private static void knots_and_rings$initVanillaBackportBlocks(CallbackInfo ci) {
     if (paleOakTreeGrower == null) return;
 
-    SaplingType.add(PALE_OAK, ModBlocks.PALE_OAK_SAPLING, ModBlocks.PALE_OAK_LEAVES);
+    SaplingType.add(PALE_OAK, ModBlocks.PALE_OAK_SAPLING, ModBlocks.PALE_OAK_LEAVES, ModBlocks.PALE_OAK_LOG);
     SaplingStems.add(PALE_OAK, (props) -> SaplingStems.paleOakSaplingBlock(paleOakTreeGrower, props));
     TreeSeeds.add(PALE_OAK, (props) -> TreeSeeds.seedBlock(ModBlocks.PALE_OAK_SAPLING.get(), props));
   }

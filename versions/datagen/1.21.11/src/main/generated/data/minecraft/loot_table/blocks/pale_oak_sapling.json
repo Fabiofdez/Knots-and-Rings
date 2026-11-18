@@ -1,0 +1,131 @@
+{
+  "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "minecraft:explosion_decay"
+    }
+  ],
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:all_of",
+                  "terms": [
+                    {
+                      "block": "minecraft:pale_oak_sapling",
+                      "condition": "minecraft:block_state_property",
+                      "properties": {
+                        "tree_root": "self"
+                      }
+                    },
+                    {
+                      "condition": "minecraft:any_of",
+                      "terms": [
+                        {
+                          "block": "minecraft:pale_oak_sapling",
+                          "condition": "minecraft:block_state_property",
+                          "properties": {
+                            "growth_stage": "4"
+                          }
+                        },
+                        {
+                          "block": "minecraft:pale_oak_sapling",
+                          "condition": "minecraft:block_state_property",
+                          "properties": {
+                            "growth_stage": "5"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "functions": [
+                {
+                  "add": false,
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "max": 3.0,
+                    "min": 1.0
+                  },
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:pale_oak_sapling"
+            },
+            {
+              "type": "minecraft:item",
+              "conditions": [
+                {
+                  "condition": "minecraft:any_of",
+                  "terms": [
+                    {
+                      "condition": "minecraft:inverted",
+                      "term": {
+                        "block": "minecraft:pale_oak_sapling",
+                        "condition": "minecraft:block_state_property",
+                        "properties": {
+                          "tree_root": "self"
+                        }
+                      }
+                    },
+                    {
+                      "condition": "minecraft:all_of",
+                      "terms": [
+                        {
+                          "block": "minecraft:pale_oak_sapling",
+                          "condition": "minecraft:block_state_property",
+                          "properties": {
+                            "tree_shape": "single"
+                          }
+                        },
+                        {
+                          "condition": "minecraft:inverted",
+                          "term": {
+                            "condition": "minecraft:any_of",
+                            "terms": [
+                              {
+                                "block": "minecraft:pale_oak_sapling",
+                                "condition": "minecraft:block_state_property",
+                                "properties": {
+                                  "growth_stage": "0"
+                                }
+                              },
+                              {
+                                "block": "minecraft:pale_oak_sapling",
+                                "condition": "minecraft:block_state_property",
+                                "properties": {
+                                  "growth_stage": "1"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
+              "functions": [
+                {
+                  "add": false,
+                  "count": 1.0,
+                  "function": "minecraft:set_count"
+                }
+              ],
+              "name": "minecraft:pale_oak_sapling"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

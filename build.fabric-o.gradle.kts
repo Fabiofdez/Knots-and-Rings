@@ -56,7 +56,7 @@ repositories {
 	strictMaven("https://maven.terraformersmc.com/", "com.terraformersmc") { name = "TerraformersMC" }
 	strictMaven("https://api.modrinth.com/maven", "maven.modrinth") { name = "Modrinth" }
 
-	if (sc.current.version == "1.21.1") {
+	if (sc.current.version <= "1.21.1") {
 		maven("https://maven.bawnorton.com/releases")
 		// Mirror
 		maven("https://maven.enjarai.dev/mirrors")
@@ -78,7 +78,7 @@ dependencies {
 		})
 	modImplementation("net.fabricmc:fabric-loader:${prop("deps.fabric-loader")}")
 
-	include(implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.4")!!)!!)
+	implementation(annotationProcessor("io.github.llamalad7:mixinextras-fabric:0.5.4")!!)
 
 	// implementation(libs.moulberry.mixinconstraints)
 	// include(libs.moulberry.mixinconstraints)
@@ -86,20 +86,26 @@ dependencies {
 //	modLocalRuntime("com.terraformersmc:modmenu:${prop("deps.modmenu")}")
 
 	if (hasProperty("deps.regions-unexplored")) {
+//		modLocalRuntime("maven.modrinth:terrablender:${prop("deps.terrablender")}-fabric,${sc.current.version}")
+//		modLocalRuntime("maven.modrinth:forge-config-api-port:${prop("deps.forgeconfigapiport")}-${sc.current.version}-Fabric")
+//
+//		TODO: use with datagen
+//		modLocalRuntime("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
 		modCompileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")
 	}
 
-//	if (sc.current.version == "1.21.1") {
-//		include(implementation(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.7-beta.3")!!)!!)
-//
-//		modImplementation("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
-//		modImplementation("maven.modrinth:platform:1.2.11.4-fabric,${sc.current.version}")
-//	} else if (sc.current.version < "1.21") {
-//		modCompileOnly("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
-//	}
-
 	if (sc.current.version <= "1.21.1") {
+		localRuntime(annotationProcessor("com.github.bawnorton.mixinsquared:mixinsquared-fabric:0.3.7-beta.3")!!)
+
+		modLocalRuntime("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
 		modCompileOnly("maven.modrinth:vanillabackport:${prop("deps.vanillabackport")}-fabric,${sc.current.version}")
+
+		modLocalRuntime("maven.modrinth:platform:1.2.11.4-fabric,${sc.current.version}")
+		modCompileOnly("maven.modrinth:platform:1.2.11.4-fabric,${sc.current.version}")
+	}
+
+	if (hasProperty("deps.more-stick-variants")) {
+		modCompileOnly("maven.modrinth:more-stick-variants:${prop("deps.more-stick-variants")}-${sc.current.version}")
 	}
 }
 

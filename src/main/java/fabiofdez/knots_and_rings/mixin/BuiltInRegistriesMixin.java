@@ -1,5 +1,6 @@
 package fabiofdez.knots_and_rings.mixin;
 
+import fabiofdez.knots_and_rings.compat.ModRegistry;
 //? fabric
 import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -15,5 +16,6 @@ public class BuiltInRegistriesMixin {
   private static void knots_and_rings$bootStrapRegistries(CallbackInfo ci) {
     //? fabric
     SaplingType.freezeTypes();
+    ModRegistry.bootstrap();
   }
 }

@@ -1,20 +1,21 @@
 package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
-//? fabric {
+//? if fabric {
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingTypeID;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.minecraft.Util;
-//? > 1.21
-import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
-//? > 1.21
+//? if > 1.21 {
+import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
+//? }
 
 import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 
@@ -30,6 +31,12 @@ public class ModLangProvider extends FabricLanguageProvider {
     builder.add(subtitleFor(ModSounds.HEAL_WOOD.get()), "Wood healing");
     builder.add(subtitleFor(ModSounds.HEAL_WOOD_ALT.get()), "Wood healing");
 
+    builder.add(ModGameRules.GENERATE_SAPLINGS.getDescriptionId(), "Generate saplings near trees");
+    builder.add(
+        ModGameRules.GENERATE_SAPLINGS.getDescriptionId().concat(".description"),
+        "Saplings have a chance to appear near trees during world generation"
+    );
+
     addTranslationForSeed(builder, ACACIA, "Acacia Seed Pod");
     addTranslationForSeed(builder, BIRCH, "Birch Seeds");
     addTranslationForSeed(builder, CHERRY, "Cherry Seed");
@@ -42,12 +49,8 @@ public class ModLangProvider extends FabricLanguageProvider {
   }
 
   private String subtitleFor(SoundEvent sound) {
-    //? > 1.21.1
-    ResourceLocation id = sound.location();
-    //? <= 1.21.1
-    //ResourceLocation id = sound.getLocation();
-
-    return Util.makeDescriptionId("subtitles", id);
+    //~ if > 1.21.1 '.getLocation()' -> '.location()'
+    return Util.makeDescriptionId("subtitles", sound.location());
   }
 
   private void addTranslationForSeed(TranslationBuilder builder, SaplingTypeID id, String value) {

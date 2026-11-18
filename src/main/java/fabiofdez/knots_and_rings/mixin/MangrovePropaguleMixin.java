@@ -10,7 +10,6 @@ import fabiofdez.knots_and_rings.feature.SaplingType;
 //? <= 1.21.1
 //import fabiofdez.knots_and_rings.util.ShapeUtil;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -85,8 +84,8 @@ public abstract class MangrovePropaguleMixin extends SaplingMixin {
   }
 
   @Override
-  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
-    if (!isHanging(state)) return super.knots_and_rings$getDrops(drops, state, level);
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state) {
+    if (!isHanging(state)) return super.knots_and_rings$getDrops(drops, state);
 
     drops.replaceAll((stack) -> {
       if (!stack.is(Items.MANGROVE_PROPAGULE)) return stack;

@@ -15,13 +15,16 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
 
   static final Map<String, Supplier<Boolean>> CONDITIONS = ImmutableMap.ofEntries(
 
+      //? fabric
+      modMixin("mstv-base", "MoreStickVariantsMixin"),
+
       //? <= 1.21.1
       //modMixin("vanillabackport", "VanillaBackportMixin"),
 
       //? fabric
       mixinRU("RenderHelperMixin"),
 
-      /*? if < 1.21 { *//* mixinRU("RUBlocksMixin") *//*? } else { */ mixinRU("WoodSetMixin") /*? } */
+      /*? if < 1.21 { */ /*mixinRU("RUBlocksMixin") *//*? } else { */ mixinRU("WoodSetMixin") /*? } */
   );
 
   @Override
@@ -64,13 +67,16 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
   }
 
   private static Map.Entry<String, Supplier<Boolean>> modMixin(String modId, String simpleName) {
-    String fullMixinPath = mixin(String.join(".", modId, simpleName));
+    String fullMixinPath = mixin(String.join(".", pathNorm(modId), simpleName));
     return Map.entry(fullMixinPath, checkLoaded(modId));
   }
 
-  @SuppressWarnings("SameParameterValue")
   private static Supplier<Boolean> checkLoaded(String modId) {
     return () -> KnotsAndRings.xplat().isModLoading(modId);
+  }
+
+  private static String pathNorm(String modId) {
+    return modId.replace('-', '_');
   }
 }
 

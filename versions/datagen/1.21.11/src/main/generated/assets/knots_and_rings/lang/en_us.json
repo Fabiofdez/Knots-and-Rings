@@ -1,4 +1,6 @@
 {
+  "gamerule.knots_and_rings.generate_saplings": "Generate saplings near trees",
+  "gamerule.knots_and_rings.generate_saplings.description": "Saplings have a chance to appear near trees during world generation",
   "item.knots_and_rings.acacia_seeds": "Acacia Seed Pod",
   "item.knots_and_rings.birch_seeds": "Birch Seeds",
   "item.knots_and_rings.cherry_seed": "Cherry Seed",

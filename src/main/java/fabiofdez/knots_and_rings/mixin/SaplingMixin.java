@@ -61,7 +61,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@SuppressWarnings("MixinSuperClass")
 @Mixin(SaplingBlock.class)
 public abstract class SaplingMixin extends VegetationBlockMixin {
 
@@ -211,18 +210,18 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
     pos = shape.root();
     Set<BlockPos> stemSpots = shape.allPositions();
     Set<BlockPos> topSpots = stemSpots.stream().map(BlockPos::above).collect(Collectors.toSet());
-    Set<BlockPos> perimeterSpots = shape.perimeter(level);
+    Set<BlockPos> saplingsInPerimeter = shape.perimeterSaplings(level);
 
     Map<BlockPos, BlockState> oldSaplingTops = mapSetToValues(topSpots, level::getBlockState);
     Map<BlockPos, BlockState> oldSaplingStems = mapSetToValues(stemSpots, level::getBlockState);
-    Map<BlockPos, BlockState> oldPerimeterBlocks = mapSetToValues(perimeterSpots, level::getBlockState);
+    Map<BlockPos, BlockState> oldPerimeterBlocks = mapSetToValues(saplingsInPerimeter, level::getBlockState);
 
     Map<BlockPos, BlockState> emptySaplingTops = mapSetToValues(topSpots, (p) -> emptyAt(level, p));
     Map<BlockPos, BlockState> defaultStemSaplings = mapSetToValues(stemSpots, (p) -> type.placedSapling(level, p));
 
     emptySaplingTops.forEach((p, placeholder) -> level.setBlock(p, placeholder, 16));
     defaultStemSaplings.forEach((p, placeholder) -> level.setBlock(p, placeholder, 16));
-    perimeterSpots.forEach((p) -> level.setBlock(p, emptyAt(level, p), 16));
+    saplingsInPerimeter.forEach((p) -> level.setBlock(p, emptyAt(level, p), 16));
 
     treeGrower.growTree(level, generator, pos, type.placedSapling(level, pos), random);
     oldPerimeterBlocks.forEach((p, oldState) -> {
@@ -349,8 +348,8 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   }
 
   @Override
-  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
-    if (GrowingSapling.isGrowingSapling(state)) return GrowingSapling.getDrops(drops, state, level);
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, BlockState state) {
+    if (GrowingSapling.isGrowingSapling(state)) return GrowingSapling.getDrops(drops, state);
     return drops;
   }
 

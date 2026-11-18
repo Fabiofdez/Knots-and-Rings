@@ -128,6 +128,10 @@ stonecutter parameters {
 			replace(".noCollission()", ".noCollision()")
 			replace(".getGameRules().getRule", ".getGameRules().get")
 			replace("GameRules.RULE_MOBGRIEFING", "GameRules.MOB_GRIEFING")
+			replace("fabric.api.resource.ResourceManagerHelper", "fabric.api.resource.v1.ResourceLoader")
+			replace("fabric.api.resource.ResourcePackActivationType", "fabric.api.resource.v1.pack.PackActivationType")
+			replace("ResourcePackActivationType", "PackActivationType")
+			replace("ResourceManagerHelper.registerBuiltinResourcePack", "ResourceLoader.registerBuiltinPack")
 		}
 
 		string(current.parsed >= "26.1") {
@@ -152,6 +156,7 @@ stonecutter parameters {
 			replace("ServerWorldEvents", "ServerLevelEvents")
 			replace("RegisterColorHandlersEvent.Block", "RegisterColorHandlersEvent.BlockTintSources")
 			replace("BlockElementFace", "CuboidFace")
+			replace("new ChunkPos(", "ChunkPos.containing(")
 
 			replace("Consumer<FabricItemGroupEntries>", "Consumer<FabricCreativeModeTabOutput>")
 		}

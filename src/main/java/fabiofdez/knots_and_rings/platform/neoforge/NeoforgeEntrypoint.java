@@ -4,6 +4,7 @@ package fabiofdez.knots_and_rings.platform.neoforge;
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
+import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingType;
@@ -25,10 +26,13 @@ public class NeoforgeEntrypoint {
 		ModBlocks.initialize();
     ModItems.initialize();
     ModSounds.initialize();
+    ModGameRules.initialize();
 
     ModBlocks.register(modEventBus);
     ModItems.register(modEventBus);
     ModSounds.register(modEventBus);
+    //? if > 1.21.5
+    //ModGameRules.register(modEventBus);
     NeoForge.EVENT_BUS.register(this);
 
     modEventBus.addListener(this::commonSetup);

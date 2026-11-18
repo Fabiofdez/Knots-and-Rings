@@ -4,22 +4,30 @@ package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
 //? < 1.21
 //import fabiofdez.knots_and_rings.feature.SaplingType;
+import fabiofdez.knots_and_rings.KnotsAndRings;
+import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
+import net.minecraft.resources.ResourceLocation;
 
 public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 
-	@Override
-	public void onInitializeDataGenerator(FabricDataGenerator generator) {
+  @Override
+  public void onInitializeDataGenerator(FabricDataGenerator generator) {
     //? < 1.21
     //SaplingType.freezeTypes();
 
-		FabricDataGenerator.Pack pack = generator.createPack();
-
+    FabricDataGenerator.Pack basePack = generator.createPack();
     //? > 1.21.1
-    pack.addProvider(ModSoundEventProvider::new);
-    pack.addProvider(ModTagProvider::new);
-    pack.addProvider(ModLangProvider::new);
-	}
+    basePack.addProvider(ModSoundEventProvider::new);
+    basePack.addProvider(ModTagProvider::new);
+    basePack.addProvider(ModLangProvider::new);
+    basePack.addProvider(ModBlockLootTableProvider::new);
+
+    ResourceLocation saplingsPackId = KnotsAndRings.id(ResourcePacks.PACK_SAPLINGS.id());
+    FabricDataGenerator.Pack vanillaSaplings = generator.createBuiltinResourcePack(saplingsPackId);
+    // TODO: create datapack(s) for sapling shape tags
+
+  }
 }
-//?}
+//? }

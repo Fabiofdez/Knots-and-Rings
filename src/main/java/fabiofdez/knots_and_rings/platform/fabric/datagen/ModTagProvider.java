@@ -35,9 +35,12 @@ public class ModTagProvider extends FabricTagProvider.BlockTagProvider {
     /*TagAppender<Block> saplingsTag = builder(BlockTags.SAPLINGS);
      *///? }
 
+    saplingsTag.setReplace(false);
+
     for (SaplingTypeID id : SaplingTypeID.values()) {
       if (id == SaplingTypeID.NONE) continue;
 
+      // TODO: make only vanilla seeds required (version-dependent)
       ResourceKey<Block> blockKey = KnotsAndRings.blockKey(id.seedId());
       SaplingType type = SaplingType.of(id);
 

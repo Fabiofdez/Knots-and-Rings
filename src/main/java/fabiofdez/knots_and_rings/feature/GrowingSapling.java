@@ -4,7 +4,6 @@ import fabiofdez.knots_and_rings.block.state.BlockPosOffset;
 import fabiofdez.knots_and_rings.util.ShapeUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -26,9 +25,9 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class GrowingSapling {
 
@@ -202,30 +201,16 @@ public class GrowingSapling {
     return half(state) == DoubleBlockHalf.UPPER ? pos.below() : pos;
   }
 
-  public static List<ItemStack> getDrops(List<ItemStack> drops, BlockState state, ServerLevel level) {
-    if (drops.isEmpty() || growthStage(state).LEQ(Stage.DECAYING)) return List.of();
+  public static List<ItemStack> getDrops(List<ItemStack> drops, BlockState state) {
+    if (drops.isEmpty()) return List.of();
 
-    boolean isUpper = half(state) == DoubleBlockHalf.UPPER;
-    boolean isTall = isDoubleSapling(state);
-    RandomSource random = level.getRandom();
-    if (isTall) drops.clear();
+    SaplingType type = SaplingType.resolve(state.getBlock());
+    ItemStack stickDrop = type.stick().getDefaultInstance();
 
-    if (isTall) {
-      int numSticks = isUpper ? 0 : 2;
-      numSticks += random.nextInt(3);
-      if (growthStage(state) == Stage.GIANT) numSticks += random.nextInt(4);
-
-      drops.addAll(Collections.nCopies(numSticks, Items.STICK.getDefaultInstance()));
-    }
-
-    if (!isTall || isUpper) {
-      int numSaplings = treeShape(state).offsets().size();
-      if (isUpper) numSaplings += random.nextInt(3);
-
-      drops.addAll(Collections.nCopies(numSaplings, state.getBlock().asItem().getDefaultInstance()));
-    }
-
-    return drops;
+    return drops.stream().map((original) -> {
+      if (!original.is(Items.STICK)) return original;
+      return stickDrop.copyWithCount(original.getCount());
+    }).collect(Collectors.toList());
   }
 
   public static VoxelShape getInteractShape(BlockState state, BlockGetter level, BlockPos pos) {

@@ -79,7 +79,7 @@ public abstract class BlockBehaviorMixin {
   }
 
   @ModifyReturnValue(method = "getDrops", at = @At(value = "RETURN", ordinal = 1))
-  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, @Local(argsOnly = true) BlockState state, @Local ServerLevel level) {
+  protected List<ItemStack> knots_and_rings$getDrops(List<ItemStack> drops, @Local(argsOnly = true) BlockState state) {
     return drops;
   }
 

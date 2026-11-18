@@ -8,6 +8,8 @@
   "block.knots_and_rings.oak_seed": "Oak Acorn",
   "block.knots_and_rings.pale_oak_seed": "Pale Oak Acorn",
   "block.knots_and_rings.spruce_seeds": "Spruce Seed Cone",
+  "gamerule.generate_saplings": "Generate saplings near trees",
+  "gamerule.generate_saplings.description": "Saplings have a chance to appear near trees during world generation",
   "subtitles.knots_and_rings.crack_wood": "Wood cracking",
   "subtitles.knots_and_rings.heal_wood": "Wood healing",
   "subtitles.knots_and_rings.heal_wood_alt": "Wood healing",

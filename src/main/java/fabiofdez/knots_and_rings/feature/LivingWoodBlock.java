@@ -1,6 +1,7 @@
 package fabiofdez.knots_and_rings.feature;
 
 import com.google.common.collect.ImmutableMap;
+import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.block.state.LogSide;
 import fabiofdez.knots_and_rings.util.NeighborIterable;
 import net.minecraft.core.BlockPos;
@@ -11,6 +12,7 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 
 public class LivingWoodBlock {
 
@@ -43,6 +46,14 @@ public class LivingWoodBlock {
 
   public static boolean isStripped(ResourceLocation id) {
     return id.getPath().startsWith("stripped_");
+  }
+
+  public static boolean isLogBlock(Block block) {
+    return isLogBlock(blockId(block));
+  }
+
+  public static boolean isWoodBlock(Block block) {
+    return isWoodBlock(blockId(block));
   }
 
   public static boolean isLivingWoodBlock(BlockState state) {
@@ -153,6 +164,15 @@ public class LivingWoodBlock {
     return isTrunk(thisState) == isTrunk(neighborState);
   }
 
+  public static Optional<Block> getAsLog(Block block) {
+    ResourceLocation id = blockId(block);
+    if (isLogBlock(id)) return Optional.of(block);
+    if (!isWoodBlock(id)) return Optional.empty();
+
+    ResourceLocation newId = KnotsAndRings.id(id.getNamespace(), id.getPath().replace("_wood", "_log"));
+    return BuiltInRegistries.BLOCK.getOptional(newId);
+  }
+
   public static BlockState getLogShape(BlockState state, BlockGetter level, BlockPos pos) {
     Direction.Axis axis = getAxis(state);
 
@@ -235,8 +255,12 @@ public class LivingWoodBlock {
     level.setBlockAndUpdate(pos, state);
   }
 
-  private static ResourceLocation blockId(BlockState state) {
-    return BuiltInRegistries.BLOCK.getKey(state.getBlock());
+  public static ResourceLocation blockId(BlockState state) {
+    return blockId(state.getBlock());
+  }
+
+  public static ResourceLocation blockId(Block block) {
+    return BuiltInRegistries.BLOCK.getKey(block);
   }
 
   private static LinkedList<Direction> makeLoop(Direction... directions) {

@@ -63,6 +63,10 @@ dependencies {
 	// implementation(libs.moulberry.mixinconstraints)
 	// include(libs.moulberry.mixinconstraints)
 	implementation("net.fabricmc.fabric-api:fabric-api:${prop("deps.fabric-api")}")
+
+	if (hasProperty("deps.more-stick-variants")) {
+		compileOnly("maven.modrinth:more-stick-variants:${prop("deps.more-stick-variants")}-${prop("deps.minecraft")}")
+	}
 //	localRuntime("com.terraformersmc:modmenu:${prop("deps.modmenu")}")
 }
 

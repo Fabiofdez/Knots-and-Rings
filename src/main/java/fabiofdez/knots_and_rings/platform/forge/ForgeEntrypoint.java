@@ -4,6 +4,7 @@ package fabiofdez.knots_and_rings.platform.forge;
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
+import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingType;
@@ -25,6 +26,7 @@ public class ForgeEntrypoint {
     ModBlocks.initialize();
     ModItems.initialize();
     ModSounds.initialize();
+    ModGameRules.initialize();
 
     ModBlocks.register(modEventBus);
     ModItems.register(modEventBus);
