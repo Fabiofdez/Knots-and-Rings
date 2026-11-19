@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 
-//? fabric && <= 1.21.1 {
+//? if fabric && <= 1.21.1 {
 
 /*import net.minecraft.world.level.block.Block;
 import net.regions_unexplored.registry.RUBlocks;
@@ -25,9 +25,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //? }
 
 @SuppressWarnings({"unused", "UnusedMixin"})
-//? < 1.21
+//? if < 1.21
 //@Mixin(RuBlockCropOuts.class)
-//? >= 1.21
+//? if >= 1.21
 @Mixin(RenderHelper.class)
 public class RenderHelperMixin {
 

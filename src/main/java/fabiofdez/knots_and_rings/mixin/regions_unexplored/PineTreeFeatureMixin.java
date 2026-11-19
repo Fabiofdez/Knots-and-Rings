@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 
-//? <= 1.21.1 {
+//? if <= 1.21.1 {
 
 /*import fabiofdez.knots_and_rings.compat.regions_unexplored.PineLogBlock;
 import net.minecraft.core.BlockPos;
@@ -30,9 +30,9 @@ public class PineTreeFeatureMixin {
     if (state.getBlock() instanceof PineLogBlock) {
       if (isStripped) {
         Block STRIPPED_PINE = RUBlocks
-            //? < 1.21
+            //? if < 1.21
             //.STRIPPED_PINE_LOG/^? forge >> ';' ^//^.get()^/;
-            //? >= 1.21
+            //? if >= 1.21
             .PINE_WOOD_SET.getStrippedLog();
 
         state = STRIPPED_PINE.defaultBlockState();

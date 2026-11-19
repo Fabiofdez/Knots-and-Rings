@@ -1,39 +1,39 @@
 package fabiofdez.knots_and_rings;
 
-//? fabric
-import net.minecraft.core.Registry;
-//? !forge
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
-//? neoforge {
+import java.util.function.Supplier;
+
+//? if fabric
+import net.minecraft.core.Registry;
+//? if !forge
+import net.minecraft.core.registries.BuiltInRegistries;
+//? if neoforge {
 /*import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 *///? }
-//? forge {
+//? if forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 *///? }
 
-import java.util.function.Supplier;
-
 public class ModSounds {
-  //? !fabric {
+  //? if !fabric {
   /*public static DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(
-      //? neoforge
+      //? if neoforge
       //BuiltInRegistries.SOUND_EVENT,
-      //? forge
+      //? if forge
       //ForgeRegistries.SOUND_EVENTS,
       KnotsAndRings.MOD_ID
   );
   *///? }
 
-  public static Supplier<SoundEvent> SPLIT_WOOD = register("split_wood");
-  public static Supplier<SoundEvent> CRACK_WOOD = register("crack_wood");
-  public static Supplier<SoundEvent> HEAL_WOOD = register("heal_wood");
-  public static Supplier<SoundEvent> HEAL_WOOD_ALT = register("heal_wood_alt");
+  public static final Supplier<SoundEvent> SPLIT_WOOD = register("split_wood");
+  public static final Supplier<SoundEvent> CRACK_WOOD = register("crack_wood");
+  public static final Supplier<SoundEvent> HEAL_WOOD = register("heal_wood");
+  public static final Supplier<SoundEvent> HEAL_WOOD_ALT = register("heal_wood_alt");
 
   //? if fabric {
   private static Supplier<SoundEvent> register(String name) {

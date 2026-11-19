@@ -1,8 +1,8 @@
 package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
-//? fabric {
+//? if fabric {
 
-//? < 1.21
+//? if < 1.21
 //import fabiofdez.knots_and_rings.feature.SaplingType;
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
@@ -14,11 +14,11 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 
   @Override
   public void onInitializeDataGenerator(FabricDataGenerator generator) {
-    //? < 1.21
+    //? if < 1.21
     //SaplingType.freezeTypes();
 
     FabricDataGenerator.Pack basePack = generator.createPack();
-    //? > 1.21.1
+    //? if > 1.21.1
     basePack.addProvider(ModSoundsProvider::new);
     basePack.addProvider(ModLangProvider::new);
     basePack.addProvider(ModTagProvider::new);

@@ -2,7 +2,7 @@
 
 package fabiofdez.knots_and_rings.mixin.vanillabackport;
 
-//? <= 1.21.1 {
+//? if <= 1.21.1 {
 
 /*import com.blackgear.vanillabackport.common.registries.ModBlocks;
 import com.blackgear.vanillabackport.core.VanillaBackport;
@@ -24,15 +24,15 @@ import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 public class VanillaBackportMixin {
 
   @Unique
-      //? < 1.21
+      //? if < 1.21
   //private static AbstractTreeGrower paleOakTreeGrower;
-      //? >= 1.21
+      //? if >= 1.21
   private static TreeGrower paleOakTreeGrower;
 
   @ModifyArg(method = "lambda$static$6", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/SaplingBlock;<init>(Lnet/minecraft/world/level/block/grower/TreeGrower;Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)V"), remap = false)
-      //? < 1.21
+      //? if < 1.21
   //private static AbstractTreeGrower knots_and_rings$captureTreeGrower(TreeGrower treeGrower) {
-      //? >= 1.21
+      //? if >= 1.21
   private static TreeGrower knots_and_rings$captureTreeGrower(TreeGrower treeGrower) {
     paleOakTreeGrower = treeGrower;
     return treeGrower;

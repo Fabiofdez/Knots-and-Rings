@@ -15,13 +15,13 @@ public class KnotsAndRingsMixinPlugin implements IMixinConfigPlugin {
 
   static final Map<String, Supplier<Boolean>> CONDITIONS = ImmutableMap.ofEntries(
 
-      //? fabric
+      //? if fabric
       modMixin("mstv-base", "MoreStickVariantsMixin"),
 
-      //? <= 1.21.1
+      //? if <= 1.21.1
       //modMixin("vanillabackport", "VanillaBackportMixin"),
 
-      //? fabric
+      //? if fabric
       mixinRU("RenderHelperMixin"),
 
       /*? if < 1.21 { */ /*mixinRU("RUBlocksMixin") *//*? } else { */ mixinRU("WoodSetMixin") /*? } */

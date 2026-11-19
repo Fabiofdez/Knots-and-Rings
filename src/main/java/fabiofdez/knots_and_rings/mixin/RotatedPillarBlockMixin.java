@@ -7,10 +7,10 @@ import com.llamalad7.mixinextras.sugar.Local;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.block.state.LogSide;
 import fabiofdez.knots_and_rings.compat.ItemDamage;
+import fabiofdez.knots_and_rings.compat.Particles;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import fabiofdez.knots_and_rings.feature.LivingWoodCluster;
 import fabiofdez.knots_and_rings.feature.LogConnectivityCache;
-import fabiofdez.knots_and_rings.compat.Particles;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -68,11 +68,13 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
     BlockState state = this.defaultBlockState();
     if (!LivingWoodBlock.isLivingWoodBlock(state)) return;
 
-    this.registerDefaultState(state
+    state = state
         .setValue(ALIVE, false)
         .setValue(IS_TRUNK, false)
         .setValue(SINGLETON, true)
-        .setValue(SIDES, LogSide.Mapping.M_0000));
+        .setValue(SIDES, LogSide.Mapping.M_0000);
+
+    this.registerDefaultState(state);
   }
 
   @Inject(method = "createBlockStateDefinition", at = @At("TAIL"))
@@ -135,7 +137,7 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
 
   @Override
   protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
-    //? < 1.21
+    //? if < 1.21
     //ItemStack stack = player.getItemInHand(hand);
 
     if (stack.is(ItemTags.PICKAXES)) {
@@ -173,7 +175,7 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
   public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
   }
 
-  //? > 1.21 {
+  //? if > 1.21 {
   @Override
   public @NotNull BlockPos getParticlePos(BlockPos pos) {
     return pos.above();
@@ -221,9 +223,9 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
       level.playSound(null, pos, ModSounds.HEAL_WOOD.get(), SoundSource.BLOCKS, 1F, pitch);
       level.playSound(null, pos, ModSounds.HEAL_WOOD_ALT.get(), SoundSource.BLOCKS, 1F, 1.2F);
 
-      //? < 1.21
+      //? if < 1.21
       //if (!player.getAbilities().instabuild) stack.shrink(1);
-      //? >= 1.21
+      //? if >= 1.21
       stack.consume(1, player);
 
       if (isTrunk) {

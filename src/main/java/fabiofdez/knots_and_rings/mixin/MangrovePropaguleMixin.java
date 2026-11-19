@@ -7,8 +7,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.SaplingType;
-//? <= 1.21.1
-//import fabiofdez.knots_and_rings.util.ShapeUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
@@ -30,12 +28,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
-import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
+import static fabiofdez.knots_and_rings.feature.SaplingTypeID.MANGROVE;
+
+//? if <= 1.21.1
+//import fabiofdez.knots_and_rings.util.ShapeUtil;
 
 @Mixin(MangrovePropaguleBlock.class)
 public abstract class MangrovePropaguleMixin extends SaplingMixin {
 
-  //? > 1.21.1 {
+  //? if > 1.21.1 {
   @Mutable
   @Shadow
   @Final

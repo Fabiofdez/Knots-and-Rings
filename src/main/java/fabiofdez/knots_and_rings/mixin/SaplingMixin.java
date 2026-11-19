@@ -9,12 +9,12 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import fabiofdez.knots_and_rings.feature.GrowingSapling.VisualShape;
-import fabiofdez.knots_and_rings.feature.SaplingShape;
+import fabiofdez.knots_and_rings.compat.ItemDamage;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Properties;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Stage;
-import fabiofdez.knots_and_rings.compat.ItemDamage;
+import fabiofdez.knots_and_rings.feature.GrowingSapling.VisualShape;
+import fabiofdez.knots_and_rings.feature.SaplingShape;
 import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -280,7 +280,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
   protected InteractionResult knots_and_rings$useItemOn(InteractionResult result, /*? if >= 1.21 { */ItemStack stack,/*? } */ BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
     if (!GrowingSapling.isGrowingSapling(state)) return result;
 
-    //? < 1.21
+    //? if < 1.21
     //ItemStack stack = player.getItemInHand(hand);
 
     if (stack.is(Items.SHEARS)) {

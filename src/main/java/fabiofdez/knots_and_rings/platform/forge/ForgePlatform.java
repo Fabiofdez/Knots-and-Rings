@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.forge;
 
-//? forge {
+//? if forge {
 
 /*import fabiofdez.knots_and_rings.platform.Platform;
 import net.minecraftforge.fml.ModList;
@@ -34,4 +34,4 @@ public class ForgePlatform implements Platform {
 		return !FMLLoader.isProduction();
 	}
 }
-*///?}
+*///? }

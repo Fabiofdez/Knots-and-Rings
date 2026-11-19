@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
-//? fabric && > 1.21.1 {
+//? if fabric && > 1.21.1 {
 
 import fabiofdez.knots_and_rings.ModSounds;
 import net.fabricmc.fabric.api.client.datagen.v1.builder.SoundTypeBuilder;

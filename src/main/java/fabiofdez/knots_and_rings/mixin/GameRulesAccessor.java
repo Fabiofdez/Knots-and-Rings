@@ -12,5 +12,5 @@ public interface GameRulesAccessor {
   static <T extends GameRules.Value<T>> GameRules.Key<T> knots_and_rings$registerGameRule(String string, GameRules.Category category, GameRules.Type<T> type) {
     throw new AssertionError();
   }
-  //?}
+  //? }
 }

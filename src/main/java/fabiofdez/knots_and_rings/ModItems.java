@@ -4,7 +4,7 @@ import net.minecraft.world.item.Item;
 
 import java.util.function.Function;
 
-//? fabric {
+//? if fabric {
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 
@@ -19,7 +19,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.minecraft.core.registries.BuiltInRegistries;
 //? }
 
-//? forge {
+//? if forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -27,9 +27,9 @@ import net.minecraftforge.registries.RegistryObject;
 *///? }
 
 public class ModItems {
-  //? neoforge
+  //? if neoforge
   //public static DeferredRegister.Items ITEMS = DeferredRegister.createItems(KnotsAndRings.MOD_ID);
-  //? forge
+  //? if forge
   //public static DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, KnotsAndRings.MOD_ID);
 
   public static ItemSupplier register(String name, Function<Item.Properties, Item> itemBuilder) {

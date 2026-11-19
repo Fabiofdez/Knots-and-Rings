@@ -1,20 +1,21 @@
 package fabiofdez.knots_and_rings.mixin;
 
 import fabiofdez.knots_and_rings.compat.ModRegistry;
-//? fabric
-import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+//? if fabric
+import fabiofdez.knots_and_rings.feature.SaplingType;
+
 @Mixin(BuiltInRegistries.class)
 public class BuiltInRegistriesMixin {
 
   @Inject(method = "bootStrap", at = @At("TAIL"))
   private static void knots_and_rings$bootStrapRegistries(CallbackInfo ci) {
-    //? fabric
+    //? if fabric
     SaplingType.freezeTypes();
     ModRegistry.bootstrap();
   }

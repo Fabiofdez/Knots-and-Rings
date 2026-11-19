@@ -1,6 +1,5 @@
 package fabiofdez.knots_and_rings.block.state;
 
-import com.google.common.collect.ImmutableMap;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
@@ -59,9 +58,9 @@ public class LogSide {
     M_R2L1("r2l1"),
     M_R22L("r22l");
 
-    private static final Map<String, LogSide.Mapping> FROM_STRING = ImmutableMap.copyOf(Arrays
+    private static final Map<String, LogSide.Mapping> FROM_STRING = Arrays
         .stream(values())
-        .collect(Collectors.toMap((sides) -> sides.name, Function.identity())));
+        .collect(Collectors.toUnmodifiableMap((sides) -> sides.name, Function.identity()));
 
     private final String name;
 

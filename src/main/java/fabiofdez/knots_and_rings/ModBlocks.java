@@ -29,26 +29,26 @@ import java.util.function.Supplier;
 
 import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 
-//? fabric {
+//? if fabric {
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 //? }
 
-//? neoforge {
+//? if neoforge {
 /*import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredBlock;
 *///? }
 
-//? forge {
+//? if forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 *///? }
 
-//? < 1.21 {
+//? if < 1.21 {
 /*import net.minecraft.world.level.block.grower.AcaciaTreeGrower;
 import net.minecraft.world.level.block.grower.BirchTreeGrower;
 import net.minecraft.world.level.block.grower.CherryTreeGrower;
@@ -60,9 +60,9 @@ import net.minecraft.world.level.block.grower.SpruceTreeGrower;
 *///? }
 
 public class ModBlocks {
-  //? neoforge
+  //? if neoforge
   //public static DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(KnotsAndRings.MOD_ID);
-  //? forge
+  //? if forge
   //public static DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, KnotsAndRings.MOD_ID);
 
   private static BlockSupplier registerBlockOnly(BlockDef.Builder builder) {

@@ -249,7 +249,7 @@ public class SaplingType {
 
   static {
     add(ACACIA);
-    add(BIRCH, (builder)  -> builder.setTint(() -> FoliageColor.FOLIAGE_BIRCH));
+    add(BIRCH, (builder) -> builder.setTint(() -> FoliageColor.FOLIAGE_BIRCH));
     add(CHERRY);
     add(DARK_OAK);
     add(JUNGLE);
@@ -257,7 +257,7 @@ public class SaplingType {
     add(OAK);
     //? if > 1.21.1
     add(PALE_OAK);
-    add(SPRUCE, (builder)  -> builder.setTint(() -> FoliageColor.FOLIAGE_EVERGREEN));
+    add(SPRUCE, (builder) -> builder.setTint(() -> FoliageColor.FOLIAGE_EVERGREEN));
 
     MANGROVE.registerPlacedState((state, level, pos) -> {
       FluidState fluid = level.getFluidState(pos);

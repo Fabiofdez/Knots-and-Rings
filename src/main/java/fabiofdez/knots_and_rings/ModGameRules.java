@@ -35,7 +35,7 @@ public class ModGameRules {
   *///? }
 
   //? if <= 1.21.5 {
-  public static GameRules.Key<BooleanValue> GENERATE_SAPLINGS = GameRulesAccessor.knots_and_rings$registerGameRule(
+  public static final GameRules.Key<BooleanValue> GENERATE_SAPLINGS = GameRulesAccessor.knots_and_rings$registerGameRule(
       "generate_saplings",
       GameRules.Category.MISC,
       BooleanValueAccessor.knots_and_rings$create(true)

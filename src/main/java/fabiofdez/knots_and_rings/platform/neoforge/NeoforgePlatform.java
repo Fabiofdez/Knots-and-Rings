@@ -1,11 +1,11 @@
 package fabiofdez.knots_and_rings.platform.neoforge;
 
-//? neoforge {
+//? if neoforge {
 
 /*import fabiofdez.knots_and_rings.platform.Platform;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLLoader;
-//? < 1.21.11
+//? if < 1.21.11
 import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.fml.loading.VersionInfo;
 
@@ -36,4 +36,4 @@ public class NeoforgePlatform implements Platform {
 		return !FMLLoader/^? if > 1.21.7 {^//^.getCurrent()^//^?}^/.isProduction();
 	}
 }
-*///?}
+*///? }

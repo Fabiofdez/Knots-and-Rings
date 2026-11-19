@@ -1,9 +1,9 @@
 package fabiofdez.knots_and_rings.platform.neoforge;
 
-//? neoforge {
+//? if neoforge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
-//? 1.21.1
+//? if 1.21.1
 //import fabiofdez.knots_and_rings.client.model.TexturedCompositeLoader;
 import fabiofdez.knots_and_rings.feature.SaplingTint;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
@@ -15,7 +15,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-//? 1.21.1
+//? if 1.21.1
 //import net.neoforged.neoforge.client.event.ModelEvent;
 import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
@@ -29,7 +29,7 @@ public class NeoforgeClientEventSubscriber {
     KnotsAndRings.onInitializeClient();
   }
 
-  //? 1.21.1 {
+  //? if 1.21.1 {
   /^@SubscribeEvent
   public static void registerGeometryLoaders(ModelEvent.RegisterGeometryLoaders event) {
     event.register(TexturedCompositeLoader.ID, TexturedCompositeLoader.INSTANCE);
@@ -57,4 +57,4 @@ public class NeoforgeClientEventSubscriber {
     );
   }
 }
-*///?}
+*///? }

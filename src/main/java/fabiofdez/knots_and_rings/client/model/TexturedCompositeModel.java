@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.client.model;
 
-//? !fabric && <= 1.21.1 {
+//? if !fabric && <= 1.21.1 {
 
 /*import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.util.Either;
@@ -20,14 +20,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-//? forge {
+//? if forge {
 /^import net.minecraftforge.client.model.CompositeModel;
 import net.minecraftforge.client.model.geometry.BlockGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IGeometryBakingContext;
 import net.minecraftforge.client.model.geometry.IUnbakedGeometry;
 import net.minecraftforge.client.model.geometry.UnbakedGeometryHelper;
 ^///? }
-//? neoforge {
+//? if neoforge {
 /^import net.neoforged.neoforge.client.model.CompositeModel;
 import net.neoforged.neoforge.client.model.geometry.BlockGeometryBakingContext;
 import net.neoforged.neoforge.client.model.geometry.IGeometryBakingContext;

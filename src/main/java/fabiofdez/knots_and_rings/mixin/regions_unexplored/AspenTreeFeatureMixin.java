@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 
-//? <= 1.21.1 {
+//? if <= 1.21.1 {
 
 /*import net.regions_unexplored.world.level.block.wood.AspenLogBlock;
 import net.regions_unexplored.world.level.feature.tree.AspenTreeFeature;

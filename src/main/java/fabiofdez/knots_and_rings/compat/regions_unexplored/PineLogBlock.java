@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.compat.regions_unexplored;
 
-//? <= 1.21.1 {
+//? if <= 1.21.1 {
 
 /*import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import net.minecraft.core.BlockPos;
@@ -17,7 +17,7 @@ import net.regions_unexplored.registry.RUBlocks;
 import net.regions_unexplored.world.level.block.state.properties.RuBlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 
-//? >= 1.21.5 {
+//? if >= 1.21.5 {
 import net.minecraft.world.level.ScheduledTickAccess;
  //? }
 
@@ -66,9 +66,9 @@ public class PineLogBlock extends RotatedPillarBlock {
     if (LivingWoodBlock.getAxis(state) != Direction.Axis.Y) return false;
 
     Block strippedPine = RUBlocks
-        //? < 1.21
+        //? if < 1.21
         //.STRIPPED_PINE_LOG/^? forge >> ';' ^//^.get()^/;
-        //? >= 1.21
+        //? if >= 1.21
         .PINE_WOOD_SET.getStrippedLog();
 
     return stateBelow.is(strippedPine);

@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.forge;
 
-//? forge {
+//? if forge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.client.model.TexturedCompositeLoader;
@@ -70,4 +70,4 @@ public class ForgeClientEventSubscriber {
   }
 }
 
-*///?}
+*///? }

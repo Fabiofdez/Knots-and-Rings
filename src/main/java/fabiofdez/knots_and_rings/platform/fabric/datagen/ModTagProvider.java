@@ -1,18 +1,18 @@
 package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
-//? fabric {
+//? if fabric {
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.feature.SaplingType;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
-//? >= 1.21.11
+//? if >= 1.21.11
 //import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
-//? < 26.2
+//? if < 26.2
 import net.minecraft.tags.BlockTags;
-//? >= 26.2
+//? if >= 26.2
 //import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.level.block.Block;
 

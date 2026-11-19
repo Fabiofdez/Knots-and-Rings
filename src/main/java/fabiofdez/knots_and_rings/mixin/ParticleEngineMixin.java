@@ -3,7 +3,7 @@ package fabiofdez.knots_and_rings.mixin;
 import net.minecraft.client.particle.ParticleEngine;
 import org.spongepowered.asm.mixin.Mixin;
 
-//? < 1.21.11 {
+//? if < 1.21.11 {
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import fabiofdez.knots_and_rings.compat.Particles;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ParticleEngine.class)
 public class ParticleEngineMixin {
 
-  //? < 1.21.11 {
+  //? if < 1.21.11 {
   @Shadow
   protected ClientLevel level;
 

@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.fabric;
 
-//? fabric {
+//? if fabric {
 
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import fabiofdez.knots_and_rings.KnotsAndRings;
@@ -26,4 +26,4 @@ public class FabricEntrypoint implements ModInitializer {
     ModBlocks.registerCompostables(CompostingChanceRegistry.INSTANCE::add);
   }
 }
-//?}
+//? }

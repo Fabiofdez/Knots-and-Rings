@@ -13,5 +13,5 @@ public interface BooleanValueAccessor {
   static GameRules.Type<GameRules.BooleanValue> knots_and_rings$create(boolean value) {
     throw new AssertionError();
   }
-  //?}
+  //? }
 }

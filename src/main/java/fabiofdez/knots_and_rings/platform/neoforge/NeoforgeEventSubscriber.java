@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.neoforge;
 
-//? neoforge {
+//? if neoforge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.feature.LogConnectivityCache;
@@ -16,4 +16,4 @@ public class NeoforgeEventSubscriber {
     LogConnectivityCache.invalidateInChunk(event.getChunk().getLevel(), event.getChunk().getPos());
   }
 }
-*///?}
+*///? }

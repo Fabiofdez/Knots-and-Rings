@@ -25,7 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-//? > 1.21 {
+//? if > 1.21 {
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 //? }
@@ -37,8 +37,8 @@ public class TreeSeedBlock extends /*? if <= 1.21.1 { *//*BushBlock*//*? } else 
 
   protected final SaplingBlock saplingBlock;
 
-  //? > 1.21 {
-  public static MapCodec<TreeSeedBlock> CODEC = RecordCodecBuilder.mapCodec((inst) -> inst
+  //? if > 1.21 {
+  public static final MapCodec<TreeSeedBlock> CODEC = RecordCodecBuilder.mapCodec((inst) -> inst
       .group(SaplingBlock.CODEC.fieldOf("sapling").forGetter((seed) -> seed.saplingBlock), propertiesCodec())
       .apply(inst, TreeSeedBlock::new));
 

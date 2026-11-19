@@ -1,7 +1,6 @@
 package fabiofdez.knots_and_rings;
 
 import fabiofdez.knots_and_rings.platform.Platform;
-
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -16,23 +15,22 @@ import java.util.Collection;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-//? !fabric {
+//? if !fabric {
 /*import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 *///? }
-
-//? fabric {
+//? if fabric {
 import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.minecraft.core.registries.Registries;
-//?} neoforge {
+//? } else if neoforge {
 /*import fabiofdez.knots_and_rings.platform.neoforge.NeoforgePlatform;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
- *///?} forge {
+ *///? } else if forge {
 /*import fabiofdez.knots_and_rings.platform.forge.ForgePlatform;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
- *///?}
+ *///? }
 
 @SuppressWarnings("LoggingSimilarMessage")
 public class KnotsAndRings {
@@ -59,13 +57,13 @@ public class KnotsAndRings {
   }
 
   private static Platform createPlatformInstance() {
-    //? fabric {
+    //? if fabric {
     return new FabricPlatform();
-    //?} neoforge {
+    //? } else if neoforge {
     /*return new NeoforgePlatform();
-     *///?} forge {
+     *///? } else if forge {
     /*return new ForgePlatform();
-     *///?}
+     *///? }
   }
 
   public static ResourceLocation id(String path) {
@@ -77,20 +75,20 @@ public class KnotsAndRings {
   }
 
   public static ResourceLocation id(String namespace, String path) {
-    //? >= 1.21
+    //? if >= 1.21
     return ResourceLocation.fromNamespaceAndPath(namespace, path);
-    //? < 1.21
+    //? if < 1.21
     //return new ResourceLocation(namespace, path);
   }
 
   public static ResourceLocation fromKey(ResourceKey<Block> blockKey) {
-    //? < 1.21.11
+    //? if < 1.21.11
     return blockKey.location();
-    //? >= 1.21.11
+    //? if >= 1.21.11
     //return blockKey.identifier();
   }
 
-  //? fabric {
+  //? if fabric {
   public static ResourceKey<Block> blockKey(String path) {
     return ResourceKey.create(Registries.BLOCK, id(path));
   }
@@ -98,7 +96,7 @@ public class KnotsAndRings {
   public static ResourceKey<Item> itemKey(String path) {
     return ResourceKey.create(Registries.ITEM, id(path));
   }
-  //?}
+  //? }
 
   public static void modifyCreativeTabs(/*? if !fabric { *//*BuildCreativeModeTabContentsEvent event, *//*? } */Consumer<CreativeTabsModifier> runnable) {
     runnable.accept(new CreativeTabsModifier(/*? if !fabric { *//*event*//*? } */));
@@ -130,21 +128,21 @@ public class KnotsAndRings {
       // TODO: add seeds before saplings?
       //? if !fabric {
       /*return addEntries((entries) -> insertAllAfter(entries, item.get(), toAdd.get()));
-      *///? } else if >= 26.1 {
+       *///? } else if >= 26.1 {
       /*return addEntries((entries) -> entries.insertAfter(item.get(), toAdd.get()));
-      *///? } else {
+       *///? } else {
       return addEntries((entries) -> entries.addAfter(item.get(), toAdd.get()));
       //? }
     }
 
     private CreativeTabsModifier addEntries(ItemEntryModifier entryModifier) {
       if (currentTab == null) return this;
-      //? !fabric
+      //? if !fabric
       //if (event == null || event.getTabKey() != currentTab) return this;
 
-      //? fabric
+      //? if fabric
       ItemGroupEvents.modifyEntriesEvent(currentTab).register(entryModifier::accept);
-      //? !fabric
+      //? if !fabric
       //entryModifier.accept(event);
 
       return this;
@@ -154,16 +152,16 @@ public class KnotsAndRings {
     /*private void insertAllAfter(BuildCreativeModeTabContentsEvent event, ItemLike lastItem, Collection<ItemStack> toAdd) {
       AtomicReference<ItemStack> currentItem = new AtomicReference<>(lastItem.asItem().getDefaultInstance());
       toAdd.forEach((newItem) -> {
-        //? forge
+        //? if forge
         //event.getEntries().putAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
-        //? neoforge
+        //? if neoforge
         //event.insertAfter(currentItem.get(), newItem, CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
         currentItem.set(newItem);
       });
     }
     *///? }
 
-    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { */ /*Consumer<BuildCreativeModeTabContentsEvent> *//*? } */{
+    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { */ /*Consumer<BuildCreativeModeTabContentsEvent> *//*? } */ {
     }
   }
 

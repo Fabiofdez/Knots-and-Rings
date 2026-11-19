@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.client.model;
 
-//? !fabric && <= 1.21.1 {
+//? if !fabric && <= 1.21.1 {
 
 /*import com.google.common.collect.ImmutableMap;
 import com.google.gson.JsonDeserializationContext;
@@ -9,9 +9,9 @@ import com.google.gson.JsonParseException;
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.resources.ResourceLocation;
-//? forge
+//? if forge
 //import net.minecraftforge.client.model.geometry.IGeometryLoader;
-//? neoforge
+//? if neoforge
 //import net.neoforged.neoforge.client.model.geometry.IGeometryLoader;
 import org.jetbrains.annotations.NotNull;
 

@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.mixin.regions_unexplored;
 
-//? 1.20.1 {
+//? if 1.20.1 {
 
 /*import com.google.common.collect.ImmutableMap;
 import fabiofdez.knots_and_rings.KnotsAndRings;

@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.compat.regions_unexplored;
 
-//? <= 1.21.1 {
+//? if <= 1.21.1 {
 
 /*import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.regions_unexplored.world.level.block.state.properties.RuBlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 
-//? >= 1.21.5 {
+//? if >= 1.21.5 {
 import net.minecraft.world.level.ScheduledTickAccess;
  //? }
 

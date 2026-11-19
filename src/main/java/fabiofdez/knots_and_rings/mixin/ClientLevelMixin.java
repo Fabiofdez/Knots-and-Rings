@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? >= 1.21.11 {
+//? if >= 1.21.11 {
 /*import fabiofdez.knots_and_rings.compat.Particles;
 import net.minecraft.core.BlockPos;
 *///? }
@@ -28,7 +28,7 @@ public abstract class ClientLevelMixin {
     stateRef.set(Blocks.AIR.defaultBlockState());
   }
 
-  //? >= 1.21.11 {
+  //? if >= 1.21.11 {
   /*@Inject(method = "addDestroyBlockEffect", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;"))
   protected void knots_and_rings$setStateForParticles(CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> stateRef, @Local(argsOnly = true) BlockPos pos) {
     stateRef.set(Particles.getStateForSapling(stateRef.get(), (ClientLevel) (Object) this, pos));

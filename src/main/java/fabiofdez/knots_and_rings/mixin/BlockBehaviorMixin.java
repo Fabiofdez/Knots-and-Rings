@@ -15,10 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-//? < 1.21.5
-//import net.minecraft.world.level.LevelAccessor;
-//? >= 1.21.5
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
@@ -31,6 +27,11 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+
+//? if < 1.21.5
+//import net.minecraft.world.level.LevelAccessor;
+//? if >= 1.21.5
+import net.minecraft.world.level.LevelReader;
 
 @Mixin(BlockBehaviour.class)
 public abstract class BlockBehaviorMixin {
@@ -51,7 +52,7 @@ public abstract class BlockBehaviorMixin {
   protected void knots_and_rings$randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
   }
 
-  //? > 1.21 {
+  //? if > 1.21 {
   @ModifyReturnValue(method = "isRandomlyTicking", at = @At("RETURN"))
   protected boolean knots_and_rings$isRandomlyTicking(boolean original, @Local(argsOnly = true) BlockState state) {
     return original;
@@ -83,7 +84,7 @@ public abstract class BlockBehaviorMixin {
     return drops;
   }
 
-  //? > 1.21.1 {
+  //? if > 1.21.1 {
   @ModifyReturnValue(method = "getCloneItemStack", at = @At("RETURN"))
   protected ItemStack knots_and_rings$pickBlock(ItemStack original, @Local(argsOnly = true) BlockState state) {
     return original;

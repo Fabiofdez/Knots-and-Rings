@@ -27,7 +27,7 @@ import java.util.Optional;
 
 public class LivingWoodBlock {
 
-  //? <= 1.21.1
+  //? if <= 1.21.1
   //public static final String OLD_CONSTRUCTOR = "(Lnet/minecraft/world/level/block/state/BlockBehaviour$Properties;)Lnet/minecraft/world/level/block/RotatedPillarBlock;";
 
   private static final ImmutableMap<Direction.Axis, LinkedList<Direction>> SIDES_BY_AXIS = ImmutableMap.ofEntries(

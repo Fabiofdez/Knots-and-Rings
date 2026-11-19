@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import org.jetbrains.annotations.Nullable;
+
 import java.util.List;
 
 //? if < 26.1 {
@@ -79,9 +80,9 @@ public class SaplingTint {
 
   @FunctionalInterface
   public interface ColorRegistryEvent {
-    //? < 26.1
+    //? if < 26.1
     void accept(BlockColor provider, Block... blocks);
-    //? >= 26.1
+    //? if >= 26.1
     //void accept(List<BlockTintSource> provider, Block... blocks);
   }
 
@@ -89,7 +90,7 @@ public class SaplingTint {
   public interface TintResolver {
     int apply(@Nullable BlockAndTintGetter tintGetter, @Nullable BlockPos pos);
 
-    //? >= 26.1 {
+    //? if >= 26.1 {
     /*default int resolve() {
       return apply(null, null);
     }

@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.fabric;
 
-//? fabric {
+//? if fabric {
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
@@ -12,7 +12,10 @@ public class FabricEventSubscriber {
   public static void registerEvents() {
     KnotsAndRings.modifyCreativeTabs(ModBlocks::addCreative);
 
-    ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> LogConnectivityCache.invalidateInChunk(level, chunk.getPos()));
+    ServerChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> LogConnectivityCache.invalidateInChunk(
+        level,
+        chunk.getPos()
+    ));
   }
 }
-//?}
+//? }

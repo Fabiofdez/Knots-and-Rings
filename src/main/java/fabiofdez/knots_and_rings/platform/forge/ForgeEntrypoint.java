@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings.platform.forge;
 
-//? forge {
+//? if forge {
 
 /*import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks;
@@ -49,4 +49,4 @@ public class ForgeEntrypoint {
     KnotsAndRings.modifyCreativeTabs(event, ModBlocks::addCreative);
   }
 }
-*///?}
+*///? }

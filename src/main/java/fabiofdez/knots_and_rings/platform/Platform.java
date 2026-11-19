@@ -1,21 +1,24 @@
 package fabiofdez.knots_and_rings.platform;
 
 public interface Platform {
-	boolean isModLoaded(String modId);
+  boolean isModLoaded(String modId);
 
   boolean isModLoading(String modId);
 
-	ModLoader loader();
+  ModLoader loader();
 
-	String mcVersion();
+  String mcVersion();
 
-	boolean isDevelopmentEnvironment();
+  boolean isDevelopmentEnvironment();
 
-	default boolean isDebug() {
-		return isDevelopmentEnvironment();
-	}
+  default boolean isDebug() {
+    return isDevelopmentEnvironment();
+  }
 
-	enum ModLoader {
-		FABRIC, NEOFORGE, FORGE, QUILT
-	}
+  enum ModLoader {
+    FABRIC,
+    NEOFORGE,
+    FORGE,
+    QUILT
+  }
 }
