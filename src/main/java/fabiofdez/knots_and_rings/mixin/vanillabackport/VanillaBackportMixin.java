@@ -5,6 +5,7 @@ package fabiofdez.knots_and_rings.mixin.vanillabackport;
 //? <= 1.21.1 {
 
 /*import com.blackgear.vanillabackport.common.registries.ModBlocks;
+import com.blackgear.vanillabackport.core.VanillaBackport;
 import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
 import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
 import fabiofdez.knots_and_rings.feature.SaplingType;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 
-@SuppressWarnings("UnusedMixin")
+@SuppressWarnings({"UnusedMixin", "unused"})
 @Mixin(ModBlocks.class)
 public class VanillaBackportMixin {
 
@@ -41,9 +42,9 @@ public class VanillaBackportMixin {
   private static void knots_and_rings$initVanillaBackportBlocks(CallbackInfo ci) {
     if (paleOakTreeGrower == null) return;
 
-    SaplingType.add(PALE_OAK, ModBlocks.PALE_OAK_SAPLING, ModBlocks.PALE_OAK_LEAVES, ModBlocks.PALE_OAK_LOG);
-    SaplingStems.add(PALE_OAK, (props) -> SaplingStems.paleOakSaplingBlock(paleOakTreeGrower, props));
-    TreeSeeds.add(PALE_OAK, (props) -> TreeSeeds.seedBlock(ModBlocks.PALE_OAK_SAPLING.get(), props));
+    SaplingType.add(PALE_OAK, (builder) -> builder.withNamespace(VanillaBackport.NAMESPACE));
+    SaplingStems.add(PALE_OAK, SaplingStems.saplingBlock(() -> paleOakTreeGrower));
+    TreeSeeds.add(PALE_OAK, TreeSeeds.seedBlock(() -> ModBlocks.PALE_OAK_SAPLING.get()));
   }
 }
 *///? }

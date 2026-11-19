@@ -76,6 +76,7 @@ stonecutter parameters {
 
 		string(current.parsed >= "1.21", "uses_tree_grower") {
 			replace("(AbstractTreeGrower ", "(TreeGrower ")
+			replace("<AbstractTreeGrower>", "<TreeGrower>")
 		}
 
 		string(current.parsed > "1.21", "blocks_mixin") {

@@ -4,7 +4,6 @@ package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.feature.SaplingType;
-import fabiofdez.knots_and_rings.feature.SaplingTypeID;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.minecraft.core.HolderLookup;
@@ -17,7 +16,10 @@ import net.minecraft.tags.BlockTags;
 //import net.minecraft.tags.BlockItemTags;
 import net.minecraft.world.level.block.Block;
 
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ModTagProvider extends FabricTagProvider.BlockTagProvider {
 
@@ -37,17 +39,18 @@ public class ModTagProvider extends FabricTagProvider.BlockTagProvider {
 
     saplingsTag.setReplace(false);
 
-    for (SaplingTypeID id : SaplingTypeID.values()) {
-      if (id == SaplingTypeID.NONE) continue;
+    Set<SaplingType> vanillaSet = Stream
+        .of(SaplingType.VANILLA_INVENTORY_ORDER)
+        .map(SaplingType::of)
+        .collect(Collectors.toUnmodifiableSet());
 
-      // TODO: make only vanilla seeds required (version-dependent)
-      ResourceKey<Block> blockKey = KnotsAndRings.blockKey(id.seedId());
-      SaplingType type = SaplingType.of(id);
+    for (SaplingType type : SaplingType.all()) {
+      ResourceKey<Block> blockKey = KnotsAndRings.blockKey(type.id().seedId());
 
-      if (type == SaplingType.NONE) {
-        saplingsTag.addOptional(blockKey);
-      } else {
+      if (vanillaSet.contains(type)) {
         saplingsTag.add(blockKey);
+      } else {
+        saplingsTag.addOptional(blockKey);
       }
     }
   }

@@ -19,9 +19,9 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 
     FabricDataGenerator.Pack basePack = generator.createPack();
     //? > 1.21.1
-    basePack.addProvider(ModSoundEventProvider::new);
-    basePack.addProvider(ModTagProvider::new);
+    basePack.addProvider(ModSoundsProvider::new);
     basePack.addProvider(ModLangProvider::new);
+    basePack.addProvider(ModTagProvider::new);
     basePack.addProvider(ModBlockLootTableProvider::new);
 
     ResourceLocation saplingsPackId = KnotsAndRings.id(ResourcePacks.PACK_SAPLINGS.id());

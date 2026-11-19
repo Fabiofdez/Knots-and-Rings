@@ -1,9 +1,14 @@
 package fabiofdez.knots_and_rings.feature;
 
+import com.google.common.collect.ImmutableList;
+import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
 import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.FoliageColor;
@@ -16,14 +21,19 @@ import net.minecraft.world.level.material.Fluids;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
-import static net.minecraft.world.level.block.Blocks.*;
 
 public class SaplingType {
+
+  public static final SaplingTypeID[] VANILLA_INVENTORY_ORDER = new SaplingTypeID[]{
+      OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK, MANGROVE, CHERRY/*? if > 1.21.1 { */, PALE_OAK/*? } */
+  };
 
   private static Map<SaplingTypeID, SaplingType> TYPES = new LinkedHashMap<>();
   private static Map<Block, SaplingType> WOOD_TO_TYPE = new LinkedHashMap<>();
@@ -34,10 +44,10 @@ public class SaplingType {
   private static Map<SaplingTypeID, PlacedStatePredicate> TYPES_PLACE_TRANSFORM = new LinkedHashMap<>();
 
   private final SaplingTypeID ID;
-  private final Supplier<Block> WOOD;
-  private final Supplier<Block> LEAVES;
-  private final Supplier<Block> SAPLING;
   private final Supplier<Integer> TINT;
+  private Supplier<Block> WOOD;
+  private Supplier<Block> LEAVES;
+  private Supplier<Block> SAPLING;
   private Supplier<Block> STEM;
   private Supplier<Block> SEED;
   private Supplier<Item> STICK = () -> Items.STICK;
@@ -45,7 +55,7 @@ public class SaplingType {
   public static final SaplingType NONE = new SaplingType();
 
   private SaplingType() {
-    this(SaplingTypeID.NONE, () -> null, () -> null, () -> null);
+    this(null, () -> null, () -> null, () -> null);
   }
 
   SaplingType(SaplingTypeID id, Supplier<Block> sapling, Supplier<Block> leaves, Supplier<Block> wood) {
@@ -57,6 +67,29 @@ public class SaplingType {
     this.SAPLING = sapling;
     this.LEAVES = leaves;
     this.WOOD = wood;
+    this.TINT = tint;
+  }
+
+  SaplingType(SaplingTypeID id, ResourceLocation saplingId, ResourceLocation leavesId, ResourceLocation woodId, Supplier<Integer> tint) {
+    this.ID = id;
+    this.SAPLING = () -> {
+      Block sapling = BuiltInRegistries.BLOCK/*? if <= 1.21.1 { *//*.get*//*? } else { */.getValue/*? } */(saplingId);
+      this.SAPLING = () -> sapling;
+      return sapling;
+    };
+
+    this.LEAVES = () -> {
+      Block leaves = BuiltInRegistries.BLOCK/*? if <= 1.21.1 { *//*.get*//*? } else { */.getValue/*? } */(leavesId);
+      this.LEAVES = () -> leaves;
+      return leaves;
+    };
+
+    this.WOOD = () -> {
+      Block wood = BuiltInRegistries.BLOCK/*? if <= 1.21.1 { *//*.get*//*? } else { */.getValue/*? } */(woodId);
+      this.WOOD = () -> wood;
+      return wood;
+    };
+
     this.TINT = tint;
   }
 
@@ -148,8 +181,14 @@ public class SaplingType {
     return type;
   }
 
-  public static void add(SaplingTypeID type, Supplier<Block> sapling, Supplier<Block> leaves, Supplier<Block> wood) {
-    TYPES.put(type, new SaplingType(type, sapling, leaves, wood));
+  public static void add(SaplingTypeID id) {
+    SaplingType type = new Builder(id).build();
+    TYPES.put(type.id(), type);
+  }
+
+  public static void add(SaplingTypeID id, UnaryOperator<Builder> transform) {
+    SaplingType type = transform.apply(new Builder(id)).build();
+    TYPES.put(type.id(), type);
   }
 
   public static void add(SaplingTypeID type, Supplier<Block> sapling, Supplier<Block> leaves, Supplier<Block> wood, Supplier<Integer> tint) {
@@ -184,6 +223,10 @@ public class SaplingType {
     SEED_TO_TYPE = Collections.unmodifiableMap(SEED_TO_TYPE);
   }
 
+  public static List<SaplingType> all() {
+    return ImmutableList.copyOf(TYPES.values());
+  }
+
   public static Block lastSaplingInOrder() {
     SaplingType lastType = of(PALE_OAK);
     if (lastType == SaplingType.NONE) lastType = of(CHERRY);
@@ -191,8 +234,12 @@ public class SaplingType {
     return lastType.sapling();
   }
 
-  public static Set<SaplingType> all() {
-    return Set.copyOf(TYPES.values());
+  public static List<ItemStack> getAsOrderedItems() {
+    return Stream
+        .of(VANILLA_INVENTORY_ORDER)
+        .map(SaplingType::of)
+        .map((type) -> type.seed().asItem().getDefaultInstance())
+        .toList();
   }
 
   @Override
@@ -201,16 +248,16 @@ public class SaplingType {
   }
 
   static {
-    add(ACACIA, () -> ACACIA_SAPLING, () -> ACACIA_LEAVES, () -> ACACIA_LOG);
-    add(BIRCH, () -> BIRCH_SAPLING, () -> BIRCH_LEAVES, () -> BIRCH_LOG, () -> FoliageColor.FOLIAGE_BIRCH);
-    add(CHERRY, () -> CHERRY_SAPLING, () -> CHERRY_LEAVES, () -> CHERRY_LOG);
-    add(DARK_OAK, () -> DARK_OAK_SAPLING, () -> DARK_OAK_LEAVES, () -> DARK_OAK_LOG);
-    add(JUNGLE, () -> JUNGLE_SAPLING, () -> JUNGLE_LEAVES, () -> JUNGLE_LOG);
-    add(MANGROVE, () -> MANGROVE_PROPAGULE, () -> MANGROVE_LEAVES, () -> MANGROVE_LOG);
-    add(OAK, () -> OAK_SAPLING, () -> OAK_LEAVES, () -> OAK_LOG);
+    add(ACACIA);
+    add(BIRCH, (builder)  -> builder.setTint(() -> FoliageColor.FOLIAGE_BIRCH));
+    add(CHERRY);
+    add(DARK_OAK);
+    add(JUNGLE);
+    add(MANGROVE);
+    add(OAK);
     //? if > 1.21.1
-    add(PALE_OAK, () -> PALE_OAK_SAPLING, () -> PALE_OAK_LEAVES, () -> PALE_OAK_LOG);
-    add(SPRUCE, () -> SPRUCE_SAPLING, () -> SPRUCE_LEAVES, () -> SPRUCE_LOG, () -> FoliageColor.FOLIAGE_EVERGREEN);
+    add(PALE_OAK);
+    add(SPRUCE, (builder)  -> builder.setTint(() -> FoliageColor.FOLIAGE_EVERGREEN));
 
     MANGROVE.registerPlacedState((state, level, pos) -> {
       FluidState fluid = level.getFluidState(pos);
@@ -226,5 +273,37 @@ public class SaplingType {
     PlacedStatePredicate DEFAULT = (state, level, pos) -> state;
 
     BlockState resolve(BlockState state, BlockGetter level, BlockPos pos);
+  }
+
+  public static class Builder {
+
+    private final SaplingTypeID ID;
+    private String NAMESPACE = ResourceLocation.DEFAULT_NAMESPACE;
+    private Supplier<Integer> TINT = () -> FoliageColor.FOLIAGE_DEFAULT;
+
+    private Builder(SaplingTypeID id) {
+      this.ID = id;
+    }
+
+    @SuppressWarnings("unused")
+    public Builder withNamespace(String namespace) {
+      this.NAMESPACE = namespace;
+      return this;
+    }
+
+    public Builder setTint(Supplier<Integer> tint) {
+      this.TINT = tint;
+      return this;
+    }
+
+    private SaplingType build() {
+      return new SaplingType(
+          ID,
+          KnotsAndRings.id(NAMESPACE, ID.saplingId()),
+          KnotsAndRings.id(NAMESPACE, ID.toString().concat("_leaves")),
+          KnotsAndRings.id(NAMESPACE, ID.toString().concat("_log")),
+          TINT
+      );
+    }
   }
 }
