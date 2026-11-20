@@ -8,22 +8,22 @@ import fabiofdez.knots_and_rings.feature.SaplingTint;
 import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.ColorProviderRegistry;
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
+import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
 //? if <= 1.21.5
-import net.minecraft.client.renderer.RenderType;
+//import net.minecraft.client.renderer.rendertype.RenderType;
 //? if < 26.1 {
-import fabiofdez.knots_and_rings.ModBlocks;
+/*import fabiofdez.knots_and_rings.ModBlocks;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
-import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockRenderLayerMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.Block;
-//? }
+*///? }
 //? if >= 1.21.11 < 26.1
 //import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 
@@ -35,8 +35,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     KnotsAndRings.onInitializeClient();
 
     //? if < 26.1 {
-    BuiltInRegistries.BLOCK.entrySet().forEach((entry) -> {
-      ResourceLocation blockId = KnotsAndRings.fromKey(entry.getKey());
+    /*BuiltInRegistries.BLOCK.entrySet().forEach((entry) -> {
+      Identifier blockId = KnotsAndRings.fromKey(entry.getKey());
       if (!LivingWoodBlock.isLogBlock(blockId) && !LivingWoodBlock.isWoodBlock(blockId)) return;
 
       renderTranslucent(entry.getValue());
@@ -44,9 +44,9 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
     ModBlocks.SaplingStems.forEach(FabricClientEntrypoint::renderCutout);
     ModBlocks.TreeSeeds.forEach(FabricClientEntrypoint::renderCutout);
-    //? }
+    *///? }
 
-    SaplingTint.registerWith(ColorProviderRegistry.BLOCK::register);
+    SaplingTint.registerWith(BlockColorRegistry::register);
 
     ModContainer container = FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).orElse(null);
     if (container == null) return;
@@ -55,17 +55,17 @@ public class FabricClientEntrypoint implements ClientModInitializer {
   }
 
   //? if < 26.1 {
-  private static void renderCutout(Block block) {
-    BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.cutout());
+  /*private static void renderCutout(Block block) {
+    BlockRenderLayerMap.putBlock(block, ChunkSectionLayer.CUTOUT);
   }
 
   private static void renderTranslucent(Block block) {
-    BlockRenderLayerMap.INSTANCE.putBlock(block, RenderType.translucent());
+    BlockRenderLayerMap.putBlock(block, ChunkSectionLayer.TRANSLUCENT);
   }
-  //? }
+  *///? }
 
   private static void addPack(ModContainer container, BuiltInResourcePack pack) {
-    ResourceManagerHelper.registerBuiltinResourcePack(
+    ResourceLoader.registerBuiltinPack(
         KnotsAndRings.id(pack.id()),
         container,
         pack.name(),
@@ -73,8 +73,8 @@ public class FabricClientEntrypoint implements ClientModInitializer {
     );
   }
 
-  private static ResourcePackActivationType activationType(BuiltInResourcePack pack) {
-    return pack.defaultEnabled() ? ResourcePackActivationType.DEFAULT_ENABLED : ResourcePackActivationType.NORMAL;
+  private static PackActivationType activationType(BuiltInResourcePack pack) {
+    return pack.defaultEnabled() ? PackActivationType.DEFAULT_ENABLED : PackActivationType.NORMAL;
   }
 }
 //? }

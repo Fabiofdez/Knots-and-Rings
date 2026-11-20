@@ -1,6 +1,6 @@
 package fabiofdez.knots_and_rings;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 import java.util.function.Supplier;
@@ -37,7 +37,7 @@ public class ModSounds {
 
   //? if fabric {
   private static Supplier<SoundEvent> register(String name) {
-    ResourceLocation soundId = KnotsAndRings.id(name);
+    Identifier soundId = KnotsAndRings.id(name);
     SoundEvent toRegister = SoundEvent.createVariableRangeEvent(soundId);
     SoundEvent registered = Registry.register(BuiltInRegistries.SOUND_EVENT, soundId, toRegister);
 
@@ -45,7 +45,7 @@ public class ModSounds {
   }
   //? } else {
   /*private static Supplier<SoundEvent> register(String name) {
-    ResourceLocation soundId = KnotsAndRings.id(name);
+    Identifier soundId = KnotsAndRings.id(name);
     return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(soundId));
   }
 

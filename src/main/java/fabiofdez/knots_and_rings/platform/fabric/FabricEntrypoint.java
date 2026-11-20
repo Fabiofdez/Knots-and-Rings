@@ -9,7 +9,7 @@ import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.registry.CompostingChanceRegistry;
+import net.fabricmc.fabric.api.registry.CompostableRegistry;
 
 @Entrypoint("main")
 public class FabricEntrypoint implements ModInitializer {
@@ -23,7 +23,7 @@ public class FabricEntrypoint implements ModInitializer {
     ModGameRules.initialize();
 
     FabricEventSubscriber.registerEvents();
-    ModBlocks.registerCompostables(CompostingChanceRegistry.INSTANCE::add);
+    ModBlocks.registerCompostables(CompostableRegistry.INSTANCE::add);
   }
 }
 //? }

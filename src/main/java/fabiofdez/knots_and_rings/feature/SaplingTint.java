@@ -12,14 +12,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 //? if < 26.1 {
-import net.minecraft.client.color.block.BlockColor;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
+/*import net.minecraft.client.color.block.BlockColor;
+import net.minecraft.client.renderer.block.model.CuboidFace;
 import net.minecraft.world.level.BlockAndTintGetter;
-//? } else {
-/*import net.minecraft.client.color.block.BlockTintSource;
+*///? } else {
+import net.minecraft.client.color.block.BlockTintSource;
 import net.minecraft.client.renderer.block.BlockAndTintGetter;
-import net.minecraft.client.resources.model.cuboid.BlockElementFace;
-*///? }
+import net.minecraft.client.resources.model.cuboid.CuboidFace;
+//? }
 
 public class SaplingTint {
 
@@ -40,9 +40,9 @@ public class SaplingTint {
   public static void registerWith(ColorRegistryEvent event) {
 
     //? if < 26.1 {
-    BlockColor provider = (state, tintGetter, pos, tintIdx) -> getSaplingTint(state).apply(tintGetter, pos);
-    //? } else {
-    /*List<BlockTintSource> provider = List.of(new BlockTintSource() {
+    /*BlockColor provider = (state, tintGetter, pos, tintIdx) -> getSaplingTint(state).apply(tintGetter, pos);
+     *///? } else {
+    List<BlockTintSource> provider = List.of(new BlockTintSource() {
       @Override
       public int color(BlockState state) {
         return getSaplingTint(state).resolve();
@@ -53,7 +53,7 @@ public class SaplingTint {
         return getSaplingTint(state).apply(tintGetter, pos);
       }
     });
-    *///? }
+    //? }
 
     event.accept(provider, TO_BE_TINTED.toArray(Block[]::new));
   }
@@ -64,7 +64,7 @@ public class SaplingTint {
     SaplingType type = SaplingType.ofSapling(state.getBlock());
 
     if (immatureSapling || !isSaplingTop || type == SaplingType.NONE) {
-      return (tintGetter, pos) -> BlockElementFace.NO_TINT;
+      return (tintGetter, pos) -> CuboidFace.NO_TINT;
     }
 
     int leavesTint = type.tint();
@@ -81,9 +81,9 @@ public class SaplingTint {
   @FunctionalInterface
   public interface ColorRegistryEvent {
     //? if < 26.1
-    void accept(BlockColor provider, Block... blocks);
+    //void accept(BlockColor provider, Block... blocks);
     //? if >= 26.1
-    //void accept(List<BlockTintSource> provider, Block... blocks);
+    void accept(List<BlockTintSource> provider, Block... blocks);
   }
 
   @FunctionalInterface
@@ -91,9 +91,9 @@ public class SaplingTint {
     int apply(@Nullable BlockAndTintGetter tintGetter, @Nullable BlockPos pos);
 
     //? if >= 26.1 {
-    /*default int resolve() {
+    default int resolve() {
       return apply(null, null);
     }
-    *///? }
+    //? }
   }
 }

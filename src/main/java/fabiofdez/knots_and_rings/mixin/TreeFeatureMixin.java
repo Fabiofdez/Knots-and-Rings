@@ -62,8 +62,8 @@ public class TreeFeatureMixin {
     WorldGenLevel level = ctx.level();
     boolean generateSaplings = level
         .getLevel()
-        .getGameRules()/*? if < 1.21.11 { */.getRule/*? } else { *//*.get*//*? } */(ModGameRules.GENERATE_SAPLINGS/*? if neoforge && >= 1.21.11 { *//*.get()*//*? } */)
-        /*? if < 1.21.11 { */.get()/*? } */;
+        .getGameRules()/*? if < 1.21.11 { *//*.getRule*//*? } else { */.get/*? } */(ModGameRules.GENERATE_SAPLINGS/*? if neoforge && >= 1.21.11 { *//*.get()*//*? } */)
+        /*? if < 1.21.11 { *//*.get()*//*? } */;
     if (!generateSaplings) return;
 
     BlockPos treeOrigin = ctx.origin();

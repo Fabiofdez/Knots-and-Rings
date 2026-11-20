@@ -4,7 +4,7 @@ import net.minecraft.client.particle.ParticleEngine;
 import org.spongepowered.asm.mixin.Mixin;
 
 //? if < 1.21.11 {
-import com.llamalad7.mixinextras.sugar.Local;
+/*import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import fabiofdez.knots_and_rings.compat.Particles;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -14,18 +14,18 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//? }
+*///? }
 
 @Mixin(ParticleEngine.class)
 public class ParticleEngineMixin {
 
   //? if < 1.21.11 {
-  @Shadow
+  /*@Shadow
   protected ClientLevel level;
 
   @Inject(method = "destroy", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;getShape(Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)Lnet/minecraft/world/phys/shapes/VoxelShape;"))
   protected void knots_and_rings$setStateForParticles(CallbackInfo ci, @Local(argsOnly = true) LocalRef<BlockState> stateRef, @Local(argsOnly = true) BlockPos pos) {
     stateRef.set(Particles.getStateForSapling(stateRef.get(), level, pos));
   }
-  //? }
+  *///? }
 }

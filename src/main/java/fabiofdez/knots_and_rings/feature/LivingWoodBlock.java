@@ -7,7 +7,7 @@ import fabiofdez.knots_and_rings.util.NeighborIterable;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
@@ -36,15 +36,15 @@ public class LivingWoodBlock {
       Map.entry(Direction.Axis.Z, makeLoop(Direction.UP, Direction.EAST, Direction.DOWN, Direction.WEST))
   );
 
-  public static boolean isLogBlock(ResourceLocation id) {
+  public static boolean isLogBlock(Identifier id) {
     return id.getPath().endsWith("_log");
   }
 
-  public static boolean isWoodBlock(ResourceLocation id) {
+  public static boolean isWoodBlock(Identifier id) {
     return id.getPath().endsWith("_wood");
   }
 
-  public static boolean isStripped(ResourceLocation id) {
+  public static boolean isStripped(Identifier id) {
     return id.getPath().startsWith("stripped_");
   }
 
@@ -64,7 +64,7 @@ public class LivingWoodBlock {
     return isLivingWoodBlock(state) && isNaturalWood(blockId(state));
   }
 
-  public static boolean isNaturalWood(ResourceLocation id) {
+  public static boolean isNaturalWood(Identifier id) {
     boolean isWood = isLogBlock(id) || isWoodBlock(id);
     return isWood && !isStripped(id);
   }
@@ -135,20 +135,20 @@ public class LivingWoodBlock {
   }
 
   public static boolean compatibleLogs(BlockState thisState, BlockState neighborState) {
-    ResourceLocation thisId = blockId(thisState);
-    ResourceLocation neighborId = blockId(neighborState);
+    Identifier thisId = blockId(thisState);
+    Identifier neighborId = blockId(neighborState);
     if (!compatibleWoods(thisId, neighborId)) return false;
 
     return isLogBlock(thisId) && isLogBlock(neighborId);
   }
 
   public static boolean compatibleWoods(BlockState thisState, BlockState neighborState) {
-    ResourceLocation thisId = blockId(thisState);
-    ResourceLocation neighborId = blockId(neighborState);
+    Identifier thisId = blockId(thisState);
+    Identifier neighborId = blockId(neighborState);
     return compatibleWoods(thisId, neighborId);
   }
 
-  public static boolean compatibleWoods(ResourceLocation thisId, ResourceLocation neighborId) {
+  public static boolean compatibleWoods(Identifier thisId, Identifier neighborId) {
     if (!isNaturalWood(thisId) || !isNaturalWood(neighborId)) return false;
 
     String thisWood = thisId.getPath().replaceAll("_log|_wood", "");
@@ -165,11 +165,11 @@ public class LivingWoodBlock {
   }
 
   public static Optional<Block> getAsLog(Block block) {
-    ResourceLocation id = blockId(block);
+    Identifier id = blockId(block);
     if (isLogBlock(id)) return Optional.of(block);
     if (!isWoodBlock(id)) return Optional.empty();
 
-    ResourceLocation newId = KnotsAndRings.id(id.getNamespace(), id.getPath().replace("_wood", "_log"));
+    Identifier newId = KnotsAndRings.id(id.getNamespace(), id.getPath().replace("_wood", "_log"));
     return BuiltInRegistries.BLOCK.getOptional(newId);
   }
 
@@ -255,11 +255,11 @@ public class LivingWoodBlock {
     level.setBlockAndUpdate(pos, state);
   }
 
-  public static ResourceLocation blockId(BlockState state) {
+  public static Identifier blockId(BlockState state) {
     return blockId(state.getBlock());
   }
 
-  public static ResourceLocation blockId(Block block) {
+  public static Identifier blockId(Block block) {
     return BuiltInRegistries.BLOCK.getKey(block);
   }
 

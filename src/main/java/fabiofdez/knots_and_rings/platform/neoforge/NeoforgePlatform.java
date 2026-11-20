@@ -18,7 +18,7 @@ public class NeoforgePlatform implements Platform {
 
 	@Override
   public boolean isModLoading(String modId) {
-    return LoadingModList.get().getModFileById(modId) != null;
+    return FMLLoader.getCurrent().getLoadingModList().getModFileById(modId) != null;
   }
 
 	@Override

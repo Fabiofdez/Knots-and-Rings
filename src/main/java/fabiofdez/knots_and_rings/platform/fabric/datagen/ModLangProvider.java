@@ -6,10 +6,10 @@ import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingTypeID;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 
 //? if > 1.21 {
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import static fabiofdez.knots_and_rings.feature.SaplingTypeID.*;
 
 public class ModLangProvider extends FabricLanguageProvider {
-  public ModLangProvider(FabricDataOutput dataOutput/*? if > 1.21 { */, CompletableFuture<HolderLookup.Provider> registryLookup/*? } */) {
+  public ModLangProvider(FabricPackOutput dataOutput/*? if > 1.21 { */, CompletableFuture<HolderLookup.Provider> registryLookup/*? } */) {
     super(dataOutput/*? if > 1.21 { */, registryLookup/*? } */);
   }
 
@@ -54,7 +54,7 @@ public class ModLangProvider extends FabricLanguageProvider {
   }
 
   private void addTranslationForSeed(TranslationBuilder builder, SaplingTypeID id, String value) {
-    ResourceLocation seedId = KnotsAndRings.id(id.seedId());
+    Identifier seedId = KnotsAndRings.id(id.seedId());
     //~ if < 1.21.5 'item' -> 'block'
     builder.add(seedId.toLanguageKey("item"), value);
   }

@@ -7,9 +7,9 @@ import fabiofdez.knots_and_rings.feature.GrowingSapling.Properties;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Stage;
 import fabiofdez.knots_and_rings.feature.SaplingShape;
 import fabiofdez.knots_and_rings.feature.SaplingType;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
-import net.minecraft.advancements./*? if < 1.21.11 { */critereon/*? } else if < 26.2 { *//*criterion*//*? } else { *//*predicates*//*? } */.StatePropertiesPredicate;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootSubProvider;
+import net.minecraft.advancements./*? if < 1.21.11 { *//*critereon*//*? } else if < 26.2 { */criterion/*? } else { *//*predicates*//*? } */.StatePropertiesPredicate;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import static fabiofdez.knots_and_rings.block.state.BlockPosOffset.*;
 import static fabiofdez.knots_and_rings.feature.GrowingSapling.Stage.*;
 import static fabiofdez.knots_and_rings.feature.SaplingShape.Layout.*;
-import static net.minecraft.advancements./*? if < 1.21.11 { */critereon/*? } else if < 26.2 { *//*criterion*//*? } else { *//*predicates*//*? } */.StatePropertiesPredicate.Builder.properties;
+import static net.minecraft.advancements./*? if < 1.21.11 { *//*critereon*//*? } else if < 26.2 { */criterion/*? } else { *//*predicates*//*? } */.StatePropertiesPredicate.Builder.properties;
 import static net.minecraft.world.level.storage.loot.LootPool.lootPool;
 import static net.minecraft.world.level.storage.loot.LootTable.lootTable;
 import static net.minecraft.world.level.storage.loot.entries.AlternativesEntry.alternatives;
@@ -41,11 +41,11 @@ import net.minecraft.core.HolderLookup;
 import java.util.concurrent.CompletableFuture;
 //? }
 
-public class ModBlockLootTableProvider extends FabricBlockLootTableProvider {
+public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
 
   private static final BlockConditionProvider IS_SELF_ROOT = (block) -> blockCondition(block, root(SELF));
 
-  protected ModBlockLootTableProvider(FabricDataOutput dataOutput/*? if >= 1.21 { */, CompletableFuture<HolderLookup.Provider> registryLookup/*? } */) {
+  protected ModBlockLootTableProvider(FabricPackOutput dataOutput/*? if >= 1.21 { */, CompletableFuture<HolderLookup.Provider> registryLookup/*? } */) {
     super(dataOutput/*? if >= 1.21 { */, registryLookup/*? } */);
   }
 

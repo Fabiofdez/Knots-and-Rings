@@ -4,11 +4,11 @@ package fabiofdez.knots_and_rings.platform.fabric.datagen;
 
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.feature.SaplingType;
-import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
-import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
+import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.core.HolderLookup;
 //? if >= 1.21.11
-//import net.minecraft.data.tags.TagAppender;
+import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 //? if < 26.2
 import net.minecraft.tags.BlockTags;
@@ -21,19 +21,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ModTagProvider extends FabricTagProvider.BlockTagProvider {
+public class ModTagProvider extends FabricTagsProvider.BlockTagsProvider {
 
-  public ModTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+  public ModTagProvider(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
     super(output, registriesFuture);
   }
 
   @Override
   protected void addTags(HolderLookup.Provider wrapperLookup) {
     //? if < 1.21.11 {
-    FabricTagProvider<Block>.FabricTagBuilder saplingsTag = getOrCreateTagBuilder(BlockTags.SAPLINGS);
-    //? } else if < 26.2 {
-    /*TagAppender<ResourceKey<Block>, Block> saplingsTag = builder(BlockTags.SAPLINGS);
-     *///? } else {
+    /*FabricTagsProvider<Block>.FabricTagBuilder saplingsTag = getOrCreateTagBuilder(BlockTags.SAPLINGS);
+     *///? } else if < 26.2 {
+    TagAppender<ResourceKey<Block>, Block> saplingsTag = builder(BlockTags.SAPLINGS);
+    //? } else {
     /*TagAppender<Block> saplingsTag = builder(BlockTags.SAPLINGS);
      *///? }
 

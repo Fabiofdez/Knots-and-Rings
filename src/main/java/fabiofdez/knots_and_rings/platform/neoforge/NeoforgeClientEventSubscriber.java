@@ -37,7 +37,7 @@ public class NeoforgeClientEventSubscriber {
   ^///? }
 
   @SubscribeEvent
-  public static void registerBlockColorHandlers(RegisterColorHandlersEvent.Block event) {
+  public static void registerBlockColorHandlers(RegisterColorHandlersEvent.BlockTintSources event) {
     SaplingTint.registerWith(event::register);
   }
 

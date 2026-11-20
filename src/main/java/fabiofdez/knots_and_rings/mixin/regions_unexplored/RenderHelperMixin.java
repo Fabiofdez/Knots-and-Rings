@@ -18,7 +18,7 @@ import java.util.Arrays;
 ^///? } else {
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.regions_unexplored.module.platform.RenderHelper;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,7 +49,7 @@ public class RenderHelperMixin {
   ^///? } else {
   @Inject(method = "setRenderType", at = @At("HEAD"))
   private static void knots_and_rings$setEucalyptusTranslucent(CallbackInfo ci, @Local(argsOnly = true) Block block, @Local(argsOnly = true) LocalRef<RenderType> renderType) {
-    if (EUCALYPTUS_BLOCKS.contains(block)) renderType.set(RenderType.translucent());
+    if (EUCALYPTUS_BLOCKS.contains(block)) renderType.set(ChunkSectionLayer.TRANSLUCENT);
   }
   //? }
 }

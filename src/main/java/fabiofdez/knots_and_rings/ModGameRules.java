@@ -1,12 +1,12 @@
 package fabiofdez.knots_and_rings;
 
 //? if <= 1.21.5 {
-import fabiofdez.knots_and_rings.mixin.BooleanValueAccessor;
+/*import fabiofdez.knots_and_rings.mixin.BooleanValueAccessor;
 import fabiofdez.knots_and_rings.mixin.GameRulesAccessor;
-import net.minecraft.world.level.GameRules;
-import net.minecraft.world.level.GameRules.BooleanValue;
-//? } else {
-/*import com.mojang.brigadier.arguments.BoolArgumentType;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.gamerules.GameRules.BooleanValue;
+*///? } else {
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlagSet;
@@ -19,11 +19,11 @@ import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 //? } else {
-/^import net.neoforged.bus.api.IEventBus;
+/*import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
-^///? }
 *///? }
+//? }
 
 public class ModGameRules {
 
@@ -35,20 +35,20 @@ public class ModGameRules {
   *///? }
 
   //? if <= 1.21.5 {
-  public static final GameRules.Key<BooleanValue> GENERATE_SAPLINGS = GameRulesAccessor.knots_and_rings$registerGameRule(
+  /*public static final GameRules.Key<BooleanValue> GENERATE_SAPLINGS = GameRulesAccessor.knots_and_rings$registerGameRule(
       "generate_saplings",
       GameRules.Category.MISC,
       BooleanValueAccessor.knots_and_rings$create(true)
   );
-  //? } else {
-  /*public static /^? if fabric { ^/GameRule<Boolean>/^? } else { ^//^DeferredHolder<GameRule<?>, GameRule<Boolean>>^//^? } ^/ GENERATE_SAPLINGS = registerBooleanGameRule(
+  *///? } else {
+  public static /*? if fabric { */ GameRule<Boolean>/*? } else { *//*DeferredHolder<GameRule<?>, GameRule<Boolean>>*//*? } */ GENERATE_SAPLINGS = registerBooleanGameRule(
       "generate_saplings",
       true,
       GameRuleCategory.MISC
   );
 
   @SuppressWarnings("SameParameterValue")
-  private static /^? if fabric { ^/GameRule<Boolean>/^? } else { ^//^DeferredHolder<GameRule<?>, GameRule<Boolean>>^//^? } ^/ registerBooleanGameRule(String path, boolean defaultValue, GameRuleCategory category) {
+  private static /*? if fabric { */GameRule<Boolean>/*? } else { *//*DeferredHolder<GameRule<?>, GameRule<Boolean>>*//*? } */ registerBooleanGameRule(String path, boolean defaultValue, GameRuleCategory category) {
     GameRule<Boolean> rule = new GameRule<>(
         category,
         GameRuleType.BOOL,
@@ -63,10 +63,10 @@ public class ModGameRules {
     //? if fabric {
     return Registry.register(BuiltInRegistries.GAME_RULE, KnotsAndRings.id(path), rule);
     //? } else {
-    /^return GAME_RULES.register(path, () -> rule);
-    ^///? }
+    /*return GAME_RULES.register(path, () -> rule);
+     *///? }
   }
-  *///? }
+  //? }
 
   public static void initialize() {
   }

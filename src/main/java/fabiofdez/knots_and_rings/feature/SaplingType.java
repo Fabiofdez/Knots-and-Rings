@@ -6,7 +6,7 @@ import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
 import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -70,7 +70,7 @@ public class SaplingType {
     this.TINT = tint;
   }
 
-  SaplingType(SaplingTypeID id, ResourceLocation saplingId, ResourceLocation leavesId, ResourceLocation woodId, Supplier<Integer> tint) {
+  SaplingType(SaplingTypeID id, Identifier saplingId, Identifier leavesId, Identifier woodId, Supplier<Integer> tint) {
     this.ID = id;
     this.SAPLING = () -> {
       Block sapling = BuiltInRegistries.BLOCK/*? if <= 1.21.1 { *//*.get*//*? } else { */.getValue/*? } */(saplingId);
@@ -278,7 +278,7 @@ public class SaplingType {
   public static class Builder {
 
     private final SaplingTypeID ID;
-    private String NAMESPACE = ResourceLocation.DEFAULT_NAMESPACE;
+    private String NAMESPACE = Identifier.DEFAULT_NAMESPACE;
     private Supplier<Integer> TINT = () -> FoliageColor.FOLIAGE_DEFAULT;
 
     private Builder(SaplingTypeID id) {

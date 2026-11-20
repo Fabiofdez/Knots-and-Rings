@@ -8,7 +8,7 @@ import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
 
@@ -24,7 +24,7 @@ public class FabricDataGeneratorEntrypoint implements DataGeneratorEntrypoint {
     basePack.addProvider(ModTagProvider::new);
     basePack.addProvider(ModBlockLootTableProvider::new);
 
-    ResourceLocation saplingsPackId = KnotsAndRings.id(ResourcePacks.PACK_SAPLINGS.id());
+    Identifier saplingsPackId = KnotsAndRings.id(ResourcePacks.PACK_SAPLINGS.id());
     FabricDataGenerator.Pack vanillaSaplings = generator.createBuiltinResourcePack(saplingsPackId);
     // TODO: create datapack(s) for sapling shape tags
 

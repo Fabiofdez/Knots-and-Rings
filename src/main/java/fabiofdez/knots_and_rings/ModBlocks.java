@@ -34,20 +34,17 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceKey;
 //? }
-
 //? if neoforge {
 /*import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.DeferredBlock;
 *///? }
-
 //? if forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 *///? }
-
 //? if < 1.21 {
 /*import net.minecraft.world.level.block.grower.AcaciaTreeGrower;
 import net.minecraft.world.level.block.grower.BirchTreeGrower;
@@ -117,7 +114,7 @@ public class ModBlocks {
       return baseProps
           .offsetType(BlockBehaviour.OffsetType.XZ)
           .mapColor(MapColor.PLANT)
-          .noCollission()
+          .noCollision()
           .randomTicks()
           .instabreak()
           .sound(SoundType.CROP)
@@ -168,7 +165,7 @@ public class ModBlocks {
     public static BlockBehaviour.Properties forSapling(BlockBehaviour.Properties baseProps) {
       return baseProps
           .mapColor(MapColor.PLANT)
-          .noCollission()
+          .noCollision()
           .randomTicks()
           .instabreak()
           .sound(SoundType.GRASS)

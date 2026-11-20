@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 //? if > 1.21 < 1.21.11
-import net.minecraft.world.entity.LivingEntity;
+//import net.minecraft.world.entity.LivingEntity;
 
 public class ItemDamage {
 
@@ -15,10 +15,10 @@ public class ItemDamage {
         //? if < 1.21 {
         /*(p) -> p.broadcastBreakEvent(hand)
          *///? } else if < 1.21.11 {
-        LivingEntity.getSlotForHand(hand)
-        //? } else {
-        /*hand.asEquipmentSlot()
-         *///? }
+        /*LivingEntity.getSlotForHand(hand)
+         *///? } else {
+        hand.asEquipmentSlot()
+        //? }
     );
   }
 }

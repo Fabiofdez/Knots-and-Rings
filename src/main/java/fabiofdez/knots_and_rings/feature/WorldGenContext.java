@@ -25,14 +25,14 @@ public class WorldGenContext {
   }
 
   public static void markVisited(Level level, BlockPos pos) {
-    withGeneratingInChunk(level, new ChunkPos(pos), (trees) -> trees.add(pos));
+    withGeneratingInChunk(level, ChunkPos.containing(pos), (trees) -> trees.add(pos));
   }
 
   public static boolean isNewTree(Level level, BlockPos pos) {
     ChunkMapConsumer<Boolean> checkAction = (chunkMap) -> {
       if (chunkMap == null) return false;
 
-      Set<BlockPos> levelTrees = chunkMap.get(new ChunkPos(pos));
+      Set<BlockPos> levelTrees = chunkMap.get(ChunkPos.containing(pos));
       return levelTrees == null || !levelTrees.contains(pos);
     };
 

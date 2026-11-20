@@ -22,10 +22,10 @@ public class PlacedFeatureMixin {
       //? if forge && < 1.21 {
       /*"m_226362_";
       *///? } else if < 26.1 {
-      /*? if fabric { */"method_39646"/*? } else { *//*"lambda$placeWithContext$4"*//*? } */;
-      //? } else {
-      /*"lambda$placeWithContext$1";
-      *///? }
+      /*/^? if fabric { ^/"method_39646"/^? } else { ^//^"lambda$placeWithContext$4"^//^? } ^/;
+      *///? } else {
+      "lambda$placeWithContext$1";
+      //? }
 
   @Inject(method = PLACE_WITH_CONTEXT, at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/mutable/MutableBoolean;setTrue()V", remap = false), remap = false)
   private static void knots_and_rings$placeSapling(CallbackInfo ci, @Local(argsOnly = true) PlacementContext ctx, @Local(argsOnly = true) BlockPos pos) {

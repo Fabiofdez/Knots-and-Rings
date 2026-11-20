@@ -12,7 +12,7 @@ import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.resources.model.ModelBaker;
 import net.minecraft.client.resources.model.ModelState;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -44,7 +44,7 @@ public final class TexturedCompositeModel implements IUnbakedGeometry<TexturedCo
   }
 
   @Override
-  public void resolveParents(Function<ResourceLocation, UnbakedModel> modelGetter, IGeometryBakingContext context) {
+  public void resolveParents(Function<Identifier, UnbakedModel> modelGetter, IGeometryBakingContext context) {
     children.values().forEach((child) -> child.resolveParents(modelGetter));
   }
 
@@ -56,7 +56,7 @@ public final class TexturedCompositeModel implements IUnbakedGeometry<TexturedCo
 
   @NotNull
   @Override
-  public BakedModel bake(IGeometryBakingContext ctx, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides/^? if forge { ^//^, ResourceLocation modelId^//^? } ^/) {
+  public BakedModel bake(IGeometryBakingContext ctx, ModelBaker baker, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState, ItemOverrides overrides/^? if forge { ^//^, Identifier modelId^//^? } ^/) {
     if (!(ctx instanceof BlockGeometryBakingContext blockContext)) {
       throw new IllegalStateException("\"%s\" can only be used with block models".formatted(TexturedCompositeLoader.ID));
     }
@@ -83,7 +83,7 @@ public final class TexturedCompositeModel implements IUnbakedGeometry<TexturedCo
     return builder.build();
   }
 
-  private BakedModel bakeChild(BlockModel child, ModelBaker baker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState/^? if forge {^//^, ResourceLocation modelId^//^? }^/) {
+  private BakedModel bakeChild(BlockModel child, ModelBaker baker, BlockModel owner, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelState/^? if forge {^//^, Identifier modelId^//^? }^/) {
     Map<String, Either<Material, String>> childTextures = child.textureMap;
 
     Map<String, Either<Material, String>> oldChildTextures = new HashMap<>();

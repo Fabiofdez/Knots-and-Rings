@@ -41,11 +41,11 @@ public class ModSoundsProvider extends FabricSoundsProvider {
   }
 
   private static SoundTypeBuilder blockSound(SoundEvent sound) {
-    return SoundTypeBuilder.of().category(SoundSource.BLOCKS).subtitle(sound.location().toLanguageKey("subtitles"));
+    return SoundTypeBuilder.of().source(SoundSource.BLOCKS).subtitle(sound.location().toLanguageKey("subtitles"));
   }
 
-  private static SoundTypeBuilder.EntryBuilder ofEvent(SoundEvent sound) {
-    return SoundTypeBuilder.EntryBuilder.ofEvent(sound);
+  private static SoundTypeBuilder.RegistrationBuilder ofEvent(SoundEvent sound) {
+    return SoundTypeBuilder.RegistrationBuilder.ofEvent(sound);
   }
 
   @Override

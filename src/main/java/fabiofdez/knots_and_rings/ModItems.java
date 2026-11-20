@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceKey;
 
 import java.util.function.Supplier;
 //? }
-
 //? if neoforge {
 /*import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -18,7 +17,6 @@ import net.neoforged.neoforge.registries.DeferredItem;
 *///? } else {
 import net.minecraft.core.registries.BuiltInRegistries;
 //? }
-
 //? if forge {
 /*import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;

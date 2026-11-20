@@ -1,8 +1,8 @@
 package fabiofdez.knots_and_rings;
 
 import fabiofdez.knots_and_rings.platform.Platform;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -21,8 +21,8 @@ import java.util.function.Supplier;
 *///? }
 //? if fabric {
 import fabiofdez.knots_and_rings.platform.fabric.FabricPlatform;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
+import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
+import net.fabricmc.fabric.api.creativetab.v1.FabricCreativeModeTabOutput;
 import net.minecraft.core.registries.Registries;
 //? } else if neoforge {
 /*import fabiofdez.knots_and_rings.platform.neoforge.NeoforgePlatform;
@@ -66,26 +66,26 @@ public class KnotsAndRings {
      *///? }
   }
 
-  public static ResourceLocation id(String path) {
+  public static Identifier id(String path) {
     return id(MOD_ID, path);
   }
 
-  public static ResourceLocation minecraftId(String path) {
-    return id(ResourceLocation.DEFAULT_NAMESPACE, path);
+  public static Identifier minecraftId(String path) {
+    return id(Identifier.DEFAULT_NAMESPACE, path);
   }
 
-  public static ResourceLocation id(String namespace, String path) {
+  public static Identifier id(String namespace, String path) {
     //? if >= 1.21
-    return ResourceLocation.fromNamespaceAndPath(namespace, path);
+    return Identifier.fromNamespaceAndPath(namespace, path);
     //? if < 1.21
-    //return new ResourceLocation(namespace, path);
+    //return new Identifier(namespace, path);
   }
 
-  public static ResourceLocation fromKey(ResourceKey<Block> blockKey) {
+  public static Identifier fromKey(ResourceKey<Block> blockKey) {
     //? if < 1.21.11
-    return blockKey.location();
+    //return blockKey.location();
     //? if >= 1.21.11
-    //return blockKey.identifier();
+    return blockKey.identifier();
   }
 
   //? if fabric {
@@ -129,10 +129,10 @@ public class KnotsAndRings {
       //? if !fabric {
       /*return addEntries((entries) -> insertAllAfter(entries, item.get(), toAdd.get()));
        *///? } else if >= 26.1 {
-      /*return addEntries((entries) -> entries.insertAfter(item.get(), toAdd.get()));
-       *///? } else {
-      return addEntries((entries) -> entries.addAfter(item.get(), toAdd.get()));
-      //? }
+      return addEntries((entries) -> entries.insertAfter(item.get(), toAdd.get()));
+      //? } else {
+      /*return addEntries((entries) -> entries.addAfter(item.get(), toAdd.get()));
+       *///? }
     }
 
     private CreativeTabsModifier addEntries(ItemEntryModifier entryModifier) {
@@ -141,7 +141,7 @@ public class KnotsAndRings {
       //if (event == null || event.getTabKey() != currentTab) return this;
 
       //? if fabric
-      ItemGroupEvents.modifyEntriesEvent(currentTab).register(entryModifier::accept);
+      CreativeModeTabEvents.modifyOutputEvent(currentTab).register(entryModifier::accept);
       //? if !fabric
       //entryModifier.accept(event);
 
@@ -161,7 +161,7 @@ public class KnotsAndRings {
     }
     *///? }
 
-    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricItemGroupEntries> /*? } else { */ /*Consumer<BuildCreativeModeTabContentsEvent> *//*? } */ {
+    private interface ItemEntryModifier extends/*? if fabric { */ Consumer<FabricCreativeModeTabOutput> /*? } else { */ /*Consumer<BuildCreativeModeTabContentsEvent> *//*? } */ {
     }
   }
 
