@@ -5,12 +5,10 @@ package fabiofdez.knots_and_rings.platform.fabric;
 import dev.kikugie.fletching_table.annotation.fabric.Entrypoint;
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.feature.SaplingTint;
-import fabiofdez.knots_and_rings.resource.BuiltInResourcePack;
+import fabiofdez.knots_and_rings.resource.PackRegistry;
 import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.BlockColorRegistry;
-import net.fabricmc.fabric.api.resource.v1.ResourceLoader;
-import net.fabricmc.fabric.api.resource.v1.pack.PackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 
@@ -48,10 +46,7 @@ public class FabricClientEntrypoint implements ClientModInitializer {
 
     SaplingTint.registerWith(BlockColorRegistry::register);
 
-    ModContainer container = FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).orElse(null);
-    if (container == null) return;
-
-    ResourcePacks.registerWith((pack) -> addPack(container, pack));
+    registerClientResources();
   }
 
   //? if < 26.1 {
@@ -64,17 +59,11 @@ public class FabricClientEntrypoint implements ClientModInitializer {
   }
   *///? }
 
-  private static void addPack(ModContainer container, BuiltInResourcePack pack) {
-    ResourceLoader.registerBuiltinPack(
-        KnotsAndRings.id(pack.id()),
-        container,
-        pack.name(),
-        activationType(pack)
-    );
-  }
+  private static void registerClientResources() {
+    ModContainer container = FabricLoader.getInstance().getModContainer(KnotsAndRings.MOD_ID).orElse(null);
+    if (container == null) return;
 
-  private static PackActivationType activationType(BuiltInResourcePack pack) {
-    return pack.defaultEnabled() ? PackActivationType.DEFAULT_ENABLED : PackActivationType.NORMAL;
+    ResourcePacks.Client.registerPacks(PackRegistry.resolve(container));
   }
 }
 //? }

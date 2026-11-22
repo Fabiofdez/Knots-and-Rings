@@ -62,7 +62,9 @@ dependencies {
 	// implementation(libs.moulberry.mixinconstraints)
 	// jarJar(libs.moulberry.mixinconstraints)
 
-	runtimeOnly("io.github.llamalad7:mixinextras-neoforge:0.5.4")
+	if (sc.current.version < "26.1") {
+		implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.5.0")!!)
+	}
 
 	if (hasProperty("deps.regions-unexplored")) {
 		compileOnly("maven.modrinth:regions-unexplored:${prop("deps.regions-unexplored")}")

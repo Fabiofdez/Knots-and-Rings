@@ -1,0 +1,20 @@
+{
+  "values": [
+    {
+      "id": "minecraft:jungle_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:dark_oak_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:spruce_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:pale_oak_sapling",
+      "required": false
+    }
+  ]
+}

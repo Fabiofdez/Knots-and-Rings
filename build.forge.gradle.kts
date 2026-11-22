@@ -62,11 +62,11 @@ repositories {
 dependencies {
 	annotationProcessor("org.spongepowered:mixin:${libs.versions.mixin.get()}:processor")
 
-	annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.4")
-	compileOnly("io.github.llamalad7:mixinextras-common:0.5.4")
+	annotationProcessor("io.github.llamalad7:mixinextras-common:0.5.0")
+	compileOnly("io.github.llamalad7:mixinextras-common:0.5.0")
 
-	implementation("io.github.llamalad7:mixinextras-forge:0.5.4")
-	jarJar("io.github.llamalad7:mixinextras-forge:0.5.4")
+	implementation("io.github.llamalad7:mixinextras-forge:0.5.0")
+	jarJar("io.github.llamalad7:mixinextras-forge:0.5.0")
 
 	// implementation(libs.moulberry.mixinconstraints)
 	// jarJar(libs.moulberry.mixinconstraints)

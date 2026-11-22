@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class LogConnectivityCache {
+public class LogClusterCache {
   private static int clusterCounter = 1;
 
   private static final Map<ResourceKey<Level>, Set<BlockPos>> EXPLORING = new ConcurrentHashMap<>();

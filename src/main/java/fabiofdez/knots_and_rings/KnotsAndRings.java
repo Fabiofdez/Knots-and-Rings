@@ -48,7 +48,7 @@ public class KnotsAndRings {
   }
 
   public static void onInitializeClient() {
-    LOGGER.info("Initializing {} Client on {}", MOD_ID, KnotsAndRings.xplat().loader());
+    LOGGER.info("Initializing {} ClientPack on {}", MOD_ID, KnotsAndRings.xplat().loader());
     LOGGER.debug("{}: { version: {}; friendly_name: {} }", MOD_ID, MOD_VERSION, MOD_FRIENDLY_NAME);
   }
 

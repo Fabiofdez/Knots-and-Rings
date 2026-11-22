@@ -147,6 +147,7 @@ stonecutter parameters {
 			replace("CompostingChanceRegistry", "CompostableRegistry")
 			replace("SoundTypeBuilder.EntryBuilder", "SoundTypeBuilder.RegistrationBuilder")
 			replace("SoundTypeBuilder.of().category", "SoundTypeBuilder.of().source")
+			replace(".category(SoundSource", ".source(SoundSource")
 			replace("FabricBlockLootTableProvider", "FabricBlockLootSubProvider")
 			replace("FabricTagProvider.BlockTagProvider", "FabricTagsProvider.BlockTagsProvider")
 			replace("FabricTagProvider", "FabricTagsProvider")
@@ -187,6 +188,10 @@ stonecutter parameters {
 		string(loader == "forge" || current.parsed > "1.21") {
 			replace("io.github.uhq_games.regions_unexplored", "net.regions_unexplored")
 			replace("Lio/github/uhq_games/regions_unexplored", "Lnet/regions_unexplored")
+		}
+
+		string(loader == "neoforge" && current.parsed > "1.21.1") {
+			replace("AddReloadListenerEvent", "AddServerReloadListenersEvent")
 		}
 	}
 }

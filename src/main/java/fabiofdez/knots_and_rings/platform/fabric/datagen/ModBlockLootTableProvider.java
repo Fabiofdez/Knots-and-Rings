@@ -20,7 +20,9 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static fabiofdez.knots_and_rings.block.state.BlockPosOffset.*;
@@ -51,13 +53,20 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
 
   @Override
   public void generate() {
+    Set<SaplingType> vanillaSet = Stream
+        .of(SaplingType.VANILLA_INVENTORY_ORDER)
+        .map(SaplingType::of)
+        .collect(Collectors.toUnmodifiableSet());
+
     for (SaplingType type : SaplingType.all()) {
+      if (!vanillaSet.contains(type)) continue;
+
       add(type.sapling(), createSaplingDrops(type));
       add(type.stem(), createSaplingStemDrops(type));
     }
   }
 
-  private LootTable.Builder createSaplingDrops(SaplingType type) {
+  protected LootTable.Builder createSaplingDrops(SaplingType type) {
     Block sapling = type.sapling();
     LootItemCondition.Builder selfRoot = IS_SELF_ROOT.apply(sapling);
     LootItemCondition.Builder isSingleton = blockCondition(sapling, shape(SINGLETON));
@@ -75,7 +84,7 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
     return applyExplosionDecay(sapling, lootTable().withPool(saplingPool));
   }
 
-  private LootTable.Builder createSaplingStemDrops(SaplingType type) {
+  protected LootTable.Builder createSaplingStemDrops(SaplingType type) {
     Block stem = type.stem();
     LootItemCondition.Builder selfRoot = IS_SELF_ROOT.apply(stem);
 
@@ -87,27 +96,27 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
     return applyExplosionDecay(stem, lootTable().withPool(stickPool));
   }
 
-  private static LootItemBlockStatePropertyCondition.Builder propsOf(Block block) {
+  protected static LootItemBlockStatePropertyCondition.Builder propsOf(Block block) {
     return LootItemBlockStatePropertyCondition.hasBlockStateProperties(block);
   }
 
-  private static LootItemCondition.Builder blockCondition(Block block, StatePropertiesPredicate.Builder propValue) {
+  protected static LootItemCondition.Builder blockCondition(Block block, StatePropertiesPredicate.Builder propValue) {
     return propsOf(block).setProperties(propValue);
   }
 
-  private static LootItemCondition.Builder[] blockCondition(Block block, StatePropertiesPredicate.Builder... propValues) {
+  protected static LootItemCondition.Builder[] blockCondition(Block block, StatePropertiesPredicate.Builder... propValues) {
     return Stream
         .of(propValues)
         .map((propValue) -> blockCondition(block, propValue))
         .toArray(LootItemCondition.Builder[]::new);
   }
 
-  private static <T extends Comparable<T> & StringRepresentable> StatePropertiesPredicate.Builder propValue(Property<T> property, T value) {
+  protected static <T extends Comparable<T> & StringRepresentable> StatePropertiesPredicate.Builder propValue(Property<T> property, T value) {
     return properties().hasProperty(property, value.getSerializedName());
   }
 
   @SafeVarargs
-  private static <T extends Comparable<T> & StringRepresentable> StatePropertiesPredicate.Builder[] propValues(Property<T> property, T... values) {
+  protected static <T extends Comparable<T> & StringRepresentable> StatePropertiesPredicate.Builder[] propValues(Property<T> property, T... values) {
     return Stream
         .of(values)
         .map((value) -> propValue(property, value))
@@ -115,36 +124,36 @@ public class ModBlockLootTableProvider extends FabricBlockLootSubProvider {
   }
 
   @SuppressWarnings("unused")
-  private static StatePropertiesPredicate.Builder stage(Stage value) {
+  protected static StatePropertiesPredicate.Builder stage(Stage value) {
     return propValue(Properties.GROWTH_STAGE, value);
   }
 
   @SuppressWarnings("SameParameterValue")
-  private static StatePropertiesPredicate.Builder[] stage(Stage... values) {
+  protected static StatePropertiesPredicate.Builder[] stage(Stage... values) {
     return propValues(Properties.GROWTH_STAGE, values);
   }
 
   @SuppressWarnings("SameParameterValue")
-  private static StatePropertiesPredicate.Builder shape(SaplingShape.Layout value) {
+  protected static StatePropertiesPredicate.Builder shape(SaplingShape.Layout value) {
     return propValue(Properties.TREE_SHAPE, value);
   }
 
   @SuppressWarnings("unused")
-  private static StatePropertiesPredicate.Builder[] shape(SaplingShape.Layout... values) {
+  protected static StatePropertiesPredicate.Builder[] shape(SaplingShape.Layout... values) {
     return propValues(Properties.TREE_SHAPE, values);
   }
 
   @SuppressWarnings("SameParameterValue")
-  private static StatePropertiesPredicate.Builder root(BlockPosOffset value) {
+  protected static StatePropertiesPredicate.Builder root(BlockPosOffset value) {
     return propValue(Properties.TREE_ROOT, value);
   }
 
   @SuppressWarnings("unused")
-  private static StatePropertiesPredicate.Builder[] root(BlockPosOffset... values) {
+  protected static StatePropertiesPredicate.Builder[] root(BlockPosOffset... values) {
     return propValues(Properties.TREE_ROOT, values);
   }
 
-  private interface BlockConditionProvider extends Function<Block, LootItemCondition.Builder> {
+  protected interface BlockConditionProvider extends Function<Block, LootItemCondition.Builder> {
   }
 }
 //? }

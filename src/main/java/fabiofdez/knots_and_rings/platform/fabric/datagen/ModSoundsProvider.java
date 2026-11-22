@@ -9,10 +9,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.CompletableFuture;
+
+//? if < 1.21.11
+//import net.minecraft.sounds.SoundSource;
 
 public class ModSoundsProvider extends FabricSoundsProvider {
   public ModSoundsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
@@ -41,7 +43,8 @@ public class ModSoundsProvider extends FabricSoundsProvider {
   }
 
   private static SoundTypeBuilder blockSound(SoundEvent sound) {
-    return SoundTypeBuilder.of().source(SoundSource.BLOCKS).subtitle(sound.location().toLanguageKey("subtitles"));
+    String subtitleKey = sound.location().toLanguageKey("subtitles");
+    return SoundTypeBuilder.of()/*? if < 1.21.11 { *//*.source(SoundSource.BLOCKS)*//*? } */.subtitle(subtitleKey);
   }
 
   private static SoundTypeBuilder.RegistrationBuilder ofEvent(SoundEvent sound) {

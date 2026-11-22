@@ -114,7 +114,8 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
     BlockPos oldTreeRootPos = shape.root();
 
     if (oldLayout == SaplingShape.Layout.SINGLETON && saplingStage.LEQ(Stage.SAPLING)) {
-      shape = GrowingSapling.findShapeForSapling(state, level, pos);
+      SaplingType type = SaplingType.resolve(state.getBlock());
+      shape = GrowingSapling.findShapeForSapling(type, state, level, pos);
     }
 
     if (shape.isEmpty()) return false;

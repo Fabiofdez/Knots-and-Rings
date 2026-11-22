@@ -8,6 +8,8 @@ import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingType;
+import fabiofdez.knots_and_rings.resource.PackRegistry;
+import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
@@ -15,15 +17,16 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @Mod(KnotsAndRings.MOD_ID)
 public class NeoforgeEntrypoint {
 
-	public NeoforgeEntrypoint(IEventBus modEventBus, ModContainer ignored) {
-		KnotsAndRings.onInitialize();
-		ModBlocks.initialize();
+  public NeoforgeEntrypoint(IEventBus modEventBus, ModContainer ignored) {
+    KnotsAndRings.onInitialize();
+    ModBlocks.initialize();
     ModItems.initialize();
     ModSounds.initialize();
     ModGameRules.initialize();
@@ -37,7 +40,8 @@ public class NeoforgeEntrypoint {
 
     modEventBus.addListener(this::commonSetup);
     modEventBus.addListener(this::modifyCreativeTabs);
-	}
+    modEventBus.addListener(this::addFeaturePacks);
+  }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
     SaplingType.freezeTypes();
@@ -51,8 +55,12 @@ public class NeoforgeEntrypoint {
     KnotsAndRings.modifyCreativeTabs(event, ModBlocks::addCreative);
   }
 
-	@SubscribeEvent
-  public void onServerStarting(ServerStartingEvent event) {
+  private void addFeaturePacks(final AddPackFindersEvent event) {
+    ResourcePacks.Server.registerPacks(PackRegistry.resolve(event));
+  }
+
+  @SubscribeEvent
+  private void onServerStarting(ServerStartingEvent event) {
   }
 }
 *///? }

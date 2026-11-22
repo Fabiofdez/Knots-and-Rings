@@ -8,10 +8,14 @@ import fabiofdez.knots_and_rings.ModGameRules;
 import fabiofdez.knots_and_rings.ModItems;
 import fabiofdez.knots_and_rings.ModSounds;
 import fabiofdez.knots_and_rings.feature.SaplingType;
+import fabiofdez.knots_and_rings.resource.PackRegistry;
+import fabiofdez.knots_and_rings.resource.ResourcePacks;
 import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AddPackFindersEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -35,6 +39,7 @@ public class ForgeEntrypoint {
 
     modEventBus.addListener(this::commonSetup);
     modEventBus.addListener(this::modifyCreativeTabs);
+    modEventBus.addListener(this::addFeaturePacks);
   }
 
   private void commonSetup(final FMLCommonSetupEvent event) {
@@ -47,6 +52,10 @@ public class ForgeEntrypoint {
 
   private void modifyCreativeTabs(BuildCreativeModeTabContentsEvent event) {
     KnotsAndRings.modifyCreativeTabs(event, ModBlocks::addCreative);
+  }
+
+  private void addFeaturePacks(final AddPackFindersEvent event) {
+    ResourcePacks.Server.registerPacks(PackRegistry.resolve(event));
   }
 }
 *///? }

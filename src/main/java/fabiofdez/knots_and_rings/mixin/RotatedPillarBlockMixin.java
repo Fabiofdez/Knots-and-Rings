@@ -10,7 +10,7 @@ import fabiofdez.knots_and_rings.compat.ItemDamage;
 import fabiofdez.knots_and_rings.compat.Particles;
 import fabiofdez.knots_and_rings.feature.LivingWoodBlock;
 import fabiofdez.knots_and_rings.feature.LivingWoodCluster;
-import fabiofdez.knots_and_rings.feature.LogConnectivityCache;
+import fabiofdez.knots_and_rings.feature.LogClusterCache;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -122,8 +122,8 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
   protected void knots_and_rings$randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random, CallbackInfo ci) {
     if (!LivingWoodBlock.isNaturalWood(state)) return;
 
-    if (LogConnectivityCache.exploring(level, pos)) return;
-    Boolean cachedAlive = LogConnectivityCache.checkCached(level, pos);
+    if (LogClusterCache.exploring(level, pos)) return;
+    Boolean cachedAlive = LogClusterCache.checkCached(level, pos);
     if (cachedAlive == null) {
       LivingWoodCluster.attemptRevivePath(level, pos);
     } else {
@@ -156,8 +156,8 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
     if (!LivingWoodBlock.isNaturalWood(state)) return;
     if (!(levelAccess instanceof Level level)) return;
 
-    if (LogConnectivityCache.checkCached(level, pos) != null) {
-      LogConnectivityCache.invalidateAttachedTo(level, pos);
+    if (LogClusterCache.checkCached(level, pos) != null) {
+      LogClusterCache.invalidateAttachedTo(level, pos);
     }
   }
 
@@ -199,7 +199,7 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
       if (player != null) ItemDamage.hurtAndBreak(stack, hand, player, 1);
       state = state.setValue(SIDES, LogSide.Mapping.M_0000);
       if (isNatural) {
-        LogConnectivityCache.invalidateAttachedTo(level, pos);
+        LogClusterCache.invalidateAttachedTo(level, pos);
         LivingWoodCluster.revivePathOrDecay(level, pos, true);
         LivingWoodBlock.updateIsTrunk(state, level, pos, false);
       } else {
@@ -231,7 +231,7 @@ public abstract class RotatedPillarBlockMixin extends BlockMixin implements Bone
       if (isTrunk) {
         level.setBlockAndUpdate(pos, newState);
       } else {
-        LogConnectivityCache.invalidateAttachedTo(level, pos);
+        LogClusterCache.invalidateAttachedTo(level, pos);
         LivingWoodBlock.updateIsTrunk(state, level, pos, true);
         healRandomNeighbors(level, pos);
       }

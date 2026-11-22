@@ -188,8 +188,8 @@ public class GrowingSapling {
     level.setBlockAndUpdate(pos, newState);
   }
 
-  public static SaplingShape findShapeForSapling(BlockState state, BlockGetter level, BlockPos pos) {
-    for (SaplingShape.Layout layout : SaplingShape.Layout.values()) {
+  public static SaplingShape findShapeForSapling(SaplingType type, BlockState state, BlockGetter level, BlockPos pos) {
+    for (SaplingShape.Layout layout : type.getPossibleShapes()) {
       SaplingShape inPlace = layout.nearbySource(state, level, pos);
       if (!inPlace.isEmpty()) return inPlace;
     }

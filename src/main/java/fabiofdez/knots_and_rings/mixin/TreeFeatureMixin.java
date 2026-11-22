@@ -92,7 +92,7 @@ public class TreeFeatureMixin {
 
     spotsForSaplings(level, random, treeOrigin, treeDist, Range.btwn(1, 3)).forEach((origin) -> {
       Layout maxLayout = random.nextBoolean() ? Layout.SQUARE_SM : Layout.SINGLETON;
-      SaplingShape shape = findSpaceForSapling(level, origin, maxLayout);
+      SaplingShape shape = findSpaceForSapling(type, level, origin, maxLayout);
       if (shape == SaplingShape.NO_SHAPE) return;
 
       Set<BlockPos> saplingSpots = shape.allPositions();
@@ -175,7 +175,7 @@ public class TreeFeatureMixin {
   }
 
   @Unique
-  private static SaplingShape findSpaceForSapling(BlockGetter level, BlockPos root, Layout maxLayout) {
+  private static SaplingShape findSpaceForSapling(SaplingType type, BlockGetter level, BlockPos root, Layout maxLayout) {
     Predicate<BlockPos> isReplaceable = (pos) -> {
       BlockState state = level.getBlockState(pos);
       if (state.is(Blocks.AIR)) return true;
@@ -189,7 +189,7 @@ public class TreeFeatureMixin {
       return isReplaceable.test(topHalf) && isReplaceable.test(topHalf.above());
     };
 
-    for (Layout layout : Layout.values()) {
+    for (Layout layout : type.getPossibleShapes()) {
       if (layout.compareTo(maxLayout) < 0) continue;
 
       SaplingShape inPlace = layout.spaceAvailableAt(root, isReplaceable);

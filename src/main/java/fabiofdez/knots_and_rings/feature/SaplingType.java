@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import fabiofdez.knots_and_rings.KnotsAndRings;
 import fabiofdez.knots_and_rings.ModBlocks.SaplingStems;
 import fabiofdez.knots_and_rings.ModBlocks.TreeSeeds;
+import fabiofdez.knots_and_rings.feature.SaplingShape.Layout;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +36,8 @@ public class SaplingType {
   public static final SaplingTypeID[] VANILLA_INVENTORY_ORDER = new SaplingTypeID[]{
       OAK, SPRUCE, BIRCH, JUNGLE, ACACIA, DARK_OAK, MANGROVE, CHERRY/*? if > 1.21.1 { */, PALE_OAK/*? } */
   };
+
+  public static final SaplingType NONE = new SaplingType();
 
   private static Map<SaplingTypeID, SaplingType> TYPES = new LinkedHashMap<>();
   private static Map<Block, SaplingType> WOOD_TO_TYPE = new LinkedHashMap<>();
@@ -51,8 +55,7 @@ public class SaplingType {
   private Supplier<Block> STEM;
   private Supplier<Block> SEED;
   private Supplier<Item> STICK = () -> Items.STICK;
-
-  public static final SaplingType NONE = new SaplingType();
+  private List<Layout> POSSIBLE_SHAPES;
 
   private SaplingType() {
     this(null, () -> null, () -> null, () -> null);
@@ -149,6 +152,18 @@ public class SaplingType {
     return TYPES_PLACE_TRANSFORM.getOrDefault(id(), PlacedStatePredicate.DEFAULT).resolve(state, level, pos);
   }
 
+  public List<Layout> getPossibleShapes() {
+    if (this.POSSIBLE_SHAPES != null) return this.POSSIBLE_SHAPES;
+
+    BlockState sapling = sapling().defaultBlockState();
+    this.POSSIBLE_SHAPES = Arrays
+        .stream(Layout.values())
+        .filter((shape) -> shape != Layout.NONE && sapling.is(shape.tag()))
+        .toList();
+
+    return this.POSSIBLE_SHAPES;
+  }
+
   public static SaplingType of(SaplingTypeID type) {
     if (SAPLING_TO_TYPE.isEmpty()) return NONE;
     return TYPES.getOrDefault(type, NONE);
@@ -221,6 +236,12 @@ public class SaplingType {
     SAPLING_TO_TYPE = Collections.unmodifiableMap(SAPLING_TO_TYPE);
     STEM_TO_TYPE = Collections.unmodifiableMap(STEM_TO_TYPE);
     SEED_TO_TYPE = Collections.unmodifiableMap(SEED_TO_TYPE);
+  }
+
+  public static void resetPossibleShapes() {
+    for (SaplingType type : TYPES.values()) {
+      type.POSSIBLE_SHAPES = null;
+    }
   }
 
   public static List<SaplingType> all() {

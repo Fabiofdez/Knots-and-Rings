@@ -43,7 +43,7 @@ public class LivingWoodCluster {
 
     queue.add(start);
     pathTrace.put(start, null);
-    LogConnectivityCache.markExploring(level, start);
+    LogClusterCache.markExploring(level, start);
     BlockState startState = level.getBlockState(start);
 
     while (!queue.isEmpty()) {
@@ -61,7 +61,7 @@ public class LivingWoodCluster {
         if (!LivingWoodBlock.compatibleWoods(startState, neighbor)) return;
 
         queue.add(neighborPos);
-        Boolean cachedNeighborAlive = LogConnectivityCache.checkCached(level, neighborPos);
+        Boolean cachedNeighborAlive = LogClusterCache.checkCached(level, neighborPos);
         if (cachedNeighborAlive != null) {
           if (cachedNeighborAlive && foundPath.get() == null) foundPath.set(buildTracedPath(pathTrace, current));
           existingAttachment.set(neighborPos.immutable());
@@ -70,19 +70,19 @@ public class LivingWoodCluster {
 
         if (!pathTrace.containsKey(neighborPos)) {
           pathTrace.put(neighborPos, current);
-          LogConnectivityCache.markExploring(level, start);
+          LogClusterCache.markExploring(level, start);
         }
       });
     }
 
     Iterable<BlockPos> resolvedPath = foundPath.get();
     Iterable<BlockPos> explored = Optional.ofNullable(resolvedPath).orElse(cluster);
-    LogConnectivityCache.forgetExplored(level, explored);
+    LogClusterCache.forgetExplored(level, explored);
 
     if (existingAttachment.get() != null) {
-      LogConnectivityCache.attachToCluster(level, existingAttachment.get(), explored);
+      LogClusterCache.attachToCluster(level, existingAttachment.get(), explored);
     } else {
-      LogConnectivityCache.cacheCluster(level, start, cluster, resolvedPath != null);
+      LogClusterCache.cacheCluster(level, start, cluster, resolvedPath != null);
     }
 
     return resolvedPath;

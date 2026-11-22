@@ -1,11 +1,14 @@
 package fabiofdez.knots_and_rings.feature;
 
 import com.google.common.collect.ImmutableSet;
+import fabiofdez.knots_and_rings.ModTags;
 import fabiofdez.knots_and_rings.block.state.BlockPosOffset;
 import fabiofdez.knots_and_rings.block.state.BlockPosOffset.MemberSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraft.world.phys.Vec3;
@@ -115,37 +118,38 @@ public class SaplingShape {
   }
 
   public enum Layout implements StringRepresentable {
-    // TODO: Other shapes? method to resolve shape from sapling type?
-
-    SQUARE_LG("3x3", MemberSet.ALL_AROUND, MemberSet.ALL_AROUND),
-    SQUARE_SM("2x2", Set.of(E, SE, S), Set.of(W, NW, N), SE),
-    SINGLETON("single", Set.of()),
+    // TODO: Other shapes?
+    SQUARE_LG("3x3", ModTags.GROWS_SQUARE_LG, MemberSet.ALL_AROUND, MemberSet.ALL_AROUND),
+    SQUARE_SM("2x2", ModTags.GROWS_SQUARE_SM, Set.of(E, SE, S), Set.of(W, NW, N), SE),
+    SINGLETON("single", ModTags.GROWS_SINGLETON, Set.of()),
     NONE("none");
 
     private final Set<BlockPosOffset> OFFSETS;
     private final Set<BlockPosOffset> POSSIBLE_ROOT_OFFSETS;
 
-    private final SaplingPlacement ROOT_PLACEMENT;
     private final String NAME;
+    private final TagKey<Block> SAPLING_TAG;
+    private final SaplingPlacement ROOT_PLACEMENT;
 
     Layout(String name) {
-      this(name, null, null);
+      this(name, null, null, null);
     }
 
-    Layout(String name, Set<BlockPosOffset> offsets) {
-      this(name, offsets, offsets);
+    Layout(String name, TagKey<Block> tag, Set<BlockPosOffset> offsets) {
+      this(name, tag, offsets, offsets);
     }
 
-    Layout(String name, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets) {
-      this(name, offsets, possibleRootOffsets, SaplingPlacement.CENTER);
+    Layout(String name, TagKey<Block> tag, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets) {
+      this(name, tag, offsets, possibleRootOffsets, SaplingPlacement.CENTER);
     }
 
-    Layout(String name, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets, BlockPosOffset rootOffset) {
-      this(name, offsets, possibleRootOffsets, SaplingPlacement.to(rootOffset));
+    Layout(String name, TagKey<Block> tag, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets, BlockPosOffset rootOffset) {
+      this(name, tag, offsets, possibleRootOffsets, SaplingPlacement.to(rootOffset));
     }
 
-    Layout(String name, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets, SaplingPlacement rootPlacement) {
+    Layout(String name, TagKey<Block> tag, Set<BlockPosOffset> offsets, Set<BlockPosOffset> possibleRootOffsets, SaplingPlacement rootPlacement) {
       this.NAME = name;
+      this.SAPLING_TAG = tag;
       this.ROOT_PLACEMENT = rootPlacement;
 
       if (offsets == null) offsets = Set.of();
@@ -228,9 +232,13 @@ public class SaplingShape {
       return GrowingSapling.growthStage(other).LEQ(thisStage);
     }
 
+    public TagKey<Block> tag() {
+      return this.SAPLING_TAG;
+    }
+
     @Override
     public String toString() {
-      return NAME;
+      return this.NAME;
     }
 
     @NotNull
