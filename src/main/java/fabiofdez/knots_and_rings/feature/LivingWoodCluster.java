@@ -58,7 +58,7 @@ public class LivingWoodCluster {
           return;
         }
 
-        if (!LivingWoodBlock.compatibleWoods(startState, neighbor)) return;
+        if (!LivingWoodBlock.compatibleWoodTypes(startState, neighbor)) return;
 
         queue.add(neighborPos);
         Boolean cachedNeighborAlive = LogClusterCache.checkCached(level, neighborPos);

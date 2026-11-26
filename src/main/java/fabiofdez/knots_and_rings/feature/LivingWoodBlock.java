@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 
 public class LivingWoodBlock {
 
@@ -61,10 +62,9 @@ public class LivingWoodBlock {
   }
 
   public static boolean isNaturalWood(BlockState state) {
-    return isLivingWoodBlock(state) && isNaturalWood(blockId(state));
-  }
+    if (!isLivingWoodBlock(state)) return false;
 
-  public static boolean isNaturalWood(Identifier id) {
+    Identifier id = blockId(state);
     boolean isWood = isLogBlock(id) || isWoodBlock(id);
     return isWood && !isStripped(id);
   }
@@ -135,26 +135,22 @@ public class LivingWoodBlock {
   }
 
   public static boolean compatibleLogs(BlockState thisState, BlockState neighborState) {
-    Identifier thisId = blockId(thisState);
-    Identifier neighborId = blockId(neighborState);
-    if (!compatibleWoods(thisId, neighborId)) return false;
-
-    return isLogBlock(thisId) && isLogBlock(neighborId);
+    BiPredicate<Identifier, Identifier> bothLogs = (thisId, neighborId) -> isLogBlock(thisId) && isLogBlock(neighborId);
+    return compatibleWoodTypes(thisState, neighborState, bothLogs);
   }
 
-  public static boolean compatibleWoods(BlockState thisState, BlockState neighborState) {
-    Identifier thisId = blockId(thisState);
-    Identifier neighborId = blockId(neighborState);
-    return compatibleWoods(thisId, neighborId);
+  public static boolean compatibleWoodTypes(BlockState thisState, BlockState neighborState) {
+    return compatibleWoodTypes(thisState, neighborState, (thisId, neighborId) -> true);
   }
 
-  public static boolean compatibleWoods(Identifier thisId, Identifier neighborId) {
-    if (!isNaturalWood(thisId) || !isNaturalWood(neighborId)) return false;
+  public static boolean compatibleWoodTypes(BlockState thisState, BlockState neighborState, BiPredicate<Identifier, Identifier> idPredicate) {
+    if (!isNaturalWood(thisState) || !isNaturalWood(neighborState)) return false;
 
+    Identifier thisId = blockId(thisState);
+    Identifier neighborId = blockId(neighborState);
     String thisWood = thisId.getPath().replaceAll("_log|_wood", "");
     String neighborWood = neighborId.getPath().replaceAll("_log|_wood", "");
-
-    return thisWood.equals(neighborWood);
+    return thisWood.equals(neighborWood) && idPredicate.test(thisId, neighborId);
   }
 
   public static boolean identicalLogs(BlockState thisState, BlockState neighborState) {
