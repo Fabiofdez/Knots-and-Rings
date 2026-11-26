@@ -58,10 +58,8 @@ public abstract class BlockMixin extends BlockBehaviorMixin {
     boolean chance = random.nextFloat() < fallDistance - 0.5;
     if (!chance) return;
 
-    boolean mobGriefing = serverLevel
-        //~ if >= 1.21.11 '.get();' -> ';'
-        .getGameRules().get(GameRules.MOB_GRIEFING);
-
+    //~ if >= 1.21.11 '.get();' -> ';'
+    boolean mobGriefing = serverLevel.getGameRules().get(GameRules.MOB_GRIEFING);
     boolean entityLargeEnough = entity.getBbWidth() * entity.getBbWidth() * entity.getBbHeight() > 0.512F;
     if ((entity instanceof Player || mobGriefing) && entityLargeEnough) stompAction.run();
   }

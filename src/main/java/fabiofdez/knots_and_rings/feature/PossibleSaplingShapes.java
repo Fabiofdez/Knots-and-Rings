@@ -1,5 +1,6 @@
 package fabiofdez.knots_and_rings.feature;
 
+import com.google.common.collect.ImmutableMap;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
@@ -16,7 +17,7 @@ public class PossibleSaplingShapes {
   private static final List<TagKey<Block>> MAX_SQ_2X2 = List.of(GROWS_SINGLETON, GROWS_SQUARE_SM);
   private static final List<TagKey<Block>> MAX_SQ_3X3 = List.of(GROWS_SINGLETON, GROWS_SQUARE_SM, GROWS_SQUARE_LG);
 
-  public static final Map<SaplingTypeID, List<TagKey<Block>>> VANILLA = Map.ofEntries(
+  public static final Map<SaplingTypeID, List<TagKey<Block>>> VANILLA = ImmutableMap.ofEntries(
       entry(ACACIA, MAX_SINGLETON),
       entry(BIRCH, MAX_SINGLETON),
       entry(CHERRY, MAX_SINGLETON),
@@ -29,7 +30,7 @@ public class PossibleSaplingShapes {
       entry(SPRUCE, MAX_SQ_2X2)
   );
 
-  public static final Map<SaplingTypeID, List<TagKey<Block>>> ARBORIA_SAPLINGS = Map.ofEntries(
+  public static final Map<SaplingTypeID, List<TagKey<Block>>> ARBORIA_SAPLINGS = ImmutableMap.ofEntries(
       entry(BIRCH, MAX_SQ_2X2),
       entry(CHERRY, MAX_SQ_2X2),
       entry(MANGROVE, MAX_SQ_2X2),

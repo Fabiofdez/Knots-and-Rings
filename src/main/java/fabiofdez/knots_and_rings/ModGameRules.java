@@ -8,7 +8,6 @@ import net.minecraft.world.level.gamerules.GameRules.BooleanValue;
 *///? } else {
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.serialization.Codec;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRuleCategory;
@@ -19,7 +18,8 @@ import net.minecraft.world.level.gamerules.GameRuleTypeVisitor;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 //? } else {
-/*import net.neoforged.bus.api.IEventBus;
+/*import net.minecraft.core.registries.Registries;
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 *///? }

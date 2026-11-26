@@ -95,10 +95,10 @@ public class SaplingShape {
     LAYOUT.forEachOffset((offset) -> action.accept(offset, offset.from(ROOT)));
   }
 
-  public Set<BlockPos> perimeter() {
+  public Set<BlockPos> perimeter(Set<BlockPosOffset> includedDirections) {
     Set<BlockPos> shapePositions = allPositions();
 
-    Function<BlockPos, Stream<BlockPos>> perimeterAroundPos = (pos) -> MemberSet.ALL_AROUND
+    Function<BlockPos, Stream<BlockPos>> perimeterAroundPos = (pos) -> includedDirections
         .stream()
         .map((offset) -> offset.from(pos))
         .filter((offsetPos) -> !shapePositions.contains(offsetPos));
@@ -108,6 +108,10 @@ public class SaplingShape {
         .map(perimeterAroundPos)
         .reduce(Stream.empty(), Stream::concat)
         .collect(Collectors.toUnmodifiableSet());
+  }
+
+  public Set<BlockPos> perimeter() {
+    return perimeter(MemberSet.ALL_AROUND);
   }
 
   public Set<BlockPos> perimeterSaplings(BlockGetter level) {
@@ -210,10 +214,10 @@ public class SaplingShape {
       return NO_SHAPE;
     }
 
-    public SaplingShape spaceAvailableAt(BlockPos pos, Predicate<BlockPos> isEmpty) {
+    public SaplingShape spaceAvailableAt(BlockPos pos, Predicate<BlockPos> isValidSpot) {
       for (BlockPos neighbor : possibleSourcesNear(pos)) {
-        if (!isEmpty.test(neighbor)) continue;
-        if (!membersAround(neighbor).stream().allMatch(isEmpty)) continue;
+        if (!isValidSpot.test(neighbor)) continue;
+        if (!membersAround(neighbor).stream().allMatch(isValidSpot)) continue;
 
         return inPlace(neighbor);
       }

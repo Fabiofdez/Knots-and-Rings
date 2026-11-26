@@ -1,19 +1,7 @@
 {
   "values": [
     {
-      "id": "minecraft:oak_sapling",
-      "required": false
-    },
-    {
-      "id": "minecraft:jungle_sapling",
-      "required": false
-    },
-    {
-      "id": "minecraft:dark_oak_sapling",
-      "required": false
-    },
-    {
-      "id": "minecraft:acacia_sapling",
+      "id": "minecraft:birch_sapling",
       "required": false
     },
     {
@@ -25,15 +13,27 @@
       "required": false
     },
     {
-      "id": "minecraft:birch_sapling",
+      "id": "minecraft:oak_sapling",
       "required": false
     },
     {
-      "id": "minecraft:spruce_sapling",
+      "id": "minecraft:acacia_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:dark_oak_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:jungle_sapling",
       "required": false
     },
     {
       "id": "minecraft:pale_oak_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:spruce_sapling",
       "required": false
     }
   ]

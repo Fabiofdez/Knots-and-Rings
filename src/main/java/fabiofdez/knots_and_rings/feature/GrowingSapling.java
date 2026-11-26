@@ -333,7 +333,10 @@ public class GrowingSapling {
           shape = shape.move(centerOffset.x, 0, centerOffset.z);
         }
 
-        shape = shape.move(randomOffset.x, randomOffset.y, randomOffset.z);
+        if (offsetToRoot(state) != BlockPosOffset.SELF || growthStage(state).GEQ(Stage.TALL_SAPLING)) {
+          shape = shape.move(randomOffset.x, randomOffset.y, randomOffset.z);
+        }
+
         return shape;
       };
     }
@@ -370,5 +373,4 @@ public class GrowingSapling {
   private interface ShapeResolver {
     VoxelShape parse(BlockState state, BlockPos pos);
   }
-
 }

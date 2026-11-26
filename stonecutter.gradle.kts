@@ -193,6 +193,10 @@ stonecutter parameters {
 		string(loader == "neoforge" && current.parsed > "1.21.1") {
 			replace("AddReloadListenerEvent", "AddServerReloadListenersEvent")
 		}
+
+		string(loader == "neoforge" && current.parsed >= "1.21.11") {
+			replace("GENERATE_SAPLINGS)", "GENERATE_SAPLINGS.get())")
+		}
 	}
 }
 

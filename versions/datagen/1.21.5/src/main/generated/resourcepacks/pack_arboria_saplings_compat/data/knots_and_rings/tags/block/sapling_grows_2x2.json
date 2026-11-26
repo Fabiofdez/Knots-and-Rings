@@ -1,11 +1,7 @@
 {
   "values": [
     {
-      "id": "minecraft:spruce_sapling",
-      "required": false
-    },
-    {
-      "id": "minecraft:oak_sapling",
+      "id": "minecraft:birch_sapling",
       "required": false
     },
     {
@@ -13,11 +9,15 @@
       "required": false
     },
     {
-      "id": "minecraft:acacia_sapling",
+      "id": "minecraft:mangrove_propagule",
       "required": false
     },
     {
-      "id": "minecraft:mangrove_propagule",
+      "id": "minecraft:oak_sapling",
+      "required": false
+    },
+    {
+      "id": "minecraft:acacia_sapling",
       "required": false
     },
     {
@@ -25,7 +25,7 @@
       "required": false
     },
     {
-      "id": "minecraft:birch_sapling",
+      "id": "minecraft:jungle_sapling",
       "required": false
     },
     {
@@ -33,7 +33,7 @@
       "required": false
     },
     {
-      "id": "minecraft:jungle_sapling",
+      "id": "minecraft:spruce_sapling",
       "required": false
     }
   ]

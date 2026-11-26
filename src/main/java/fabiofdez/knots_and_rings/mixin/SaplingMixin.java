@@ -107,7 +107,6 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
       return level.setBlock(pos, state, updateFlag);
     }
 
-    // TODO: resolve shape dynamically/data-driven from sapling type?
     SaplingShape shape = GrowingSapling.resolveTreeShape(state, pos);
     SaplingShape.Layout oldLayout = shape.layout();
     Stage saplingStage = GrowingSapling.growthStage(state);
@@ -206,7 +205,7 @@ public abstract class SaplingMixin extends VegetationBlockMixin {
     if (type == SaplingType.NONE) return false;
 
     SaplingShape shape = GrowingSapling.resolveTreeShape(state, pos);
-    if (shape.isEmpty()) return false;
+    if (shape.isEmpty() || !type.getPossibleShapes().contains(shape.layout())) return false;
 
     pos = shape.root();
     Set<BlockPos> stemSpots = shape.allPositions();
