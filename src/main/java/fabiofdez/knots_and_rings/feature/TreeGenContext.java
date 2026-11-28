@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkAccess;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -28,8 +30,9 @@ public class TreeGenContext {
     ifGenerating(level, (chunkMap) -> chunkMap.get(chunk)).ifPresent(ChunkTrees::generateSaplings);
   }
 
-  public static void endDecorating(Level level, ChunkPos chunk) {
-    ifGenerating(level, (chunkMap) -> chunkMap.remove(chunk)).ifPresent(ChunkTrees::checkSaplings);
+  public static void endDecorating(Level level, ChunkAccess chunk) {
+    ChunkMapConsumer<ChunkTrees> removeChunk = (chunkMap) -> chunkMap.remove(chunk.getPos());
+    ifGenerating(level, removeChunk).ifPresent((trees) -> trees.checkSaplings(level, chunk));
   }
 
   public static void markVisited(Level level, BlockPos pos) {
@@ -40,7 +43,7 @@ public class TreeGenContext {
     withGeneratingInChunk(level, ChunkPos.containing(pos), (trees) -> trees.placeWhenDecorated(action));
   }
 
-  public static void checkWhenLit(Level level, BlockPos pos, Runnable action) {
+  public static void checkWhenLit(Level level, BlockPos pos, BiConsumer<Level, ChunkAccess> action) {
     withGeneratingInChunk(level, ChunkPos.containing(pos), (trees) -> trees.checkWhenLit(action));
   }
 
@@ -83,7 +86,7 @@ public class TreeGenContext {
   private interface ChunkMapConsumer<T> extends Function<Map<ChunkPos, ChunkTrees>, T> {
   }
 
-  private record ChunkTrees(Set<BlockPos> visitedTrees, List<Runnable> saplingQueue, List<Runnable> lightCheckQueue) {
+  private record ChunkTrees(Set<BlockPos> visitedTrees, List<Runnable> saplingQueue, List<BiConsumer<Level, ChunkAccess>> lightCheckQueue) {
 
     static ChunkTrees create(ChunkPos chunk) {
       return new ChunkTrees(ConcurrentHashMap.newKeySet(), new ArrayList<>(), new ArrayList<>());
@@ -101,7 +104,7 @@ public class TreeGenContext {
       saplingQueue.add(action);
     }
 
-    void checkWhenLit(Runnable action) {
+    void checkWhenLit(BiConsumer<Level, ChunkAccess> action) {
       lightCheckQueue.add(action);
     }
 
@@ -109,8 +112,8 @@ public class TreeGenContext {
       saplingQueue.forEach(Runnable::run);
     }
 
-    void checkSaplings() {
-      lightCheckQueue.forEach(Runnable::run);
+    void checkSaplings(Level level, ChunkAccess chunk) {
+      lightCheckQueue.forEach((action) -> action.accept(level, chunk));
     }
   }
 }

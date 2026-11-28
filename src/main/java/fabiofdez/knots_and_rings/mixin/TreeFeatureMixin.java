@@ -1,6 +1,7 @@
 package fabiofdez.knots_and_rings.mixin;
 
 import fabiofdez.knots_and_rings.ModGameRules;
+import fabiofdez.knots_and_rings.block.TreeSeedBlock;
 import fabiofdez.knots_and_rings.feature.GrowingSapling;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Properties;
 import fabiofdez.knots_and_rings.feature.GrowingSapling.Stage;
@@ -16,15 +17,17 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Brightness;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoublePlantBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
+import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
 import net.minecraft.world.level.levelgen.feature.TreeFeature;
@@ -44,6 +47,7 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -182,10 +186,10 @@ public class TreeFeatureMixin {
   }
 
   @Unique
-  private static SaplingShape findSpaceForSapling(SaplingType type, BlockGetter level, BlockPos root, Layout largestShape, Stage stage) {
+  private static SaplingShape findSpaceForSapling(SaplingType type, WorldGenLevel level, BlockPos root, Layout largestShape, Stage stage) {
     Predicate<BlockPos> isReplaceable = (pos) -> isReplaceableBySapling(level.getBlockState(pos));
     Predicate<BlockPos> validSpot = (pos) -> {
-      if (!isReplaceable.test(pos)) return false;
+      if (!level.ensureCanWrite(pos) || !isReplaceable.test(pos)) return false;
       if (stage == Stage.SPROUT) return isReplaceable.test(pos.above());
 
       BlockPos topHalf = pos.above();
@@ -200,7 +204,7 @@ public class TreeFeatureMixin {
 
       if (stage != Stage.SPROUT) {
         boolean spaceAround = inPlace.perimeter(CARDINAL).stream().allMatch((pos) -> {
-          if (!isReplaceable.test(pos)) return false;
+          if (!level.ensureCanWrite(pos) || !isReplaceable.test(pos)) return false;
           return isReplaceable.test(pos.above());
         });
 
@@ -285,20 +289,28 @@ public class TreeFeatureMixin {
       growSapling(type, shape, stage, level, random);
       numPlaced.getAndIncrement();
 
-      Runnable checkSkyLight = () -> checkSaplingLight(type, shape, level, random);
+      ChunkAction checkSkyLight = (newLevel, chunk) -> checkSaplingLight(type, shape, newLevel, chunk, random);
       TreeGenContext.checkWhenLit(level.getLevel(), shape.root(), checkSkyLight);
     });
   }
 
   @Unique
-  private static void checkSaplingLight(SaplingType type, SaplingShape shape, WorldGenLevel level, RandomSource random) {
+  private static void checkSaplingLight(SaplingType type, SaplingShape shape, Level level, ChunkAccess chunk, RandomSource random) {
     BlockPos saplingRoot = shape.root();
     Set<BlockPos> saplingParts = shape.allPositions();
 
-    Predicate<BlockPos> validSaplingPart = (pos) -> level.getBlockState(pos).getBlock() instanceof SaplingBlock;
-    Runnable uprootSapling = () -> shape.forEach((pos) -> {
-      level.destroyBlock(pos, false);
-      if (validSaplingPart.test(pos.above())) level.destroyBlock(pos.above(), false);
+    //~ if > 1.21.1 'true);' -> '3);'
+    BiConsumer<BlockPos, BlockState> setBlock = (pos, state) -> chunk.setBlockState(pos, state, 3);
+    Function<BlockPos, BlockState> getAsEmptyBlock = (pos) -> chunk.getFluidState(pos).createLegacyBlock();
+    Predicate<BlockPos> validSaplingPart = (pos) -> chunk.getBlockState(pos).getBlock() instanceof SaplingBlock;
+
+    shape.forEach((pos) -> {
+      BlockPos abovePos = pos.above();
+      BlockState aboveState = chunk.getBlockState(abovePos);
+
+      if (!validSaplingPart.test(abovePos) && aboveState.hasProperty(DoublePlantBlock.HALF)) {
+        setBlock.accept(abovePos, getAsEmptyBlock.apply(abovePos));
+      }
     });
 
     Function<BlockPos, Integer> skyLight = (pos) -> level.getBrightness(LightLayer.SKY, pos);
@@ -310,21 +322,32 @@ public class TreeFeatureMixin {
     boolean validSapling = saplingParts.stream().allMatch(validSaplingPart);
     if (!willUproot || !validSapling) return;
 
-    uprootSapling.run();
+    shape.forEach((pos) -> {
+      setBlock.accept(pos, getAsEmptyBlock.apply(pos));
+
+      BlockPos abovePos = pos.above();
+      if (validSaplingPart.test(abovePos)) {
+        setBlock.accept(abovePos, getAsEmptyBlock.apply(abovePos));
+      }
+    });
+
     if (random.nextInt(3) != 0) return;
 
     BlockState drySapling = type
-        .placedSapling(level, saplingRoot)
+        .placedSapling(chunk, saplingRoot)
         .setValue(Properties.GROWTH_STAGE, Stage.DECAYING)
         .setValue(Properties.PRUNED, true);
 
-    level.setBlock(saplingRoot, drySapling, 3);
+    setBlock.accept(saplingRoot, drySapling);
   }
 
   @Unique
   private static boolean isReplaceableBySapling(BlockState state) {
     if (state.is(Blocks.AIR)) return true;
     if (state.is(BlockTags.LEAVES)) return false;
+
+    Block block = state.getBlock();
+    if (block instanceof SaplingBlock || block instanceof TreeSeedBlock) return false;
 
     return state.is(BlockTags.REPLACEABLE_BY_TREES) || state.is(BlockTags.FLOWERS);
   }
@@ -347,5 +370,8 @@ public class TreeFeatureMixin {
 
       return (pos) -> pos.relative(Axis.X, xOffset).relative(Axis.Z, zOffset);
     }
+  }
+
+  private interface ChunkAction extends BiConsumer<Level, ChunkAccess> {
   }
 }

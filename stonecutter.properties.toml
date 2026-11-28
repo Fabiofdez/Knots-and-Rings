@@ -1,8 +1,8 @@
 mod.id = "knots_and_rings"
 mod.name = "Knots & Rings"
 mod.group = "fabiofdez"
-mod.version = "2.4.0"
-mod.channel_tag = "-alpha"
+mod.version = "2.4.1"
+mod.channel_tag = "-beta"
 mod.description = "Bring trees to life with natural details like seamless growth rings and bark imperfections"
 mod.authors = ["Fabiofdez"]
 mod.contributors = []

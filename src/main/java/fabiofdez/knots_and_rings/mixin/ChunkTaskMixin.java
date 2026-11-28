@@ -37,12 +37,12 @@ public class ChunkTaskMixin {
 
   @Inject(method = GENERATE_SPAWN, at = @At(value = "INVOKE", target = SPAWN_MOBS))
   private static void knots_and_rings$uprootSaplingsInShadow(CallbackInfo ci, @Local(argsOnly = true) ServerLevel level, @Local(argsOnly = true) ChunkAccess chunk) {
-    TreeGenContext.endDecorating(level, chunk.getPos());
+    TreeGenContext.endDecorating(level, chunk);
   }
   *///? } else {
   @Inject(method = "generateSpawn", at = @At(value = "INVOKE", target = SPAWN_MOBS))
   private static void knots_and_rings$uprootSaplingsInShadow(CallbackInfoReturnable<CompletableFuture<ChunkAccess>> cir, @Local(argsOnly = true) WorldGenContext ctx, @Local(argsOnly = true) ChunkAccess chunk) {
-    TreeGenContext.endDecorating(ctx.level(), chunk.getPos());
+    TreeGenContext.endDecorating(ctx.level(), chunk);
   }
   //? }
 }
